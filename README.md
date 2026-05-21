@@ -1,58 +1,20 @@
-# Hayatımız Oyun V2.1.0
+# Hayatımız Oyun V2.1.0 Fix 1
 
-V2.1.0, V2.0.5 planındaki fix alanlarının dışına çıkan büyük sistem güncellemesidir.
+Bu paket V2.1.0 üzerine gelen kategori, admin oyunlar ve toplu düzenleme düzeltmesidir.
 
-## Yeni Büyük Özellikler
+## Fixler
 
-### Gelişmiş Arşiv
-- Seri bazlı arşiv sayfası eklendi.
-- Her seri için oyun ve bölüm sayısı gösterilir.
-- Seri kartlarında kapak önizlemeleri bulunur.
-
-### Gelişmiş Arama
-- Oyun, seri, açıklama ve etiket içinde arama.
-- Durum, tip ve seri filtreleri.
-- Kapaklı sonuç kartları.
-
-### Oyun Detay Sayfası V2
-- Büyük kapak alanı.
-- Seri, tip, durum ve bölüm sayısı.
-- Bölüm listesi ve izleme bağlantıları.
-
-### Favoriler Sistemi
-- Oyunları favorilere ekleme/çıkarma.
-- Favoriler sayfası.
-- Favoriler yerel tarayıcı hafızasında saklanır.
-
-### İzleme Takip Sistemi
-- İzledim, İzliyorum, İzleyeceğim, Yarım Kaldı durumları.
-- İzleme Takibi sayfası.
-- Takip kayıtları yerel tarayıcı hafızasında saklanır.
-
-### Duyuru Sistemi
-- Ana sayfaya duyuru alanı eklendi.
-- Admin V2.1.0 merkezinden duyuru ekleme.
-
-### Site Sağlık Kontrolü
-- Kapaksız, hikayesiz, bölümsüz ve sosyal link eksiklerini sayar.
-- Admin V2.1.0 merkezinde sağlık özeti görünür.
-
-### Yedekleme ve Geri Yükleme V2
-- Tam site yedeğini JSON olarak indirme.
-- Yedeği içe aktarma önizleme/yerel yükleme.
-
-### Admin V2.1.0 Merkez
-- Yeni admin merkezi.
-- Oyun, seri, bölüm, favori, takip ve sağlık istatistikleri.
-- Yedek alma ve duyuru ekleme.
-
-## Korunanlar
-
-- V2.0.3 Fix 1 admin oyun seçimi.
-- Hakkında yönetimi.
-- ByNoGame ve TikTok ikon düzeltmeleri.
-- Kapak görünüm fixleri.
-- Mevcut API ve Supabase schema-safe düzeltmeleri.
+- Üst kategori/nav butonlarının iç içe girmesi düzeltildi.
+- V2.1.0 Arşiv / Arama / Favoriler / Takip butonları düzenli grup haline alındı.
+- Admin panel kategori butonları grid yapıya çekildi.
+- Admin > Oyunlar bölümü yeniden tasarlandı.
+- Oyun kapakları admin panelinde daha düzgün görünür hale getirildi.
+- Oyun kartı butonları grid düzene alındı.
+- Tümünü seç artık gerçek oyun checkboxlarını seçer.
+- Seçilenleri Güncelle artık “Oyun seç” hatasına düşmez.
+- Seçilenleri Onar ve Seçilenleri Sil aynı seçim sistemiyle çalışır.
+- Güncelleme notları tek temiz listede, sürüm numarasına göre en yeniden eskiye sıralanır.
+- JS syntax kontrolünden geçti.
 
 ## Temiz Kurulum
 
@@ -66,7 +28,7 @@ ZIP içeriğini klasöre çıkar.
 
 ```powershell
 git add .
-git commit -m "V2.1.0 buyuk sistem guncellemesi"
+git commit -m "V2.1.0 Fix 1 admin kategori oyunlar duzeltmeleri"
 git push -f origin main
 ```
 

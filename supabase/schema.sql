@@ -631,3 +631,5 @@ alter table games add column if not exists thumbnail text;
 -- V2.0.3 Fix 1: Oyunlar sekmesine tümünü seç/toplu düzenleme, admin kapak düzeltmesi ve hakkında yönetimi eklendi.
 
 -- V2.1.0: Gelişmiş arşiv, arama, favoriler, izleme takip, duyuru, sağlık kontrolü ve yedekleme merkezi eklendi.
+
+-- V2.1.0 Fix 1: Kategori/nav düzeni, admin oyun kartları, tümünü seç/toplu güncelleme ve güncelleme notları sıralaması düzeltildi.
