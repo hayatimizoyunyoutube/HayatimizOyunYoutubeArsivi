@@ -1162,3 +1162,69 @@ body{background:
 .v220-banner{
   border-color:rgba(34,197,94,.30)!important;
 }
+
+
+/* V2.2.0 İzleme Fix - site içi player */
+
+.watch-page-v220{
+  display:grid!important;
+  gap:18px!important;
+}
+.watch-head-v220{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+}
+.player-shell-v220{
+  position:relative!important;
+  width:100%!important;
+  aspect-ratio:16/9!important;
+  border-radius:28px!important;
+  overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  background:#000!important;
+  box-shadow:0 28px 90px rgba(0,0,0,.42)!important;
+}
+.player-shell-v220 iframe{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  border:0!important;
+}
+.episode-row-watch-v220{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+}
+.episode-row-watch-v220 small{
+  display:block!important;
+  margin-top:4px!important;
+  color:#94a3b8!important;
+  font-size:12px!important;
+}
+.videoid-repair-v220{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  margin-bottom:16px!important;
+  border-color:rgba(34,197,94,.28)!important;
+  background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(99,102,241,.08),rgba(255,255,255,.03))!important;
+}
+.button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-decoration:none!important;
+}
+@media(max-width:720px){
+  .watch-head-v220,.episode-row-watch-v220,.videoid-repair-v220{
+    display:block!important;
+  }
+  .watch-head-v220 .row,.episode-row-watch-v220 .row{
+    margin-top:10px!important;
+  }
+}

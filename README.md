@@ -1,25 +1,30 @@
-# Hayatımız Oyun V2.2.0 - V3.0.0 Açılış Sistemi Fix
+# Hayatımız Oyun V2.2.0 İzleme Fix
 
-Bu paket sürüm ayrımını düzeltir:
-
-- **Site sürümü:** V2.2.0
-- **Site açılış/loading sistemi:** V3.0.0 açılış ekranı mantığı
+Bu paket izleme ekranındaki **Video ID yok** hatasını düzeltir.
 
 ## Düzeltilenler
 
-- Site artık V3.0.0 sürümüne geçirilmiş gibi görünmez.
-- Genel site sürüm etiketi V2.2.0 kalır.
-- Açılış/loading ekranında V3.0.0 açılış sistemi metni görünür.
-- Loading yüzdesi sabit/yanlış değil, adımlara göre otomatik ilerler:
-  - V3.0.0 açılış sistemi hazırlanıyor
-  - Site ayarları yükleniyor
-  - Oyunlar ve kapaklar hazırlanıyor
-  - Güncelleme notları sıralanıyor
-  - Takvim ve duyurular kontrol ediliyor
-  - V2.2.0 site arayüzü açılıyor
-- A-Z/Seriler arama düzeltmeleri korunur.
-- ByNoGame yuvarlak ikon düzeltmesi korunur.
-- Sosyal Medya Hata Kontrol bölümü korunur.
+- Site içi izleme ekranı YouTube linkinden video ID'yi otomatik çıkarır.
+- Desteklenen alanlar:
+  - `videoId`
+  - `video_id`
+  - `youtube_id`
+  - `youtubeId`
+  - `url`
+  - `video_url`
+  - `videoUrl`
+  - `link`
+  - `href`
+- Desteklenen YouTube formatları:
+  - `youtube.com/watch?v=VIDEO_ID`
+  - `youtu.be/VIDEO_ID`
+  - `youtube.com/embed/VIDEO_ID`
+  - `youtube.com/shorts/VIDEO_ID`
+  - `youtube.com/live/VIDEO_ID`
+- Oyun detay sayfasındaki bölümlere **Site İçinde İzle** butonu eklendi.
+- Video site içinde `youtube-nocookie.com/embed` iframe ile açılır.
+- Admin paneline **Video ID Onarım** kutusu eklendi.
+- Video ID onarım aracı YouTube linki olup `videoId` alanı boş olan bölümleri otomatik düzeltir.
 - JS syntax kontrolünden geçti.
 
 ## Temiz Kurulum
@@ -34,7 +39,7 @@ ZIP içeriğini klasöre çıkar.
 
 ```powershell
 git add .
-git commit -m "V2.2.0 v3 acilis sistemi duzeltmesi"
+git commit -m "V2.2.0 site ici izleme video id fix"
 git push -f origin main
 ```
 

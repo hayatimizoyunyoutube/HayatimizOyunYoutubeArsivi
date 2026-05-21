@@ -1,5 +1,5 @@
 
-/* Hayatımız Oyun - V2.2.0 with V2.2.0 Opening */
+/* Hayatımız Oyun - V2.2.0 Izleme Fix */
 const VERSION='2.2.0';
 const STAFF=['Moderatör','Editör','Admin','Kurucu'];
 const state={games:[],notes:[],events:[],settings:{},page:'home',filter:'',user:JSON.parse(localStorage.ho_user||'null'),selectedFriend:null,seriesEditKey:''};
@@ -492,9 +492,115 @@ function gameCardV210(g){
     </div>
   </article>`;
 }
+
+/* V2.2.0 İzleme Fix - YouTube video ID otomatik algılama */
+function extractVideoIdV220(input=''){
+  const raw=String(input||'').trim();
+  if(!raw)return '';
+  if(/^[a-zA-Z0-9_-]{11}$/.test(raw))return raw;
+  try{
+    const normalized=/^https?:\/\//i.test(raw)?raw:'https://'+raw;
+    const u=new URL(normalized);
+    const host=u.hostname.replace(/^www\./,'').toLowerCase();
+    if(host.includes('youtu.be')){
+      const id=u.pathname.split('/').filter(Boolean)[0]||'';
+      if(/^[a-zA-Z0-9_-]{11}$/.test(id))return id;
+    }
+    if(host.includes('youtube.com')||host.includes('youtube-nocookie.com')){
+      const v=u.searchParams.get('v');
+      if(v&&/^[a-zA-Z0-9_-]{11}$/.test(v))return v;
+      const parts=u.pathname.split('/').filter(Boolean);
+      const keys=['embed','shorts','live','v'];
+      for(let i=0;i<parts.length;i++){
+        if(keys.includes(parts[i])&&parts[i+1]&&/^[a-zA-Z0-9_-]{11}$/.test(parts[i+1]))return parts[i+1];
+      }
+      const last=parts[parts.length-1]||'';
+      if(/^[a-zA-Z0-9_-]{11}$/.test(last))return last;
+    }
+  }catch(e){}
+  const m=raw.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([a-zA-Z0-9_-]{11})/);
+  if(m)return m[1];
+  const loose=raw.match(/\b([a-zA-Z0-9_-]{11})\b/);
+  return loose?loose[1]:'';
+}
+function episodeVideoIdV220(ep={}){
+  return extractVideoIdV220(
+    ep.videoId || ep.video_id || ep.youtube_id || ep.youtubeId || ep.id ||
+    ep.url || ep.video_url || ep.videoUrl || ep.link || ep.href || ''
+  );
+}
+function episodeWatchUrlV220(ep={}){
+  const id=episodeVideoIdV220(ep);
+  if(id)return `https://www.youtube.com/watch?v=${id}`;
+  return ep.url||ep.video_url||ep.videoUrl||ep.link||ep.href||'';
+}
+function episodeEmbedUrlV220(ep={}){
+  const id=episodeVideoIdV220(ep);
+  return id?`https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&autoplay=0`:'';
+}
+function openEpisodePlayerV220(gameId,idx){
+  const g=(state.games||[]).find(x=>String(x.id||x.slug||x.title)===String(gameId));
+  if(!g)return alert('Oyun bulunamadı.');
+  const ep=(Array.isArray(g.episodes)?g.episodes:[])[Number(idx)];
+  if(!ep)return alert('Bölüm bulunamadı.');
+  const embed=episodeEmbedUrlV220(ep);
+  const watch=episodeWatchUrlV220(ep);
+  const app=document.getElementById('app');
+  if(!embed){
+    return alert('Video ID bulunamadı. Bölümde YouTube linki veya video ID alanı yok. Admin panelden bölüm URL/videoId alanını kontrol et.');
+  }
+  app.innerHTML=`<section class="watch-page-v220">
+    <div class="watch-head-v220 card">
+      <div><span class="version-pill">Site içi izleme</span><h1>${escV220(ep.title||g.title||'Bölüm')}</h1><p class="muted">${escV220(g.title||'Oyun')} • ${escV220(g.series||'Seri')}</p></div>
+      <div class="row"><button onclick="showGameDetailV210('${escV220(gameId)}')">Oyuna Dön</button><a class="button ghost" href="${escV220(watch)}" target="_blank" rel="noopener noreferrer">YouTube’da Aç</a></div>
+    </div>
+    <div class="player-shell-v220">
+      <iframe src="${escV220(embed)}" title="${escV220(ep.title||g.title||'Video')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+    <section class="card"><h2>Bölüm Bilgisi</h2><p>${escV220(ep.description||g.description||'Açıklama eklenmemiş.')}</p><p class="muted">Video ID: ${escV220(episodeVideoIdV220(ep))}</p></section>
+  </section>`;
+}
+function normalizeEpisodesVideoIdsV220(game){
+  const g={...(game||{})};
+  if(!Array.isArray(g.episodes))g.episodes=[];
+  g.episodes=g.episodes.map(ep=>{
+    const next={...(ep||{})};
+    const id=episodeVideoIdV220(next);
+    if(id&&!next.videoId)next.videoId=id;
+    if(!next.url&&id)next.url=`https://www.youtube.com/watch?v=${id}`;
+    return next;
+  });
+  return g;
+}
+async function repairEpisodeVideoIdsV220(){
+  const games=(state.games||[]).filter(g=>(Array.isArray(g.episodes)?g.episodes:[]).some(ep=>episodeVideoIdV220(ep)&&!ep.videoId));
+  if(!games.length)return alert('Video ID onarılacak bölüm bulunamadı.');
+  if(!confirm(games.length+' oyundaki bölüm video ID alanları onarılsın mı?'))return;
+  let ok=0,fail=0;
+  if(typeof runWithProgressV220==='function'){
+    await runWithProgressV220('Bölüm Video ID Onarımı',games,async(g)=>{
+      const fixed=normalizeEpisodesVideoIdsV220(g);
+      if(typeof saveGameV220==='function')await saveGameV220(fixed);
+      else await api('/api/games',{method:'PUT',body:JSON.stringify({game:fixed})});
+    });
+    ok=games.length;
+  }else{
+    for(const g of games){
+      try{
+        const fixed=normalizeEpisodesVideoIdsV220(g);
+        await api('/api/games',{method:'PUT',body:JSON.stringify({game:fixed})});
+        ok++;
+      }catch(e){console.warn(e);fail++;}
+    }
+  }
+  await load();
+  alert('Video ID onarımı tamamlandı. Başarılı: '+ok+' Hata: '+fail);
+}
+
 function showGameDetailV210(id){
-  const g=(state.games||[]).find(x=>gameIdV210(x)===String(id));
+  const g=(state.games||[]).find(x=>gameIdV210(x)===String(id)||String(x.id||x.slug||x.title)===String(id));
   if(!g)return;
+  const gid=String(g.id||g.slug||g.title||id);
   const eps=Array.isArray(g.episodes)?g.episodes:[];
   const app=document.getElementById('app');
   app.innerHTML=`<section class="game-detail-v210 hero">
@@ -502,9 +608,14 @@ function showGameDetailV210(id){
     <div><span class="version-pill">Detay V2.2.0</span><h1>${escV210(g.title||'Başlıksız')}</h1>
     <p>${escV210(g.description||'Bu oyun için açıklama henüz eklenmedi.')}</p>
     <div class="roadmap-list"><span>${escV210(g.series||'Serisiz')}</span><span>${escV210(g.type||'Ana Oyun')}</span><span>${escV210(g.status||'Durum Yok')}</span><span>${eps.length} bölüm</span></div>
-    <div class="row"><button onclick="history.back();render()">Geri Dön</button><button class="ghost" onclick="toggleFavoriteV210('${escV210(id)}')">${isFavoriteV210(id)?'Favoriden Çıkar':'Favoriye Ekle'}</button></div></div>
+    <div class="row"><button onclick="render()">Geri Dön</button><button class="ghost" onclick="toggleFavoriteV210('${escV210(gid)}')">${isFavoriteV210(gid)?'Favoriden Çıkar':'Favoriye Ekle'}</button></div></div>
   </section>
-  <section class="card"><h2>Bölümler</h2><div class="episodes-v210">${eps.map((ep,i)=>`<div class="episode-row-v210"><b>${i+1}. ${escV210(ep.title||'Bölüm')}</b>${ep.url?`<a href="${escV210(ep.url)}" target="_blank" rel="noopener noreferrer">İzle</a>`:''}</div>`).join('')||'<p class="muted">Bölüm eklenmemiş.</p>'}</div></section>`;
+  <section class="card"><div class="section-title"><div><h2>Bölümler</h2><p class="muted">YouTube linki olan bölümler site içinde oynatılır. ID yoksa linkten otomatik alınır.</p></div></div>
+  <div class="episodes-v210 episodes-watch-v220">${eps.map((ep,i)=>{
+    const vid=episodeVideoIdV220(ep);
+    const watch=episodeWatchUrlV220(ep);
+    return `<div class="episode-row-v210 episode-row-watch-v220"><div><b>${i+1}. ${escV210(ep.title||'Bölüm')}</b><small>${vid?'Video ID: '+escV210(vid):'Video ID/link yok'}</small></div><div class="row">${vid?`<button onclick="openEpisodePlayerV220('${escV210(gid)}','${i}')">Site İçinde İzle</button>`:''}${watch?`<a class="button ghost" href="${escV210(watch)}" target="_blank" rel="noopener noreferrer">YouTube</a>`:''}</div></div>`;
+  }).join('')||'<p class="muted">Bölüm eklenmemiş.</p>'}</div></section>`;
 }
 function v210DashboardStats(){
   const games=state.games||[];
@@ -1039,7 +1150,7 @@ function v195QuickActions(){
   const apiCount=12;
   return `<section class="card v195-panel"><div class="section-title"><div><span class="version-pill">V1.9.5</span><h2>Temiz Kurulum ve Hızlı Onarım Merkezi</h2><p class="muted">Bu panel eski API dosyası kalması, kapak/hikaye eksikleri, seri dağınıklığı ve sosyal medya ayarlarını tek yerden kontrol etmek için eklendi.</p></div><button class="ghost" onclick="copyCleanInstallCommands()">Temiz Kurulum Komutlarını Kopyala</button></div><div class="grid compact"><div class="card"><h3>${apiCount}/12</h3><p>Vercel API endpoint düzeni</p></div><div class="card"><h3>${d.score}%</h3><p>Seri sağlığı</p></div><div class="card"><h3>${d.noCover.length}</h3><p>Kapaksız oyun</p></div><div class="card"><h3>${d.noStory.length}</h3><p>Hikayesi eksik</p></div></div><div class="row"><button onclick="adminTab('seriesControl')">Serileri Kontrol Et</button><button class="ghost" onclick="adminTab('api')">RAWG / YouTube Araçları</button><button class="ghost" onclick="adminTab('socialset')">Sosyal Medya Ayarları</button><button class="ghost" onclick="downloadReadme()">Kurulum Notu İndir</button></div></section>`;
 }
-function cleanInstallCommands(){return `# Hayatımız Oyun V2.2.0 temiz kurulum
+function cleanInstallCommands(){return `# Hayatımız Oyun V2.2.0 İzleme Fix temiz kurulum
 # Eski dosyaların üstüne kopyalama yapma; yeni ZIP klasörünü temiz kaynak olarak kullan.
 
 git init
@@ -1053,7 +1164,7 @@ git push -f origin main
 # Sonra Vercel panelinden Redeploy yap.
 # Gerekirse Supabase SQL Editor içinde supabase/schema.sql dosyasını çalıştır.`;}
 async function copyCleanInstallCommands(){try{await navigator.clipboard.writeText(cleanInstallCommands()); alert('Temiz kurulum komutları kopyalandı.');}catch{alert(cleanInstallCommands());}}
-function downloadReadme(){const blob=new Blob([cleanInstallCommands()+`\n\nV1.9.5 Fix 2 Özeti:\n- Admin Panel V3 hızlı onarım merkezi\n- Sosyal medya / bağış / yayıncı alanı güçlendirme\n- Seri kontrol ve kapaklı sıralama stabilizasyonu\n- API JSON hata uyarıları ve Vercel 12 endpoint düzeni\n- RAWG kapak/hikaye toplu yenileme araçları\n- YouTube kanal import/senkron ilerleme göstergesi\n`],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='V2.2.0-v3-acilis-temiz-kurulum-notu.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+function downloadReadme(){const blob=new Blob([cleanInstallCommands()+`\n\nV1.9.5 Fix 2 Özeti:\n- Admin Panel V3 hızlı onarım merkezi\n- Sosyal medya / bağış / yayıncı alanı güçlendirme\n- Seri kontrol ve kapaklı sıralama stabilizasyonu\n- API JSON hata uyarıları ve Vercel 12 endpoint düzeni\n- RAWG kapak/hikaye toplu yenileme araçları\n- YouTube kanal import/senkron ilerleme göstergesi\n`],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='V2.2.0-izleme-fix-temiz-kurulum-notu.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 
 function stripGameDbUnsafeFields(game){
   const g={...(game||{})};
@@ -1948,6 +2059,36 @@ function v220AdminCenter(){
         return;
       }
       return await oldAdminTab.apply(this,arguments);
+    };
+    try{adminTab=window.adminTab;}catch(e){}
+  }
+})();
+
+
+function watchEpisode(gameId,idx){return openEpisodePlayerV220(gameId,idx)}
+function playEpisode(gameId,idx){return openEpisodePlayerV220(gameId,idx)}
+function openVideo(gameId,idx){return openEpisodePlayerV220(gameId,idx)}
+
+
+(function(){
+  if(window.__HO_V220_WATCHFIX_ADMIN__)return;
+  window.__HO_V220_WATCHFIX_ADMIN__=true;
+  const oldAdminTab=window.adminTab || (typeof adminTab==='function'?adminTab:null);
+  if(oldAdminTab){
+    window.adminTab=async function(t){
+      const r=await oldAdminTab.apply(this,arguments);
+      setTimeout(()=>{
+        const a=document.getElementById('adminArea');
+        if(!a||document.getElementById('videoIdRepairBoxV220'))return;
+        if(t==='games'||t==='repairV2'||t==='v220'){
+          const box=document.createElement('section');
+          box.id='videoIdRepairBoxV220';
+          box.className='card videoid-repair-v220';
+          box.innerHTML=`<div><span class="version-pill">İzleme Fix</span><h2>Video ID Onarım</h2><p class="muted">Bölümlerde YouTube linki varsa ama videoId alanı boşsa otomatik doldurur.</p></div><button onclick="repairEpisodeVideoIdsV220()">Video ID’leri Onar</button>`;
+          a.prepend(box);
+        }
+      },90);
+      return r;
     };
     try{adminTab=window.adminTab;}catch(e){}
   }
