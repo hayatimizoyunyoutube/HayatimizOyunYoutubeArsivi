@@ -629,3 +629,10 @@ alter table games add column if not exists thumbnail text;
 -- V2.0.3 Current: V3.0.0 duyuruları kaldırıldı, site güncel sürüm V2.0.3 olarak normal açılır.
 
 -- V2.0.3 Fix 1: Oyunlar sekmesine tümünü seç/toplu düzenleme, admin kapak düzeltmesi ve hakkında yönetimi eklendi.
+
+-- V2.0.3 Fix 2
+alter table site_settings add column if not exists about_title text default 'Hayatımız Oyun';
+alter table site_settings add column if not exists about_mission text default '';
+alter table site_settings add column if not exists about_vision text default '';
+alter table site_settings add column if not exists about_show_stats boolean default true;
+-- Admin oyun seçim/toplu güncelleme, hakkında kaydetme ve güncelleme notları sıralaması düzeltildi.

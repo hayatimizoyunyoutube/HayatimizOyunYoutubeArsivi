@@ -1,27 +1,17 @@
-# Hayatımız Oyun V2.0.3 Fix 1
+# Hayatımız Oyun V2.0.3 Fix 2
 
-Bu paket V2.0.3 üzerine gelen admin panel, kapak ve hakkında sayfası düzeltmesidir.
+## Düzeltilenler
 
-## Yeni Özellikler
-
-- Oyunlar sekmesine **Tüm oyunları seç** eklendi.
-- Seçili oyunları toplu düzenleme eklendi.
-- Seçili oyunları toplu onarma eklendi.
-- Admin paneline **Hakkında** yönetim bölümü eklendi.
-- Hakkında bilgileri admin panelinden düzenlenebilir hale geldi.
-- Hakkında metni için **Yapay Zeka ile Oluştur** butonu eklendi.
-- Hakkında sayfasında temiz istatistik alanı eklendi.
-
-## Fixler
-
-- Admin panelindeki oyun kapakları daha düzgün ve tam görünecek şekilde düzeltildi.
-- Kapak alanlarında `contain` kullanıldı.
-- Oyun kartlarına admin seçim kutusu eklendi.
-- Hakkında sayfasındaki oyun/seri/hata bildir karışıklığı temizlendi.
-- V3 duyuru kartı kapalı tutuldu.
-- ByNoGame ve TikTok ikon düzeltmeleri korundu.
-- `adminTab` async hatası düzeltildi.
-- JS syntax kontrolünden geçti.
+- Oyunlar sekmesinde **Tüm oyunları seç** artık gerçekten seçim yapar.
+- Seçili oyunlarda **durum değiştir / seri değiştir / etiket ekle** işlemleri artık “Oyun seç” hatasına düşmez.
+- Admin oyun kartları yeniden düzenlendi.
+- Oyun kapakları admin panelinde tam görünür hale getirildi.
+- Butonlar daha düzgün grid düzenine alındı.
+- Hakkında kısmında kaydetme hatası düzeltildi.
+- Hakkında ek alanları güvenli şekilde saklanır; veritabanında kolon yoksa localStorage yedek kullanılır.
+- `/api/settings` schema cache / bilinmeyen kolon hatasında bilinmeyen alanları çıkarıp tekrar dener.
+- Güncelleme notları sürüm numarası ve tarihe göre en yeniden eskiye sıralanır.
+- 1.8.0 / 1.7.4 gibi notlar artık karışık görünmez.
 
 ## Temiz Kurulum
 
@@ -35,7 +25,7 @@ ZIP içeriğini klasöre çıkar.
 
 ```powershell
 git add .
-git commit -m "V2.0.3 Fix 1 admin kapak hakkında düzeltmeleri"
+git commit -m "V2.0.3 Fix 2 admin oyunlar hakkında not sırası düzeltmeleri"
 git push -f origin main
 ```
 
