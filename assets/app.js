@@ -1,6 +1,6 @@
 
-/* Hayatımız Oyun - V2.0.3 Fix 2 */
-const VERSION='2.0.3 Fix 2';
+/* Hayatımız Oyun - V2.1.0 Büyük Sistem Güncellemesi */
+const VERSION='2.1.0';
 const STAFF=['Moderatör','Editör','Admin','Kurucu'];
 const state={games:[],notes:[],events:[],settings:{},page:'home',filter:'',user:JSON.parse(localStorage.ho_user||'null'),selectedFriend:null,seriesEditKey:''};
 const $=(s,el=document)=>el.querySelector(s);
@@ -241,7 +241,7 @@ function renderSocialSurfaces(){
   let head=$('#socialHeader');
   if(!head){head=document.createElement('div'); head.id='socialHeader'; head.className='social-header'; document.querySelector('header.top')?.appendChild(head);}
   head.innerHTML=state.settings?.show_social_header===false?'':html;
-  const foot=$('#siteFooter'); if(foot)foot.innerHTML=`<div class="footer-info"><b>${esc(siteTitle())}</b><small>V${VERSION} • V2.0.3 Fix 2</small><p>${esc(state.settings?.footer_text||state.settings?.share_description||'Oyun ve seri izleme arşivi.')}</p><div class="footer-links"><button class="ghost small" onclick="setPage('notes')">Güncelleme Notları</button><button class="ghost small" onclick="setPage('calendar')">Takvim</button><button class="ghost small" onclick="setPage('about')">Hakkında / Destek</button></div></div><div class="footer-social">${state.settings?.show_social_footer===false?'':(html||'<span class="muted">Sosyal medya linkleri ayarlardan eklenebilir.</span>')}</div>`;
+  const foot=$('#siteFooter'); if(foot)foot.innerHTML=`<div class="footer-info"><b>${esc(siteTitle())}</b><small>V${VERSION} • V2.1.0</small><p>${esc(state.settings?.footer_text||state.settings?.share_description||'Oyun ve seri izleme arşivi.')}</p><div class="footer-links"><button class="ghost small" onclick="setPage('notes')">Güncelleme Notları</button><button class="ghost small" onclick="setPage('calendar')">Takvim</button><button class="ghost small" onclick="setPage('about')">Hakkında / Destek</button></div></div><div class="footer-social">${state.settings?.show_social_footer===false?'':(html||'<span class="muted">Sosyal medya linkleri ayarlardan eklenebilir.</span>')}</div>`;
   const fav=state.settings?.favicon||state.settings?.site_logo; if(fav){let l=document.querySelector('link[rel="icon"]'); if(l)l.href=fav;}
   renderSideMenu();
 }
@@ -284,11 +284,13 @@ function setAtmosphereTheme(label='Ana Sayfa'){
 }
 function playMusic(){
   const pref=soundPrefs(); pref.enabled=false; pref.muted=true; pref.notify=false; pref.volume=0; pref.volume=0; saveSoundPrefs(pref);
-  musicState.playing=false; renderMusicPanel();
+  musicState.playing=false; injectHomeV210();
+  renderMusicPanel();
 }
 function pauseMusic(){
   const pref=soundPrefs(); pref.enabled=false; pref.muted=true; pref.notify=false; pref.volume=0; pref.volume=0; saveSoundPrefs(pref);
-  musicState.playing=false; renderMusicPanel();
+  musicState.playing=false; injectHomeV210();
+  renderMusicPanel();
 }
 function toggleMusic(){pauseMusic();}
 function setMusicVolume(v){
@@ -309,6 +311,7 @@ function hideLoader(){
     l.classList.add('hide');
     setTimeout(()=>{try{l.remove()}catch(e){}},720);
   }
+  injectHomeV210();
   renderMusicPanel();
   setAtmosphereTheme(state.page);
 }
@@ -321,7 +324,8 @@ function loaderSet(pct,text){
   if(n)n.textContent=safePct+'%';
   if(t&&text)t.textContent=text;
 }
-function hideLoader(){const l=$('#siteLoader'); if(l){l.classList.add('hide'); setTimeout(()=>l.remove(),650);} renderMusicPanel(); setAtmosphereTheme(state.page);}
+function hideLoader(){const l=$('#siteLoader'); if(l){l.classList.add('hide'); setTimeout(()=>l.remove(),650);} injectHomeV210();
+  renderMusicPanel(); setAtmosphereTheme(state.page);}
 function playNotificationSound(){const pref=soundPrefs(); if(!pref.notify)return; initMusic(); const ctx=musicState.ctx; if(!ctx)return; const o=ctx.createOscillator(),g=ctx.createGain(); o.frequency.value=880; o.type='sine'; g.gain.value=(pref.volume||.25)*.25; o.connect(g); g.connect(ctx.destination); o.start(); g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.28); setTimeout(()=>o.stop(),320);}
 
 async function load(){
@@ -334,13 +338,239 @@ async function load(){
   const s=await safe('Site ayarları hazırlanıyor...',14,()=>api('/api/settings'),{settings:{}},220); state.settings=s.settings||{};
   if(state.settings.v300_prelaunch!==undefined) state.settings.v300_prelaunch=false;
   const g=await safe('Oyunlar ve kapaklar yükleniyor...',38,()=>api('/api/games'),{games:[]},260); state.games=g.games||[];
-  const n=await safe('Güncelleme notları sıralanıyor...',64,()=>api('/api/notes'),{notes:[]},220); state.notes=(n.notes||[]).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  const n=await safe('Güncelleme notları sıralanıyor...',64,()=>api('/api/notes'),{notes:[]},220); state.notes=sortNotesV210(n.notes||[]).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
   const c=await safe('Takvim kontrol ediliyor...',84,()=>api('/api/calendar'),{events:[]},180); state.events=c.events||[];
-  loaderSet(100,'V2.0.3 Fix 2 açılıyor...');
+  loaderSet(100,'V2.1.0 açılıyor...');
   await wait(380);
 }
+
+function injectNavV210(){
+  try{
+    const nav=document.getElementById('nav');
+    if(!nav || document.getElementById('navV210Archive'))return;
+    const items=[
+      ['archivev210','Arşiv'],
+      ['searchv210','Arama'],
+      ['favoritesv210','Favoriler'],
+      ['trackingv210','Takip']
+    ];
+    items.forEach(([p,label])=>{
+      const b=document.createElement('button');
+      b.id='navV210'+label;
+      b.className=state.page===p?'active':'';
+      b.textContent=label;
+      b.onclick=()=>setPage(p);
+      nav.appendChild(b);
+    });
+  }catch(e){}
+}
+
 function renderNav(){const items=[['home','Ana Sayfa'],['series','Seriler'],['az','A-Z'],['calendar','Takvim'],['notes','Güncelleme Notları'],['social','Sosyal'],['about','Hakkında'],['profile','Profil']]; if(canSeeAdmin())items.push(['admin','Admin']); $('#brand').innerHTML=`${state.settings?.site_logo?`<img src="${esc(state.settings.site_logo)}" class="brand-logo">`:''}<b>${esc(siteTitle())}</b><small>V${VERSION}</small>`; $('#nav').innerHTML=items.map(([p,t])=>`<button type="button" data-page="${p}" class="${state.page===p?'active':''}">${t}</button>`).join(''); $$('#nav button').forEach(b=>b.addEventListener('click',()=>setPage(b.dataset.page))); renderSocialSurfaces();}
 function setPage(p){state.page=p||'home'; location.hash='#/'+state.page; render();}
+
+/* V2.1.0 - Büyük sistem güncellemesi */
+function storageGetV210(key, fallback){
+  try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback));}catch(e){return fallback}
+}
+function storageSetV210(key, value){
+  try{localStorage.setItem(key, JSON.stringify(value));}catch(e){}
+}
+function userListsV210(){return storageGetV210('ho_v210_user_lists',{favorites:[],watch:{}});}
+function saveUserListsV210(data){storageSetV210('ho_v210_user_lists',data);}
+function isFavoriteV210(id){
+  const d=userListsV210();
+  return d.favorites.includes(String(id));
+}
+function toggleFavoriteV210(id){
+  const d=userListsV210();
+  id=String(id);
+  d.favorites=d.favorites.includes(id)?d.favorites.filter(x=>x!==id):[...d.favorites,id];
+  saveUserListsV210(d);
+  if(typeof render==='function')render();
+}
+function setWatchStatusV210(id,status){
+  const d=userListsV210();
+  id=String(id);
+  d.watch[id]=status;
+  saveUserListsV210(d);
+  if(typeof render==='function')render();
+}
+function getWatchStatusV210(id){
+  const d=userListsV210();
+  return d.watch[String(id)]||'';
+}
+function gameIdV210(g){return String(g?.id||g?.slug||g?.title||'');}
+function searchParamsV210(){
+  const q=document.getElementById('searchQv210')?.value?.toLocaleLowerCase('tr-TR')||'';
+  const status=document.getElementById('statusFilterV210')?.value||'';
+  const type=document.getElementById('typeFilterV210')?.value||'';
+  const series=document.getElementById('seriesFilterV210')?.value||'';
+  return {q,status,type,series};
+}
+function filteredGamesV210(){
+  const {q,status,type,series}=searchParamsV210();
+  return (state.games||[]).filter(g=>{
+    const hay=`${g.title||''} ${g.series||''} ${g.description||''} ${(g.tags||[]).join(' ')}`.toLocaleLowerCase('tr-TR');
+    if(q && !hay.includes(q))return false;
+    if(status && String(g.status||'')!==status)return false;
+    if(type && String(g.type||'')!==type)return false;
+    if(series && String(g.series||'')!==series)return false;
+    return true;
+  });
+}
+function episodeCountV210(g){return Array.isArray(g?.episodes)?g.episodes.length:0;}
+function seriesListV210(){return [...new Set((state.games||[]).map(g=>g.series).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'));}
+function statusesV210(){return [...new Set((state.games||[]).map(g=>g.status).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'));}
+function typesV210(){return [...new Set((state.games||[]).map(g=>g.type).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'));}
+function coverV210(g){return (typeof gameCover==='function'?gameCover(g):(g?.cover||g?.thumbnail||'/assets/series-placeholder.svg'))||'/assets/series-placeholder.svg';}
+function escV210(x){return typeof esc==='function'?esc(x):String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function gameCardV210(g){
+  const id=gameIdV210(g);
+  const fav=isFavoriteV210(id);
+  const watch=getWatchStatusV210(id);
+  return `<article class="game-v210-card card">
+    <div class="game-v210-cover" style="background-image:url('${escV210(coverV210(g))}')">
+      <span class="status-pill">${escV210(g.status||'Durum Yok')}</span>
+      <button class="fav-btn-v210 ${fav?'active':''}" onclick="toggleFavoriteV210('${escV210(id)}')" title="Favori">${fav?'★':'☆'}</button>
+    </div>
+    <div class="game-v210-body">
+      <h3>${escV210(g.title||'Başlıksız')}</h3>
+      <p class="muted">${escV210(g.series||'Serisiz')} • ${escV210(g.type||'Ana Oyun')} • ${episodeCountV210(g)} bölüm</p>
+      ${watch?`<span class="watch-pill-v210">${escV210(watch)}</span>`:''}
+      <div class="row">
+        <button onclick="showGameDetailV210('${escV210(id)}')">Detay</button>
+        <select onchange="setWatchStatusV210('${escV210(id)}',this.value)">
+          <option value="">Takip Durumu</option>
+          <option ${watch==='İzledim'?'selected':''}>İzledim</option>
+          <option ${watch==='İzliyorum'?'selected':''}>İzliyorum</option>
+          <option ${watch==='İzleyeceğim'?'selected':''}>İzleyeceğim</option>
+          <option ${watch==='Yarım Kaldı'?'selected':''}>Yarım Kaldı</option>
+        </select>
+      </div>
+    </div>
+  </article>`;
+}
+function showGameDetailV210(id){
+  const g=(state.games||[]).find(x=>gameIdV210(x)===String(id));
+  if(!g)return;
+  const eps=Array.isArray(g.episodes)?g.episodes:[];
+  const app=document.getElementById('app');
+  app.innerHTML=`<section class="game-detail-v210 hero">
+    <div class="game-detail-cover-v210" style="background-image:url('${escV210(coverV210(g))}')"></div>
+    <div><span class="version-pill">Detay V2.1.0</span><h1>${escV210(g.title||'Başlıksız')}</h1>
+    <p>${escV210(g.description||'Bu oyun için açıklama henüz eklenmedi.')}</p>
+    <div class="roadmap-list"><span>${escV210(g.series||'Serisiz')}</span><span>${escV210(g.type||'Ana Oyun')}</span><span>${escV210(g.status||'Durum Yok')}</span><span>${eps.length} bölüm</span></div>
+    <div class="row"><button onclick="history.back();render()">Geri Dön</button><button class="ghost" onclick="toggleFavoriteV210('${escV210(id)}')">${isFavoriteV210(id)?'Favoriden Çıkar':'Favoriye Ekle'}</button></div></div>
+  </section>
+  <section class="card"><h2>Bölümler</h2><div class="episodes-v210">${eps.map((ep,i)=>`<div class="episode-row-v210"><b>${i+1}. ${escV210(ep.title||'Bölüm')}</b>${ep.url?`<a href="${escV210(ep.url)}" target="_blank" rel="noopener noreferrer">İzle</a>`:''}</div>`).join('')||'<p class="muted">Bölüm eklenmemiş.</p>'}</div></section>`;
+}
+function v210DashboardStats(){
+  const games=state.games||[];
+  const fav=userListsV210().favorites.length;
+  const watch=userListsV210().watch||{};
+  const series=seriesListV210().length;
+  const eps=games.reduce((a,g)=>a+episodeCountV210(g),0);
+  const health=siteHealthV210();
+  return {games:games.length,series,eps,fav,watch:Object.keys(watch).length,health};
+}
+function siteHealthV210(){
+  const games=state.games||[];
+  const missingCover=games.filter(g=>!g.cover&&!g.thumbnail).length;
+  const missingStory=games.filter(g=>!String(g.description||'').trim()).length;
+  const missingEpisode=games.filter(g=>episodeCountV210(g)===0&&!/yakında|yakinda|gelecek/i.test(`${g.status||''} ${g.title||''}`)).length;
+  const badSocial=['social_youtube','social_kick','social_discord','social_donate','social_tiktok','social_instagram'].filter(k=>!state.settings?.[k]).length;
+  return {missingCover,missingStory,missingEpisode,badSocial,totalIssues:missingCover+missingStory+missingEpisode+badSocial};
+}
+function exportBackupV210(){
+  const data={version:'2.1.0',created_at:new Date().toISOString(),settings:state.settings,games:state.games,notes:state.notes,events:state.events,userLists:userListsV210()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='hayatimiz-oyun-v2.1.0-yedek.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importBackupV210(){
+  const input=document.createElement('input');
+  input.type='file'; input.accept='application/json';
+  input.onchange=async()=>{
+    const file=input.files[0]; if(!file)return;
+    const text=await file.text();
+    const data=JSON.parse(text);
+    if(!confirm('Yedek içeriği yerel olarak yüklensin mi? Veritabanına yazma işlemi yapılmaz.'))return;
+    state.settings=data.settings||state.settings;
+    state.games=data.games||state.games;
+    state.notes=data.notes||state.notes;
+    state.events=data.events||state.events;
+    if(data.userLists)saveUserListsV210(data.userLists);
+    render();
+  };
+  input.click();
+}
+function v210AnnouncementBanner(){
+  const list=storageGetV210('ho_v210_announcements',[{title:'V2.1.0 yayında',type:'Yeni Özellik',body:'Gelişmiş arşiv, arama, favoriler, izleme takip, sağlık kontrolü ve yedekleme sistemi eklendi.'}]);
+  return `<section class="announcement-v210">${list.slice(0,3).map(x=>`<article><span>${escV210(x.type||'Duyuru')}</span><h3>${escV210(x.title)}</h3><p>${escV210(x.body||'')}</p></article>`).join('')}</section>`;
+}
+function addAnnouncementV210(){
+  const title=prompt('Duyuru başlığı:','Yeni duyuru'); if(!title)return;
+  const type=prompt('Duyuru türü:','Yeni Özellik')||'Duyuru';
+  const body=prompt('Duyuru açıklaması:','')||'';
+  const list=storageGetV210('ho_v210_announcements',[]);
+  list.unshift({title,type,body,created_at:new Date().toISOString()});
+  storageSetV210('ho_v210_announcements',list);
+  if(typeof adminTab==='function')adminTab('v210');
+}
+function v210AdminPanel(){
+  const st=v210DashboardStats();
+  const health=st.health;
+  return `<section class="card v210-admin-panel"><div class="section-title"><div><span class="version-pill">V2.1.0</span><h2>Büyük Sistem Güncellemesi</h2><p class="muted">Arşiv, arama, favoriler, izleme takip, site sağlık kontrolü, duyuru ve yedekleme merkezi.</p></div><button onclick="exportBackupV210()">Yedek Al</button></div>
+  <div class="grid compact">
+    <div class="card"><h2>${st.games}</h2><p>Oyun</p></div>
+    <div class="card"><h2>${st.series}</h2><p>Seri</p></div>
+    <div class="card"><h2>${st.eps}</h2><p>Bölüm</p></div>
+    <div class="card"><h2>${st.fav}</h2><p>Favori</p></div>
+    <div class="card"><h2>${st.watch}</h2><p>Takip Kaydı</p></div>
+    <div class="card ${health.totalIssues?'health-warn':'health-ok'}"><h2>${health.totalIssues}</h2><p>Sağlık Uyarısı</p></div>
+  </div>
+  <section class="split">
+    <div class="card"><h2>Site Sağlık Kontrolü</h2><p>Kapaksız: ${health.missingCover}</p><p>Hikayesiz: ${health.missingStory}</p><p>Bölümsüz: ${health.missingEpisode}</p><p>Sosyal eksik: ${health.badSocial}</p><button onclick="adminTab('repairV2')">Onarım Merkezine Git</button></div>
+    <div class="card"><h2>Duyuru Sistemi</h2><p class="muted">Ana sayfada gösterilecek kısa duyuruları yönet.</p><button onclick="addAnnouncementV210()">Duyuru Ekle</button></div>
+  </section>
+  <section class="card"><h2>Yedekleme ve Geri Yükleme</h2><div class="row"><button onclick="exportBackupV210()">Tam Yedek İndir</button><button class="ghost" onclick="importBackupV210()">Yedek İçeri Aktar</button></div></section>
+  </section>`;
+}
+function archivePageV210(){
+  const series=seriesListV210();
+  return `<section class="hero"><span class="version-pill">V2.1.0</span><h1>Gelişmiş Arşiv</h1><p>Seriler, oyunlar, bölümler ve takip durumları tek merkezde.</p></section>
+  <section class="grid compact">${series.map(name=>{
+    const games=(state.games||[]).filter(g=>g.series===name);
+    const eps=games.reduce((a,g)=>a+episodeCountV210(g),0);
+    return `<article class="card series-v210-card"><h2>${escV210(name)}</h2><p class="muted">${games.length} oyun • ${eps} bölüm</p><div class="series-covers-v210">${games.slice(0,4).map(g=>`<span style="background-image:url('${escV210(coverV210(g))}')"></span>`).join('')}</div></article>`;
+  }).join('')}</section>`;
+}
+function searchPageV210(){
+  const series=seriesListV210(), statuses=statusesV210(), types=typesV210();
+  const games=filteredGamesV210();
+  return `<section class="hero"><span class="version-pill">V2.1.0</span><h1>Gelişmiş Arama</h1><p>Oyun, seri, durum, tip ve açıklama üzerinden arama yap.</p></section>
+  <section class="card search-panel-v210"><div class="search-grid-v210">
+    <input id="searchQv210" placeholder="Oyun, seri veya bölüm ara..." oninput="setPage('searchv210')" value="${escV210(document.getElementById('searchQv210')?.value||'')}">
+    <select id="statusFilterV210" onchange="setPage('searchv210')"><option value="">Tüm Durumlar</option>${statuses.map(x=>`<option>${escV210(x)}</option>`).join('')}</select>
+    <select id="typeFilterV210" onchange="setPage('searchv210')"><option value="">Tüm Tipler</option>${types.map(x=>`<option>${escV210(x)}</option>`).join('')}</select>
+    <select id="seriesFilterV210" onchange="setPage('searchv210')"><option value="">Tüm Seriler</option>${series.map(x=>`<option>${escV210(x)}</option>`).join('')}</select>
+  </div></section>
+  <section class="grid">${games.map(gameCardV210).join('')||'<div class="card"><p class="muted">Sonuç bulunamadı.</p></div>'}</section>`;
+}
+function favoritesPageV210(){
+  const ids=new Set(userListsV210().favorites);
+  const games=(state.games||[]).filter(g=>ids.has(gameIdV210(g)));
+  return `<section class="hero"><span class="version-pill">V2.1.0</span><h1>Favoriler</h1><p>Favori oyunların ve serilerin hızlı erişim alanı.</p></section><section class="grid">${games.map(gameCardV210).join('')||'<div class="card"><p class="muted">Henüz favori eklenmedi.</p></div>'}</section>`;
+}
+function trackingPageV210(){
+  const watch=userListsV210().watch||{};
+  const games=(state.games||[]).filter(g=>watch[gameIdV210(g)]);
+  return `<section class="hero"><span class="version-pill">V2.1.0</span><h1>İzleme Takibi</h1><p>İzledim, izliyorum, izleyeceğim ve yarım kaldı kayıtların.</p></section><section class="grid">${games.map(gameCardV210).join('')||'<div class="card"><p class="muted">Henüz takip kaydı yok.</p></div>'}</section>`;
+}
+
 function render(){
   applyTheme();
   document.documentElement.style.setProperty('--bg-intensity', Math.max(.2, Math.min(1.25, Number(state.settings?.background_intensity??75)/100)));
@@ -349,31 +579,33 @@ function render(){
   const app=$('#app');
   if(app){app.classList.remove('page-in'); void app.offsetWidth; app.classList.add('page-in');}
   renderNav();
+  injectNavV210();
   setAtmosphereTheme(state.page);
   if(state.settings?.maintenance && !canSeeAdmin()){
     maintenance();
     return;
   }
-  const pages={home,series,az,calendar,notes,social,about,profile,admin};
+  const pages={home,series,az,calendar,notes,social,about,profile,admin,archivev210:archivePageV210,searchv210:searchPageV210,favoritesv210:favoritesPageV210,trackingv210:trackingPageV210};
   (pages[state.page]||home)();
+  injectHomeV210();
   renderMusicPanel();
 }
 function maintenance(){
  const logo=state.settings?.site_logo?`<img src="${esc(state.settings.site_logo)}" class="maint-logo">`:'<div class="maint-logo-text">HO</div>';
  const rawProgress=Number(state.settings?.maintenance_progress??72);
  const progress=Math.max(0,Math.min(100,Number.isFinite(rawProgress)?rawProgress:72));
- const featureText=state.settings?.upcoming_features||'V2.0.3 Fix 2 profesyonel arayüz yenilemesi\nTransparan sosyal medya ikonları\nProfesyonel bakım modu ve loading ekranı\nOyun listesi ve kapak düzeni yenilemesi\nAdmin kalite ve stabilite düzeltmeleri';
+ const featureText=state.settings?.upcoming_features||'V2.1.0 profesyonel arayüz yenilemesi\nTransparan sosyal medya ikonları\nProfesyonel bakım modu ve loading ekranı\nOyun listesi ve kapak düzeni yenilemesi\nAdmin kalite ve stabilite düzeltmeleri';
  const features=String(featureText).split(/\n|,/).map(x=>x.trim()).filter(Boolean).slice(0,10);
  const notes=[...(state.notes||[])].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,6);
- const noteHtml=notes.length?notes.map(n=>`<article class="maintenance-note-item"><div><span class="version-pill">${esc(n.version||'Güncelleme')}</span><h3>${esc(n.title||'Güncelleme Notu')}</h3><p>${esc((n.body||n.content||'').slice(0,180))}</p></div></article>`).join(''):'<article class="maintenance-note-item"><div><span class="version-pill">V2.0.3 Fix 2</span><h3>Güncellemeler hazırlanıyor</h3><p>Bakım süresince yeni özellikler ve düzeltmeler bu alanda listelenecek.</p></div></article>';
+ const noteHtml=notes.length?notes.map(n=>`<article class="maintenance-note-item"><div><span class="version-pill">${esc(n.version||'Güncelleme')}</span><h3>${esc(n.title||'Güncelleme Notu')}</h3><p>${esc((n.body||n.content||'').slice(0,180))}</p></div></article>`).join(''):'<article class="maintenance-note-item"><div><span class="version-pill">V2.1.0</span><h3>Güncellemeler hazırlanıyor</h3><p>Bakım süresince yeni özellikler ve düzeltmeler bu alanda listelenecek.</p></div></article>';
  const socialButtons=socialLinksHtml ? socialLinksHtml() : '';
- $('#app').innerHTML=`<section class="maintenance maintenance-v300"><div class="maintenance-shell-v300"><div class="maintenance-card-v300"><div class="maintenance-glow-v300"></div><div class="maintenance-head-v300"><div class="maintenance-brand-v300">${logo}<div><span class="version-pill">V${VERSION}</span><h1>Hayatımız Oyun V2.0.3 Fix 2 Hazırlanıyor</h1><p class="muted">${esc(state.settings?.maintenance_note||'Site daha profesyonel görünüm, düzenlenmiş oyun listesi ve yenilenen sosyal ikon sistemiyle açılışa hazırlanıyor.')}</p></div></div><div class="maintenance-progress-badge">%${progress}</div></div><div class="maintenance-grid-v300"><div class="maintenance-main-v300"><div class="maintenance-message-v300"><h2>Site 3.0.0 sürümünde açılacak</h2><p>Bakım ekranında devam eden çalışmalar, güncelleme notları ve hazırlık durumu gösterilir.</p></div><div class="maintenance-track-v300"><b style="width:${progress}%"></b></div><div class="feature-list alpha2-feature-list maintenance-feature-v300">${features.map(x=>`<span>${esc(x)}</span>`).join('')}</div>${socialButtons?`<div class="maint-social">${socialButtons}</div>`:''}${canSeeAdmin()?`<div class="row maintenance-admin-actions"><button onclick="setPage('admin')">Admin Panel</button><button class="ghost" onclick="state.settings.maintenance=false;state.settings.v300_prelaunch=false;render()">Siteyi Önizle</button></div>`:''}</div><aside class="maintenance-side-v300"><div class="maintenance-update-head"><h2>Bakımda Yapılan Güncellemeler</h2><span class="muted">En yeni notlar üstte</span></div><div class="maintenance-notes-list">${noteHtml}</div></aside></div></div></div></section>`;
+ $('#app').innerHTML=`<section class="maintenance maintenance-v300"><div class="maintenance-shell-v300"><div class="maintenance-card-v300"><div class="maintenance-glow-v300"></div><div class="maintenance-head-v300"><div class="maintenance-brand-v300">${logo}<div><span class="version-pill">V${VERSION}</span><h1>Hayatımız Oyun V2.1.0 Hazırlanıyor</h1><p class="muted">${esc(state.settings?.maintenance_note||'Site daha profesyonel görünüm, düzenlenmiş oyun listesi ve yenilenen sosyal ikon sistemiyle açılışa hazırlanıyor.')}</p></div></div><div class="maintenance-progress-badge">%${progress}</div></div><div class="maintenance-grid-v300"><div class="maintenance-main-v300"><div class="maintenance-message-v300"><h2>Site 3.0.0 sürümünde açılacak</h2><p>Bakım ekranında devam eden çalışmalar, güncelleme notları ve hazırlık durumu gösterilir.</p></div><div class="maintenance-track-v300"><b style="width:${progress}%"></b></div><div class="feature-list alpha2-feature-list maintenance-feature-v300">${features.map(x=>`<span>${esc(x)}</span>`).join('')}</div>${socialButtons?`<div class="maint-social">${socialButtons}</div>`:''}${canSeeAdmin()?`<div class="row maintenance-admin-actions"><button onclick="setPage('admin')">Admin Panel</button><button class="ghost" onclick="state.settings.maintenance=false;state.settings.v300_prelaunch=false;render()">Siteyi Önizle</button></div>`:''}</div><aside class="maintenance-side-v300"><div class="maintenance-update-head"><h2>Bakımda Yapılan Güncellemeler</h2><span class="muted">En yeni notlar üstte</span></div><div class="maintenance-notes-list">${noteHtml}</div></aside></div></div></div></section>`;
 }
 
 function getSocialItem(key){return socialLinksFromSettings().find(x=>socialPlatform(x.url,x.title).key===key);} 
 function finalCountdown(){
-  const d=parseDate(state.settings?.final_release_date); if(!d)return 'V2.0.3 Fix 2';
-  const diff=d.getTime()-Date.now(); if(diff<=0)return 'V2.0.3 Fix 2';
+  const d=parseDate(state.settings?.final_release_date); if(!d)return 'V2.1.0';
+  const diff=d.getTime()-Date.now(); if(diff<=0)return 'V2.1.0';
   const day=Math.floor(diff/86400000), hour=Math.floor(diff%86400000/3600000), min=Math.floor(diff%3600000/60000);
   return `${day} gün ${hour} saat ${min} dk kaldı`;
 }
@@ -383,7 +615,7 @@ function streamerCard(){
  if(state.settings?.show_streamer_card===false||!buttons)return '';
  const live=!!state.settings?.kick_live;
  const desc=state.settings?.publisher_description||'Kick yayınları, YouTube arşivi, Discord topluluğu ve bağış bağlantıları burada.';
- return `<section class="card streamer-card streamer-v186"><div><span class="version-pill ${live?'live-pill':''}">${live?'● Canlı Yayında':'Yayıncı Alanı'}</span><h2>Hayatımız Oyun'u takip et ve destek ol</h2><p class="muted">${esc(desc)}</p><p class="muted"><b>V2.0.3 Fix 2:</b> ${esc(finalCountdown())}</p></div><div class="social-icons streamer-links">${buttons}</div></section>`;
+ return `<section class="card streamer-card streamer-v186"><div><span class="version-pill ${live?'live-pill':''}">${live?'● Canlı Yayında':'Yayıncı Alanı'}</span><h2>Hayatımız Oyun'u takip et ve destek ol</h2><p class="muted">${esc(desc)}</p><p class="muted"><b>V2.1.0:</b> ${esc(finalCountdown())}</p></div><div class="social-icons streamer-links">${buttons}</div></section>`;
 }
 function supportLinks(){const links=socialLinksFromSettings(); return links.length?`<div class="social-icons support-links">${links.map(x=>socialIconHtml(x)).join('')}</div>`:'<p class="muted">Sosyal bağlantılar admin panelinden eklenebilir.</p>';}
 function card(g){const up=isUpcoming(g); const ep=g.episodes?.length||0; return `<article class="card game pro-card ${up?'upcoming-card':''}"><div class="cover" style="${coverStyle(g)}"><span class="badge-top">${esc(up?'Yakında':(g.status||'Arşiv'))}</span></div><div class="body"><h3>${esc(g.title)}</h3><p class="muted">${esc(getSeriesName(g))} • ${fmtDate(g.release_date)} • ${ep} bölüm</p>${up?upcomingBox(getUpcomingStart(g)):''}<p>${esc((g.description||'').slice(0,150))}</p><div class="tags">${(g.tags||[]).slice(0,5).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div><div class="row"><button onclick="openGame('${esc(g.slug)}')">Detay</button>${up?'':`<button onclick="watchGame('${esc(g.slug)}',0)">İzle</button>`}<button class="ghost" onclick="favGame('${esc(g.slug)}')">Favori</button></div></div></article>`;}
@@ -410,36 +642,11 @@ function markHere(sl,i){const w=watchState(); w[`${sl}:${i}`]={here:true,watched
 function markWatched(sl,i){const w=watchState(); w[`${sl}:${i}`]={here:false,watched:true,at:Date.now()}; saveWatchState(w); alert('İzlendi olarak işaretlendi.');}
 function undoWatched(sl,i){const w=watchState(); w[`${sl}:${i}`]={here:true,watched:false,at:Date.now()}; saveWatchState(w); alert('Geri alındı.');}
 function calendar(){const today=new Date().toISOString().slice(0,10); const todayEvents=state.events.filter(e=>e.event_date===today); $('#app').innerHTML=`<section class="hero"><h1>Takvim</h1><p class="muted">Bugün: ${new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}</p><p>${todayEvents.length?`Bugün ${todayEvents.length} etkinlik var.`:'Bugün etkinlik yok.'}</p></section><div class="grid">${state.events.map(e=>`<div class="card"><div class="calendar-img" style="background-image:url('${esc(e.image||'')}')"></div><h3>${esc(e.title)}</h3><p>${esc(e.game_title||'')} • ${fmtDate(e.event_date)} ${esc(e.event_time||'')}</p><p>${esc(e.description||'')}</p></div>`).join('')||'<p>Takvim boş.</p>'}</div>`;}
-
-function versionScoreV203F2(v=''){
-  const s=String(v||'');
-  const m=s.match(/v?\s*(\d+)\.(\d+)\.(\d+)(?:\s*(?:fix|alpha|beta)\s*([0-9]+))?/i);
-  if(!m)return 0;
-  return Number(m[1])*100000000+Number(m[2])*1000000+Number(m[3])*10000+Number(m[4]||0);
-}
-function sortNotesV203F2(notes=[]){
-  return [...notes].sort((a,b)=>{
-    const sv=versionScoreV203F2(b.version||b.title)-versionScoreV203F2(a.version||a.title);
-    if(sv)return sv;
-    return (new Date(b.created_at||0).getTime())-(new Date(a.created_at||0).getTime());
-  });
-}
-
-function noteList(arr){
-  const list=sortNotesV203F2(arr||[]);
-  return list.map(n=>`<div class="episode note-row-v203f2"><span><b>${esc(n.title||n.version)}</b><small>${esc(n.version||'')} • ${esc(n.type||'')}</small><p>${esc(n.body||'')}</p></span></div>`).join('')||'<p class="muted">Not yok.</p>';
-}
-function notes(){
-  const publicNotes=sortNotesV203F2((state.notes||[]).filter(n=>n.public_visible!==false&&n.type!=='Admin'));
-  $('#app').innerHTML=`<section class="hero"><h1>Güncelleme Notları</h1><p class="muted">Sürümler en yeniden eskiye doğru sıralanır.</p></section><div class="note-grid note-grid-v203f2"><div class="card"><h2>Tüm Güncellemeler</h2>${noteList(publicNotes)}</div><div class="card"><h2>Fix</h2>${noteList(publicNotes.filter(n=>/fix/i.test(n.type||'')))}</div><div class="card"><h2>Özellik / Sürüm</h2>${noteList(publicNotes.filter(n=>/özellik|sürüm|buyuk|büyük/i.test(n.type||'')))}</div></div>`;
-}
-
-
-function aboutLocalV203F2(){try{return JSON.parse(localStorage.ho_about_v203f2||'{}')}catch{return {}}}
-function mergedAboutSettingsV203F2(){return {...(state.settings||{}),...aboutLocalV203F2()};}
+function noteList(arr){return (arr||[]).map(n=>`<div class="episode"><span><b>${esc(n.title||n.version)}</b><small>${esc(n.version||'')} • ${esc(n.type||'')}</small><p>${esc(n.body||'')}</p></span></div>`).join('')||'<p class="muted">Not yok.</p>';}
+function notes(){const publicNotes=state.notes.filter(n=>n.public_visible!==false&&n.type!=='Admin'); $('#app').innerHTML=`<section class="hero"><h1>Güncelleme Notları</h1><p class="muted">Kullanıcıyı ilgilendiren yenilikler.</p></section><div class="note-grid"><div class="card"><h2>Yeni Özellikler</h2>${noteList(publicNotes.filter(n=>/özellik/i.test(n.type||'')))}</div><div class="card"><h2>Fix</h2>${noteList(publicNotes.filter(n=>/fix/i.test(n.type||'')))}</div><div class="card"><h2>Sürüm</h2>${noteList(publicNotes.filter(n=>/sürüm/i.test(n.type||'')))}</div></div>`;}
 
 function about(){
-  const st=mergedAboutSettingsV203F2();
+  const st=state.settings||{};
   const stats=aboutStatsV203F1();
   $('#app').innerHTML=`<section class="hero about-hero-v203f1"><span class="version-pill">V${VERSION}</span><h1>${esc(st.about_title||'Hayatımız Oyun')}</h1><p>${esc(st.about_text||'Hayatımız Oyun, oyun serilerini ve bölümlerini düzenli şekilde arşivlemek için hazırlanmış özel bir oyun arşiv sitesidir.')}</p></section>
   ${st.about_show_stats===false?'':`<section class="grid compact about-stats-v203f1"><div class="card"><h2>${stats.games}</h2><p>Oyun</p></div><div class="card"><h2>${stats.series}</h2><p>Seri</p></div><div class="card"><h2>${stats.episodes}</h2><p>Bölüm</p></div><div class="card"><h2>${stats.broken}</h2><p>Kontrol Edilecek</p></div></section>`}
@@ -466,11 +673,11 @@ async function sendComment(e,sl){e.preventDefault(); const body=e.target.body.va
 
 
 function finalV2Panel(){
-  return `<section class="card final-panel"><div class="section-title"><div><span class="version-pill">V2.0.3 Fix 2</span><h2>Final Sürüm Hazır</h2><p class="muted">Stabil açılış, Admin Panel V2, sosyal ikonlar, bakım modu, kapak/hikaye onarım ve Supabase schema uyumluluğu tek pakette toplandı.</p></div><button onclick="adminTab('repairV2')">Kapak / Hikaye Onarımına Git</button></div><div class="roadmap-list"><span>Loading düzeltildi</span><span>Admin Final Grid</span><span>Thumbnail schema hatası çözüldü</span><span>Kapak/Hikaye Onarım</span><span>Sosyal İkon V2</span></div></section>`;
+  return `<section class="card final-panel"><div class="section-title"><div><span class="version-pill">V2.1.0</span><h2>Final Sürüm Hazır</h2><p class="muted">Stabil açılış, Admin Panel V2, sosyal ikonlar, bakım modu, kapak/hikaye onarım ve Supabase schema uyumluluğu tek pakette toplandı.</p></div><button onclick="adminTab('repairV2')">Kapak / Hikaye Onarımına Git</button></div><div class="roadmap-list"><span>Loading düzeltildi</span><span>Admin Final Grid</span><span>Thumbnail schema hatası çözüldü</span><span>Kapak/Hikaye Onarım</span><span>Sosyal İkon V2</span></div></section>`;
 }
 
 function alpha2Panel(){
-  return `<section class="card alpha2-panel"><div class="section-title"><div><span class="version-pill">V2.0.3 Fix 2</span><h2>Admin + Sosyal + Bakım Güncellemesi</h2><p class="muted">Bu aşamada açılış sistemi korunur; sadece admin panel görünümü, sosyal medya ikonları ve bakım modu profesyonelleştirilir.</p></div><button onclick="adminTab('set')">Bakım Ayarları</button></div><div class="roadmap-list"><span>Kompakt Admin Panel</span><span>Sosyal İkon V2</span><span>Bynogame / Bağış düzeltmesi</span><span>Discord ikon düzeltmesi</span><span>Tonlu Bakım Modu</span></div></section>`;
+  return `<section class="card alpha2-panel"><div class="section-title"><div><span class="version-pill">V2.1.0</span><h2>Admin + Sosyal + Bakım Güncellemesi</h2><p class="muted">Bu aşamada açılış sistemi korunur; sadece admin panel görünümü, sosyal medya ikonları ve bakım modu profesyonelleştirilir.</p></div><button onclick="adminTab('set')">Bakım Ayarları</button></div><div class="roadmap-list"><span>Kompakt Admin Panel</span><span>Sosyal İkon V2</span><span>Bynogame / Bağış düzeltmesi</span><span>Discord ikon düzeltmesi</span><span>Tonlu Bakım Modu</span></div></section>`;
 }
 
 function adminV2Checklist(){
@@ -487,7 +694,7 @@ function v195QuickActions(){
   const apiCount=12;
   return `<section class="card v195-panel"><div class="section-title"><div><span class="version-pill">V1.9.5</span><h2>Temiz Kurulum ve Hızlı Onarım Merkezi</h2><p class="muted">Bu panel eski API dosyası kalması, kapak/hikaye eksikleri, seri dağınıklığı ve sosyal medya ayarlarını tek yerden kontrol etmek için eklendi.</p></div><button class="ghost" onclick="copyCleanInstallCommands()">Temiz Kurulum Komutlarını Kopyala</button></div><div class="grid compact"><div class="card"><h3>${apiCount}/12</h3><p>Vercel API endpoint düzeni</p></div><div class="card"><h3>${d.score}%</h3><p>Seri sağlığı</p></div><div class="card"><h3>${d.noCover.length}</h3><p>Kapaksız oyun</p></div><div class="card"><h3>${d.noStory.length}</h3><p>Hikayesi eksik</p></div></div><div class="row"><button onclick="adminTab('seriesControl')">Serileri Kontrol Et</button><button class="ghost" onclick="adminTab('api')">RAWG / YouTube Araçları</button><button class="ghost" onclick="adminTab('socialset')">Sosyal Medya Ayarları</button><button class="ghost" onclick="downloadReadme()">Kurulum Notu İndir</button></div></section>`;
 }
-function cleanInstallCommands(){return `# Hayatımız Oyun V2.0.3 Fix 2 temiz kurulum
+function cleanInstallCommands(){return `# Hayatımız Oyun V2.1.0 temiz kurulum
 # Eski dosyaların üstüne kopyalama yapma; yeni ZIP klasörünü temiz kaynak olarak kullan.
 
 git init
@@ -495,13 +702,13 @@ git branch -M main
 git remote remove origin 2>nul || true
 git remote add origin https://github.com/hayatimizoyunyoutube/HayatimizOyunYoutubeArsivi.git
 git add .
-git commit -m "V2.0.3 Fix 2 stabil düzeltme"
+git commit -m "V2.1.0 stabil düzeltme"
 git push -f origin main
 
 # Sonra Vercel panelinden Redeploy yap.
 # Gerekirse Supabase SQL Editor içinde supabase/schema.sql dosyasını çalıştır.`;}
 async function copyCleanInstallCommands(){try{await navigator.clipboard.writeText(cleanInstallCommands()); alert('Temiz kurulum komutları kopyalandı.');}catch{alert(cleanInstallCommands());}}
-function downloadReadme(){const blob=new Blob([cleanInstallCommands()+`\n\nV1.9.5 Fix 2 Özeti:\n- Admin Panel V3 hızlı onarım merkezi\n- Sosyal medya / bağış / yayıncı alanı güçlendirme\n- Seri kontrol ve kapaklı sıralama stabilizasyonu\n- API JSON hata uyarıları ve Vercel 12 endpoint düzeni\n- RAWG kapak/hikaye toplu yenileme araçları\n- YouTube kanal import/senkron ilerleme göstergesi\n`],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='V2.0.3 Fix 2-Fix-1-temiz-kurulum-notu.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+function downloadReadme(){const blob=new Blob([cleanInstallCommands()+`\n\nV1.9.5 Fix 2 Özeti:\n- Admin Panel V3 hızlı onarım merkezi\n- Sosyal medya / bağış / yayıncı alanı güçlendirme\n- Seri kontrol ve kapaklı sıralama stabilizasyonu\n- API JSON hata uyarıları ve Vercel 12 endpoint düzeni\n- RAWG kapak/hikaye toplu yenileme araçları\n- YouTube kanal import/senkron ilerleme göstergesi\n`],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='V2.1.0-temiz-kurulum-notu.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 
 function stripGameDbUnsafeFields(game){
   const g={...(game||{})};
@@ -560,6 +767,7 @@ function admin(){
       ${adminNavBtn('aboutset','Hakkında','ℹ')}
       ${adminNavBtn('feedback','İstek / Geri Bildirim','✉')}
       ${adminNavBtn('set','Ayarlar','⚙')}
+      ${adminNavBtn('v210','V2.1.0 Merkez','🚀')}
       ${adminNavBtn('aboutset','Hakkında','ℹ')}
       ${adminNavBtn('note','Güncelleme Notları','📝')}
       ${adminNavBtn('cal','Takvim','📅')}
@@ -653,29 +861,26 @@ function generateAboutWithAIV203F1(){
   const vision=document.getElementById('aboutVisionV203F1'); if(vision)vision.value='Hayatımız Oyun arşivini Türkçe oyun içerikleri için düzenli, hızlı ve kaliteli bir referans noktası haline getirmek.';
 }
 async function saveAboutSettingsV203F1(){
-  const about={
-    about_title:document.getElementById('aboutTitleV203F1')?.value||'Hayatımız Oyun',
-    about_text:document.getElementById('aboutTextV203F1')?.value||'',
-    about_mission:document.getElementById('aboutMissionV203F1')?.value||'',
-    about_vision:document.getElementById('aboutVisionV203F1')?.value||'',
-    about_show_stats:document.getElementById('aboutStatsV203F1')?.checked!==false
-  };
-  localStorage.ho_about_v203f2=JSON.stringify(about);
-  state.settings={...(state.settings||{}),...about};
+  state.settings=state.settings||{};
+  state.settings.about_title=document.getElementById('aboutTitleV203F1')?.value||'Hayatımız Oyun';
+  state.settings.about_text=document.getElementById('aboutTextV203F1')?.value||'';
+  state.settings.about_mission=document.getElementById('aboutMissionV203F1')?.value||'';
+  state.settings.about_vision=document.getElementById('aboutVisionV203F1')?.value||'';
+  state.settings.about_show_stats=document.getElementById('aboutStatsV203F1')?.checked!==false;
   try{
-    await api('/api/settings',{method:'PUT',body:JSON.stringify({settings:{about_text:about.about_text}})});
+    await api('/api/settings',{method:'PUT',body:JSON.stringify({settings:state.settings})});
     alert('Hakkında bilgileri kaydedildi.');
-  }catch(e){
-    console.warn('Hakkında DB kaydı başarısız, yerel kayıt korundu:',e);
-    alert('Hakkında bilgileri kaydedildi. Not: Veritabanı about_text kolonu yoksa schema.sql çalıştırılana kadar ek alanlar tarayıcıda saklanır.');
-  }
+  }catch(e){alert('Kaydetme hatası: '+e.message);}
 }
 function aboutAdminPanelV203F1(){
-  const st=mergedAboutSettingsV203F2();
-  return `<section class="card about-admin-v203f1"><div class="section-title"><div><span class="version-pill">V2.0.3 Fix 2</span><h2>Hakkında Sayfası Yönetimi</h2><p class="muted">Hakkında sayfasındaki metinleri buradan düzenle. Kaydetme hatası olmaması için ek alanlar güvenli şekilde saklanır.</p></div><button onclick="generateAboutWithAIV203F1()">Yapay Zeka ile Oluştur</button></div>
+  const st=state.settings||{};
+  return `<section class="card about-admin-v203f1"><div class="section-title"><div><span class="version-pill">V2.1.0</span><h2>Hakkında Sayfası Yönetimi</h2><p class="muted">Hakkında sayfasındaki metinleri buradan düzenle. İstersen yapay zeka taslak metni oluşturabilirsin.</p></div><button onclick="generateAboutWithAIV203F1()">Yapay Zeka ile Oluştur</button></div>
   <label>Başlık<input id="aboutTitleV203F1" value="${esc(st.about_title||'Hayatımız Oyun')}"></label>
   <label>Hakkında Metni<textarea id="aboutTextV203F1" rows="8">${esc(st.about_text||'Hayatımız Oyun, oyun serilerini ve bölümlerini düzenli şekilde arşivlemek için hazırlanmış özel bir oyun arşiv sitesidir.')}</textarea></label>
-  <div class="split"><label>Misyon<textarea id="aboutMissionV203F1" rows="5">${esc(st.about_mission||'Oyun arşivini düzenli, anlaşılır ve güncel şekilde sunmak.')}</textarea></label><label>Vizyon<textarea id="aboutVisionV203F1" rows="5">${esc(st.about_vision||'Türkçe oyun içerikleri için profesyonel bir arşiv deneyimi oluşturmak.')}</textarea></label></div>
+  <div class="split">
+    <label>Misyon<textarea id="aboutMissionV203F1" rows="5">${esc(st.about_mission||'Oyun arşivini düzenli, anlaşılır ve güncel şekilde sunmak.')}</textarea></label>
+    <label>Vizyon<textarea id="aboutVisionV203F1" rows="5">${esc(st.about_vision||'Türkçe oyun içerikleri için profesyonel bir arşiv deneyimi oluşturmak.')}</textarea></label>
+  </div>
   <label class="inline-check"><input type="checkbox" id="aboutStatsV203F1" ${st.about_show_stats!==false?'checked':''}> Hakkında sayfasında istatistikleri göster</label>
   <div class="row"><button onclick="saveAboutSettingsV203F1()">Hakkında Bilgilerini Kaydet</button><button class="ghost" onclick="setPage('about')">Hakkında Sayfasını Gör</button></div></section>`;
 }
@@ -711,65 +916,23 @@ function gameForm(g={}){const tagVals=Array.isArray(g.tags)?g.tags:String(g.tags
 function chooseOne(btn,name,val){const wrap=btn.parentElement; $$('button',wrap).forEach(b=>b.classList.remove('active')); btn.classList.add('active'); btn.closest('form').elements[name].value=val;}
 function toggleTagButton(btn,val){btn.classList.toggle('active'); const form=btn.closest('form'); form.elements.tags.value=$$('.tags-choice button.active',form).map(b=>b.textContent.trim()).join(', ');}
 async function saveGame(e){e.preventDefault(); const game=Object.fromEntries(new FormData(e.target)); if(!game.slug)game.slug=slug(game.title); game.release_date=fmtDate(game.release_date); game.tags=String(game.tags||'').split(',').map(x=>x.trim()).filter(Boolean); try{game.episodes=JSON.parse(game.episodes||'[]')}catch{return alert('Bölümler JSON hatalı.')} repairGameBeforeSave(game); if(!game.id)delete game.id; try{await api('/api/games',{method:game.id?'PUT':'POST',body:JSON.stringify({game})}); await load(); adminTab('games');}catch(err){alert(err.message)}}
-
-function allAdminGameChecksV203F2(){return Array.from(document.querySelectorAll('.game-check,.admin-game-select-v203f1')).filter((el,i,a)=>a.indexOf(el)===i);}
-function selectedGameIdsV203F1(){return allAdminGameChecksV203F2().filter(x=>x.checked).map(x=>x.value).filter(Boolean);}
-function toggleAllGamesV203F1(chk){allAdminGameChecksV203F2().forEach(x=>x.checked=!!chk.checked);updateSelectedGamesV203F1();}
-function updateSelectedGamesV203F1(){const n=selectedGameIdsV203F1().length;const el=document.getElementById('selectedGamesCountV203F1');if(el)el.textContent=n+' seçili';}
-function selectedGamesV203F1(){const ids=new Set(selectedGameIdsV203F1());return (state.games||[]).filter(g=>ids.has(String(g.id||g.slug)));}
-function adminGameCardV203F2(g){
-  const cover=gameAdminCoverV203F1(g);
-  const issues=gameIssuesV203F1(g);
-  const id=String(g.id||g.slug||'');
-  return `<article class="card admin-game-card-v203f2"><label class="game-select-pill-v203f2"><input type="checkbox" class="game-check admin-game-select-v203f1" value="${esc(id)}" onchange="updateSelectedGamesV203F1()"> Seç</label><div class="admin-cover-v203f2" style="background-image:url('${esc(cover)}')"><span class="badge-top">${esc(g.status||'Durum')}</span></div><div class="admin-game-body-v203f2"><h3>${esc(g.title||'Başlıksız')}</h3><p class="muted">${esc(getSeriesName(g))} • ${esc(g.type||'Ana Oyun')} • ${fmtDate(g.release_date)||'Tarih yok'}</p><div class="mini-badges"><span>${esc(g.genre||'Tür yok')}</span><span>${(g.episodes||[]).length} bölüm</span>${issues.slice(0,3).map(x=>`<span class="warn">${esc(x)}</span>`).join('')}</div><div class="admin-card-actions-v203f2"><button onclick="editGame('${esc(g.slug)}')">Düzenle</button><button class="ghost" onclick="quickCover('${esc(g.id)}')">Kapak Çek</button><button class="ghost" onclick="quickStory('${esc(g.id)}')">Hikaye Çek</button><button class="ghost" onclick="googleCoverGame('${esc(g.id)}')">Google Ara</button><button class="danger" onclick="deleteGame('${esc(g.id)}')">Sil</button></div></div></article>`;
-}
-
 function adminGamesList(list){
   const arr=[...list].sort((a,b)=>trSort(getSeriesName(a),getSeriesName(b))||((a.order_no||0)-(b.order_no||0))||trSort(a.title,b.title));
-  return `<div class="admin-game-grid-v203f2">${arr.map(adminGameCardV203F2).join('')||'<p>Oyun yok.</p>'}</div>`;
+  return `<div class="admin-game-grid admin-game-grid-pro">${arr.map(g=>{const noCover=!g.cover; const noStory=!String(g.description||'').trim(); const noEpisode=!(Array.isArray(g.episodes)&&g.episodes.length); return `<div class="card admin-game-card pro-game-card">
+    <input type="checkbox" class="game-check" value="${esc(g.id)}">
+    <div class="admin-cover" style="background-image:url('${esc(img(g))}')"><span class="badge-top">${esc(g.status||'Durum')}</span></div>
+    <div class="admin-game-info"><h3>${esc(g.title)}</h3><p class="muted">${esc(getSeriesName(g))} • ${esc(g.type||'Ana Oyun')} • ${fmtDate(g.release_date)||'Tarih yok'}</p>
+    <div class="mini-badges"><span>${esc(g.genre||'Tür yok')}</span><span>${(g.episodes||[]).length} bölüm</span>${noCover?'<span class="warn">Kapak yok</span>':''}${noStory?'<span class="warn">Hikaye yok</span>':''}${noEpisode?'<span class="warn">Bölüm yok</span>':''}</div>
+    <div class="row"><button onclick="editGame('${esc(g.slug)}')">Düzenle</button><button class="ghost" onclick="quickCover('${esc(g.id)}')">Kapak Çek</button><button class="ghost" onclick="quickStory('${esc(g.id)}')">Hikaye Çek</button><button class="ghost" onclick="googleCoverGame('${esc(g.id)}')">Google Ara</button><button class="danger" onclick="deleteGame('${esc(g.id)}')">Sil</button></div></div>
+  </div>`}).join('')||'<p>Oyun yok.</p>'}</div>`;
 }
-function filterAdminGames(){
-  const q=($('#adminGameSearch')?.value||'').toLocaleLowerCase('tr-TR');
-  const st=$('#adminFilterStatus')?.value||'';
-  const miss=$('#adminFilterMissing')?.value||'';
-  const list=state.games.filter(g=>{
-    const hay=((g.title||'')+' '+getSeriesName(g)+' '+(g.genre||'')+' '+(g.tags||[]).join(' ')).toLocaleLowerCase('tr-TR');
-    if(q&&!hay.includes(q))return false;
-    if(st&&String(g.status||'')!==st)return false;
-    if(miss==='cover'&&hasRealCoverAlpha3(g))return false;
-    if(miss==='broken'&&!gameIssuesV203F1(g).length)return false;
-    if(miss==='story'&&String(g.description||'').trim().length>30)return false;
-    if(miss==='episode'&&(isUpcomingGameV201F2b(g)||(g.episodes||[]).length))return false;
-    return true;
-  });
-  $('#adminGamesList').innerHTML=adminGamesList(list);
-  updateSelectedGamesV203F1();
-}
+function filterAdminGames(){const q=($('#adminGameSearch')?.value||'').toLocaleLowerCase('tr-TR'); const st=$('#adminFilterStatus')?.value||''; const miss=$('#adminFilterMissing')?.value||''; const list=state.games.filter(g=>{const hay=(g.title+' '+getSeriesName(g)+' '+(g.genre||'')+' '+(g.tags||[]).join(' ')).toLocaleLowerCase('tr-TR'); if(q&&!hay.includes(q))return false; if(st&&String(g.status||'')!==st)return false; if(miss==='cover'&&img(g))return false; if(miss==='story'&&String(g.description||'').trim().length>30)return false; if(miss==='episode'&&(g.episodes||[]).length)return false; return true;}); $('#adminGamesList').innerHTML=adminGamesList(list);}
 function editGame(sl){const g=state.games.find(x=>x.slug===sl); $('#adminArea').innerHTML=gameForm(g)+`<h2>Oyun Listesi</h2><div id="adminGamesList">${adminGamesList(state.games)}</div>`; scrollTo({top:0,behavior:'smooth'});}
 function clearGameForm(){adminTab('games');}
 async function deleteGame(id){if(confirm('Oyun silinsin mi?')){await api('/api/games',{method:'DELETE',body:JSON.stringify({id})}); await load(); adminTab('games');}}
-async function deleteSelectedGames(){
-  const ids=selectedGameIdsV203F1();
-  if(!ids.length)return alert('Oyun seç.');
-  if(confirm(`${ids.length} oyun silinsin mi?`)){
-    await api('/api/games',{method:'DELETE',body:JSON.stringify({ids})});
-    await load(); adminTab('games');
-  }
-}
+async function deleteSelectedGames(){const ids=$$('.game-check:checked').map(x=>x.value); if(!ids.length)return alert('Oyun seç.'); if(confirm(`${ids.length} oyun silinsin mi?`)){await api('/api/games',{method:'DELETE',body:JSON.stringify({ids})}); await load(); adminTab('games');}}
 async function deleteAllGames(){const word=prompt('Tüm oyunlar silinecek. Onay için SIL yaz.'); if(word!=='SIL')return; await api('/api/games',{method:'DELETE',body:JSON.stringify({all:true})}); await load(); adminTab('games');}
-async function bulkUpdateSelectedGames(){
-  const ids=selectedGameIdsV203F1();
-  if(!ids.length)return alert('Oyun seç.');
-  const patch={};
-  if($('#bulkStatus')?.value)patch.status=$('#bulkStatus').value;
-  if($('#bulkSeries')?.value.trim())patch.series=$('#bulkSeries').value.trim();
-  if($('#bulkTag')?.value.trim())patch.add_tag=$('#bulkTag').value.trim();
-  if(!Object.keys(patch).length)return alert('Bir güncelleme alanı doldur.');
-  await api('/api/games',{method:'PATCH',body:JSON.stringify({ids,patch})});
-  await load();
-  adminTab('games');
-  alert(ids.length+' oyun güncellendi.');
-}
+async function bulkUpdateSelectedGames(){const ids=$$('.game-check:checked').map(x=>x.value); if(!ids.length)return alert('Oyun seç.'); const patch={}; if($('#bulkStatus')?.value)patch.status=$('#bulkStatus').value; if($('#bulkSeries')?.value.trim())patch.series=$('#bulkSeries').value.trim(); if($('#bulkTag')?.value.trim())patch.add_tag=$('#bulkTag').value.trim(); if(!Object.keys(patch).length)return alert('Bir güncelleme alanı doldur.'); await api('/api/games',{method:'PATCH',body:JSON.stringify({ids,patch})}); await load(); adminTab('games');}
 function seriesOrderPanel(){
   const groups=groupGames();
   const options=groups.map(g=>`<option value="${esc(slug(g.series))}" ${state.seriesEditKey===slug(g.series)?'selected':''}>${esc(g.series)} (${g.games.length})</option>`).join('');
@@ -986,7 +1149,7 @@ function alpha3Stats(){
 function alpha3RepairPanel(){
   const st=alpha3Stats();
   return `<section class="alpha3-panel card">
-    <div class="section-title"><div><span class="version-pill">V2.0.3 Fix 2</span><h2>Kapak / Hikaye / Hatalı Oyun Onarım V2</h2><p class="muted">Bu aşamada sadece kapak, hikaye ve hatalı oyun kontrolü eklendi. Loading ve admin sistemi korunur.</p></div><button onclick="alpha3FixAllIssues()">Tüm Hataları Onar</button></div>
+    <div class="section-title"><div><span class="version-pill">V2.1.0</span><h2>Kapak / Hikaye / Hatalı Oyun Onarım V2</h2><p class="muted">Bu aşamada sadece kapak, hikaye ve hatalı oyun kontrolü eklendi. Loading ve admin sistemi korunur.</p></div><button onclick="alpha3FixAllIssues()">Tüm Hataları Onar</button></div>
     <div class="grid compact alpha3-stats">
       <div class="card"><h2>${st.all}</h2><p>Toplam oyun</p></div>
       <div class="card"><h2>${st.noCover.length}</h2><p>Kapaksız / otomatik kapak</p></div>
@@ -1127,7 +1290,7 @@ async function bootAppV300(){
   try{
     await load();
   }catch(e){
-    console.error('V2.0.3 Fix 2 açılış hatası:', e);
+    console.error('V2.1.0 açılış hatası:', e);
     state.settings=state.settings||{};
     state.games=Array.isArray(state.games)?state.games:[];
     state.notes=Array.isArray(state.notes)?state.notes:[];
@@ -1192,9 +1355,47 @@ function enhanceAdminGamesV203F1(){
 })();
 
 
-/* V2.0.3 Fix 2 final overrides */
-function allAdminGameChecksV203F2(){return Array.from(document.querySelectorAll('.game-check,.admin-game-select-v203f1')).filter((el,i,a)=>a.indexOf(el)===i);}
-function selectedGameIdsV203F1(){return allAdminGameChecksV203F2().filter(x=>x.checked).map(x=>x.value).filter(Boolean);}
-function toggleAllGamesV203F1(chk){allAdminGameChecksV203F2().forEach(x=>x.checked=!!chk.checked);updateSelectedGamesV203F1();}
-function updateSelectedGamesV203F1(){const n=selectedGameIdsV203F1().length;const el=document.getElementById('selectedGamesCountV203F1');if(el)el.textContent=n+' seçili';}
-function selectedGamesV203F1(){const ids=new Set(selectedGameIdsV203F1());return (state.games||[]).filter(g=>ids.has(String(g.id||g.slug)));}
+function injectHomeV210(){
+  try{
+    if(state.page!=='home')return;
+    const app=document.getElementById('app');
+    if(!app || document.getElementById('homeV210Block'))return;
+    const st=v210DashboardStats();
+    const wrap=document.createElement('section');
+    wrap.id='homeV210Block';
+    wrap.className='home-v210-block';
+    wrap.innerHTML=`${v210AnnouncementBanner()}<section class="grid compact v210-home-stats"><div class="card"><h2>${st.games}</h2><p>Oyun</p></div><div class="card"><h2>${st.series}</h2><p>Seri</p></div><div class="card"><h2>${st.eps}</h2><p>Bölüm</p></div><div class="card"><h2>${st.fav}</h2><p>Favori</p></div></section>`;
+    app.prepend(wrap);
+  }catch(e){}
+}
+
+
+(function(){
+  if(window.__HO_V210_ADMIN_WRAP__)return;
+  window.__HO_V210_ADMIN_WRAP__=true;
+  const oldAdminTab=window.adminTab || (typeof adminTab==='function'?adminTab:null);
+  if(!oldAdminTab)return;
+  window.adminTab=async function(t){
+    if(t==='v210'){
+      const a=document.getElementById('adminArea');
+      if(a)a.innerHTML=v210AdminPanel();
+      return;
+    }
+    return await oldAdminTab.apply(this,arguments);
+  };
+  try{adminTab=window.adminTab;}catch(e){}
+})();
+
+
+function versionScoreV210(v=''){
+  const m=String(v||'').match(/v?\s*(\d+)\.(\d+)\.(\d+)(?:\s*(?:fix|alpha|beta)\s*([0-9]+))?/i);
+  if(!m)return 0;
+  return Number(m[1])*100000000+Number(m[2])*1000000+Number(m[3])*10000+Number(m[4]||0);
+}
+function sortNotesV210(notes=[]){
+  return [...notes].sort((a,b)=>{
+    const sv=versionScoreV210(b.version||b.title)-versionScoreV210(a.version||a.title);
+    if(sv)return sv;
+    return new Date(b.created_at||0)-new Date(a.created_at||0);
+  });
+}

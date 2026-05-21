@@ -796,16 +796,31 @@ body{background:
 }
 
 
-/* V2.0.3 Fix 2 - admin oyunlar, not sırası, hakkında kaydetme */
+/* V2.1.0 - büyük sistem güncellemesi */
 
-.admin-game-grid-v203f2{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))!important;gap:18px!important;align-items:stretch!important}
-.admin-game-card-v203f2{position:relative!important;overflow:hidden!important;padding:0!important;border-radius:24px!important;background:linear-gradient(180deg,rgba(17,24,39,.96),rgba(8,12,24,.96))!important}
-.admin-cover-v203f2{height:210px!important;min-height:210px!important;width:100%!important;background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;background-color:#090f1f!important;border-bottom:1px solid rgba(255,255,255,.08)!important;border-radius:0!important;margin:0!important}
-.admin-game-body-v203f2{padding:16px!important}.admin-game-body-v203f2 h3{font-size:18px!important;line-height:1.2!important;margin:0 0 8px!important}
-.admin-card-actions-v203f2{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-top:12px!important}.admin-card-actions-v203f2 button{width:100%!important;min-height:38px!important;border-radius:12px!important;padding:8px!important;font-size:12px!important}
-.game-select-pill-v203f2{position:absolute!important;right:12px!important;top:12px!important;z-index:5!important;display:inline-flex!important;align-items:center!important;gap:7px!important;border-radius:999px!important;padding:8px 11px!important;background:rgba(8,12,24,.86)!important;border:1px solid rgba(255,255,255,.18)!important;font-weight:900!important;font-size:12px!important;color:#fff!important;backdrop-filter:blur(12px)!important}
-.games-bulk-toolbar-v203f1{position:sticky!important;top:8px!important;z-index:10!important;display:flex!important;justify-content:space-between!important;align-items:center!important;gap:12px!important;border-color:rgba(34,197,94,.25)!important;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(15,23,42,.96))!important}
-.games-bulk-toolbar-v203f1 .row{flex-wrap:wrap!important}.games-bulk-toolbar-v203f1 button{min-height:38px!important}
-.note-grid-v203f2{grid-template-columns:1.2fr .9fr .9fr!important}.note-row-v203f2 small{display:block!important;margin-top:3px!important;color:#94a3b8!important}.note-row-v203f2:first-child{border-color:rgba(34,197,94,.25)!important;background:rgba(34,197,94,.06)!important}
-.about-admin-v203f1 textarea,.about-admin-v203f1 input{width:100%!important}.about-admin-v203f1 label{display:grid!important;gap:8px!important;margin-bottom:12px!important}
-@media(max-width:760px){.admin-game-grid-v203f2{grid-template-columns:1fr!important}.games-bulk-toolbar-v203f1{position:static!important;display:block!important}.admin-card-actions-v203f2{grid-template-columns:1fr!important}.note-grid-v203f2{grid-template-columns:1fr!important}}
+.home-v210-block{margin-bottom:22px}
+.announcement-v210{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px}
+.announcement-v210 article{border:1px solid rgba(34,197,94,.24);border-radius:22px;padding:18px;background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(99,102,241,.08),rgba(255,255,255,.03))}
+.announcement-v210 span{display:inline-flex;border-radius:999px;padding:6px 9px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.24);font-size:11px;font-weight:900;color:#bbf7d0}
+.announcement-v210 h3{margin:10px 0 6px}
+.search-grid-v210{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px}
+.game-v210-card{overflow:hidden;padding:0!important;border-radius:26px!important}
+.game-v210-cover{height:260px;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#0b1020;position:relative;border-bottom:1px solid rgba(255,255,255,.08)}
+.game-v210-body{padding:18px}.game-v210-body h3{margin:0 0 8px;font-size:22px}
+.status-pill{position:absolute;left:12px;top:12px;border-radius:999px;padding:7px 10px;background:rgba(8,12,22,.86);border:1px solid rgba(255,255,255,.14);font-size:12px;font-weight:900}
+.fav-btn-v210{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:50%;padding:0!important;background:rgba(8,12,22,.86)!important;border:1px solid rgba(255,255,255,.18)!important}
+.fav-btn-v210.active{background:linear-gradient(135deg,#f59e0b,#ef4444)!important}
+.watch-pill-v210{display:inline-flex;margin:6px 0;border-radius:999px;padding:6px 9px;background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.25);font-size:12px;font-weight:900}
+.game-detail-v210{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:center}
+.game-detail-cover-v210{height:380px;border-radius:26px;background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#0b1020;border:1px solid rgba(255,255,255,.10)}
+.episode-row-v210{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 14px;margin-bottom:8px;background:rgba(255,255,255,.035)}
+.series-covers-v210{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.series-covers-v210 span{height:72px;border-radius:10px;background-size:cover;background-position:center;background-color:#0b1020;border:1px solid rgba(255,255,255,.08)}
+.v210-admin-panel .health-warn{border-color:rgba(239,68,68,.35)!important;background:linear-gradient(135deg,rgba(239,68,68,.10),rgba(255,255,255,.03))!important}
+.v210-admin-panel .health-ok{border-color:rgba(34,197,94,.35)!important;background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(255,255,255,.03))!important}
+#navV210Arşiv,#navV210Arama,#navV210Favoriler,#navV210Takip{border-color:rgba(34,197,94,.22)}
+@media(max-width:900px){
+  .search-grid-v210{grid-template-columns:1fr}
+  .game-detail-v210{grid-template-columns:1fr}
+  .game-detail-cover-v210{height:300px}
+}
