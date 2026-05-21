@@ -1,0 +1,20 @@
+{
+  "name": "hayatimiz-oyun-v2-5-1-fix-11-menu-clean",
+  "version": "2.5.1-fix.11",
+  "private": true,
+  "description": "Hayatımız Oyun V2.5.1 Fix 11 - ana sitedeki cift menu temizlendi, sol menu sadece admin panelde kaldi",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev",
+    "build": "node -e \"console.log('V2.5.1 Fix 11 build ok')\"",
+    "clean-api": "node scripts/clean-api.js"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "@supabase/supabase-js": "latest",
+    "bcryptjs": "latest"
+  },
+  "devDependencies": {
+    "vercel": "latest"
+  }
+}
