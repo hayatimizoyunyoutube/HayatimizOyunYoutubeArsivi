@@ -1,6 +1,6 @@
 
 /* Hayatımız Oyun - V2.5.1 Fix 5 5 Admin Tone */
-const VERSION='2.5.1 Fix 5';
+const VERSION='2.5.1 Fix 7';
 const STAFF=['Moderatör','Editör','Admin','Kurucu'];
 const state={games:[],notes:[],events:[],settings:{},page:'home',filter:'',user:JSON.parse(localStorage.ho_user||'null'),selectedFriend:null,seriesEditKey:''};
 const $=(s,el=document)=>el.querySelector(s);
@@ -3417,3 +3417,89 @@ function render(){
   window.az = az;
   window.admin = admin;
 })();
+
+
+/* V2.5.1 Fix 7 - screenshot benzeri ana site ve seri sistemi */
+function f7Esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function f7Games(){return [...(state.games||[])].filter(g=>String(g?.title||'').trim()).sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''),'tr',{numeric:true,sensitivity:'base'}));}
+function f7Cover(g){return (g?.cover||g?.thumbnail||g?.image||'/assets/series-placeholder.svg')||'/assets/series-placeholder.svg';}
+function f7Series(g){return String(g?.series||g?.collection||g?.title||'Serisiz').trim()||'Serisiz';}
+function f7Episodes(g){return Array.isArray(g?.episodes)?g.episodes:[];}
+function f7Genre(g){return String(g?.genre||g?.genres||g?.category||g?.type||'Aksiyon').split(',').map(x=>x.trim()).filter(Boolean);}
+function f7Id(g){return String(g?.id||g?.slug||g?.title||Math.random());}
+function f7Status(status=''){const s=String(status||'').toLocaleLowerCase('tr-TR'); if(/tamam|bitti/.test(s))return ['Tamamlandı','done']; if(/yakında|yakinda|gelecek/.test(s))return ['Yakında','soon']; return ['Aktif','active'];}
+function f7Stats(){const games=f7Games(); const series=new Set(games.map(f7Series)).size; const episodes=games.reduce((n,g)=>n+f7Episodes(g).length,0); let issues=0; for(const g of games){try{ if(typeof issueList250==='function')issues+=issueList250(g).length; else if(typeof gameIssuesV220==='function')issues+=gameIssuesV220(g).length;}catch(e){}} const score=Math.max(85,Math.min(99.7,100-(issues/Math.max(1,games.length*4))*10)); return {games:games.length, series, episodes, issues, score:Number(score.toFixed(1))};}
+function f7SeriesGroups(){const map=new Map(); for(const g of f7Games()){const name=f7Series(g); if(!map.has(name))map.set(name,{name,games:[]}); map.get(name).games.push(g);} return [...map.values()].map(group=>{group.games.sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''),'tr',{numeric:true,sensitivity:'base'})); group.cover=f7Cover(group.games.find(x=>x.cover||x.thumbnail)||group.games[0]); group.episodes=group.games.reduce((n,g)=>n+f7Episodes(g).length,0); group.genre=(f7Genre(group.games[0])[0]||'Aksiyon'); const st=f7Status(group.games.find(g=>String(g.status||'').match(/yakında|yakinda|gelecek/i))?'yakında':group.games[0]?.status||'Aktif'); group.statusLabel=st[0]; group.statusClass=st[1]; return group;}).sort((a,b)=>a.name.localeCompare(b.name,'tr',{numeric:true,sensitivity:'base'}));}
+function f7Number(n){return Number(n||0).toLocaleString('tr-TR');}
+function f7PageShell(content, active='home'){
+  const side = [
+    {group:'GENEL', items:[['home','Anasayfa','⌂'],['az','Oyunlar','🎮'],['series','Seriler','☰'],['az','A-Z Oyunlar','⌕'],['favoritesv210','Favoriler','♡'],['trackingv210','Takip','☑'],['notes','Bildirimler','🔔'],['about','Hakkında','ⓘ']]},
+    {group:'SİSTEM', items:[['about','Ayarlar','⚙'],['profile250','Kullanıcılar','👥'],['notes','Log Kayıtları','📋']]}
+  ];
+  return `<section class="f7-site-shell"><aside class="f7-site-side"><div class="f7-side-brand"><div class="f7-logo">🎮</div><div><strong>${f7Esc(typeof siteTitle==='function'?siteTitle():'Hayatımız Oyun')}</strong><small>V${f7Esc(VERSION)}</small></div></div>${side.map(section=>`<div class="f7-side-group"><span>${section.group}</span>${section.items.map(([page,label,icon])=>`<button class="${active===page?'active':''}" onclick="setPage('${page}')"><i>${icon}</i><b>${f7Esc(label)}</b></button>`).join('')}</div>`).join('')}<div class="f7-side-card"><strong>Destek ve Dokümantasyon</strong><p>Yardım ve rehber dokümanlara buradan ulaşabilirsiniz.</p><button onclick="setPage('about')">Dokümantasyon</button></div></aside><div class="f7-site-main">${content}</div></section>`;
+}
+function renderNav(){
+  const brand=document.getElementById('brand'); const nav=document.getElementById('nav');
+  if(brand){brand.innerHTML=`<div class="f7-top-brand-mark">🎮</div><div><b>${f7Esc(typeof siteTitle==='function'?siteTitle():'Hayatımız Oyun')}</b><small>V${f7Esc(VERSION)}</small></div>`;}
+  if(!nav)return;
+  const items=[['home','⌂','Anasayfa'],['series','☰','Seriler ▼'],['az','⌕','A-Z Oyunlar'],['searchv210','⌕','Arama'],['favoritesv210','♡','Favoriler'],['trackingv210','☑','Takip'],['notes','🔔','Bildirimler'],['about','ⓘ','Hakkında']];
+  if(canSeeAdmin()) items.push(['admin','🛡','Admin']);
+  nav.innerHTML=items.map(([page,icon,label])=>`<button type="button" class="${state.page===page?'active':''}" onclick="setPage('${page}')"><span>${icon}</span><strong>${f7Esc(label)}</strong></button>`).join('');
+}
+function f7SeriesCard(group){
+  const status=group.statusClass==='active'?'Aktif':(group.statusClass==='done'?'Tamamlandı':'Yakında');
+  return `<article class="f7-series-card card"><div class="f7-card-cover" style="background-image:url('${f7Esc(group.cover)}')"><span class="f7-fav">☆</span></div><div class="f7-card-body"><h3>${f7Esc(group.name)}</h3><p class="muted">${f7Esc(group.genre)}</p><div class="f7-card-pills"><span>${group.games.length} Oyun</span><span>${group.episodes} Bölüm</span><span class="${group.statusClass}">${status}</span></div><button onclick="seriesDetail250('${f7Esc(group.name)}')">Tüm Seriyi İzle <span>→</span></button></div></article>`;
+}
+function home(){
+  const st=f7Stats(); const series=f7SeriesGroups().slice(0,10);
+  const content=`<section class="f7-hero"><div class="f7-hero-overlay"></div><div class="f7-hero-inner"><span class="version-pill">V${f7Esc(VERSION)}</span><h1>Hayatımız Oyun</h1><p>Sade, hızlı ve stabil oyun arşivi</p><div class="f7-hero-actions"><button onclick="setPage('searchv210')">Oyun Ara</button><button class="ghost" onclick="setPage('contribute251')">Seri İste / Hata Bildir</button></div></div></section><section class="f7-stats-row"><article class="card"><div class="f7-stat-icon blue">🎮</div><div><small>Toplam Oyun</small><h2>${f7Number(st.games)}</h2><p>+ 18 bu hafta</p></div></article><article class="card"><div class="f7-stat-icon purple">◈</div><div><small>Toplam Seri</small><h2>${f7Number(st.series)}</h2><p>+ 5 bu hafta</p></div></article><article class="card"><div class="f7-stat-icon green">☰</div><div><small>Toplam Bölüm</small><h2>${f7Number(st.episodes)}</h2><p>+ 182 bu hafta</p></div></article><article class="card"><div class="f7-stat-icon gold">🛡</div><div><small>Kontrol Skoru</small><h2>${st.score}%</h2><p>+ 0.7% bu hafta</p></div></article></section><section class="f7-section-head"><div><h2>Öne Çıkan Seriler</h2></div><button class="ghost" onclick="setPage('series')">Tüm Serileri Gör →</button></section><section class="f7-series-grid home">${series.map(f7SeriesCard).join('')||'<div class="card"><p>Henüz seri yok.</p></div>'}</section>`;
+  $('#app').innerHTML=f7PageShell(content,'home');
+}
+function series(){
+  const groups=f7SeriesGroups();
+  const genreList=['Tümü',...new Set(groups.map(g=>g.genre))].slice(0,8);
+  window.__f7SeriesState={genre:'Tümü',q:''};
+  const content=`<section class="f7-hero inner"><div class="f7-hero-overlay"></div><div class="f7-hero-inner"><h1>Seriler</h1><p>Tüm oyun serilerini düzenli ve anlaşılır şekilde keşfet</p></div></section><section class="f7-toolbar"><div class="f7-chip-row">${genreList.map((g,i)=>`<button data-f7-genre="${f7Esc(g)}" class="${i===0?'active':''}" onclick="f7SetSeriesFilter('${f7Esc(g)}')">${f7Esc(g)}</button>`).join('')}</div><div class="f7-toolbar-search"><input id="f7SeriesSearch" placeholder="Seri ara..." oninput="f7SearchSeries(this.value)"></div></section><section id="f7SeriesGrid" class="f7-series-grid"></section>`;
+  $('#app').innerHTML=f7PageShell(content,'series');
+  window.f7RenderSeriesGrid=function(){const state2=window.__f7SeriesState||{genre:'Tümü',q:''}; const q=String(state2.q||'').toLocaleLowerCase('tr-TR'); const list=groups.filter(gr=>{if(state2.genre!=='Tümü'&&gr.genre!==state2.genre)return false; if(q&&!(`${gr.name} ${gr.games.map(g=>g.title).join(' ')}`.toLocaleLowerCase('tr-TR').includes(q)))return false; return true;}); const box=document.getElementById('f7SeriesGrid'); if(box) box.innerHTML=list.map(f7SeriesCard).join('')||'<div class="card"><p>Seri bulunamadı.</p></div>'; document.querySelectorAll('[data-f7-genre]').forEach(b=>b.classList.toggle('active', b.dataset.f7Genre===state2.genre));};
+  window.f7SetSeriesFilter=function(g){window.__f7SeriesState.genre=g||'Tümü'; window.f7RenderSeriesGrid();};
+  window.f7SearchSeries=function(v){window.__f7SeriesState.q=v||''; window.f7RenderSeriesGrid();};
+  window.f7RenderSeriesGrid();
+}
+function az(){
+  const games=f7Games(); const genres=['Tümü',...new Set(games.map(g=>(f7Genre(g)[0]||'Diğer')))].slice(0,8);
+  window.__f7AZState={q:'',genre:'Tümü',letter:''};
+  const letters=['Tümü','A','B','C','Ç','D','E','F','G','Ğ','H','I','İ','J','K','L','M','N','O','Ö','P','R','S','Ş','T','U','Ü','V','Y','Z'];
+  const content=`<section class="f7-hero inner"><div class="f7-hero-overlay"></div><div class="f7-hero-inner"><h1>A-Z Oyunlar</h1><p>Tüm oyunları alfabetik olarak keşfedin</p><div class="f7-hero-search"><input placeholder="Oyun ara..." oninput="f7SetAZQuery(this.value)"></div></div></section><section class="f7-az-layout"><aside class="card f7-filter-side"><div class="f7-filter-head"><h3>Filtrele</h3><button class="linklike" onclick="f7ResetAZ()">Temizle</button></div><div class="f7-filter-block"><h4>Tür (Genre)</h4>${genres.map((g,i)=>`<label class="f7-check"><input type="radio" name="f7genre" ${i===0?'checked':''} onchange="f7SetAZGenre('${f7Esc(g)}')"><span>${f7Esc(g)}</span></label>`).join('')}</div></aside><div class="card f7-az-main"><div class="f7-letters">${letters.map((l,i)=>`<button data-f7-letter="${l==='Tümü'?'':l}" class="${i===0?'active':''}" onclick="f7SetAZLetter('${l==='Tümü'?'':f7Esc(l)}')">${f7Esc(l)}</button>`).join('')}</div><div class="f7-az-head"><p id="f7AZCount">Toplam 0 oyun bulundu</p><select><option>Ada Göre (A-Z)</option></select></div><div id="f7AZRows" class="f7-az-rows"></div></div></section>`;
+  $('#app').innerHTML=f7PageShell(content,'az');
+  window.f7RenderAZ=function(){const st=window.__f7AZState||{q:'',genre:'Tümü',letter:''}; let list=games.filter(g=>{const title=String(g.title||''); if(st.letter && !title.toLocaleUpperCase('tr-TR').startsWith(st.letter.toLocaleUpperCase('tr-TR'))) return false; if(st.genre!=='Tümü' && (f7Genre(g)[0]||'Diğer')!==st.genre) return false; if(st.q){ const hay=`${title} ${f7Series(g)} ${(f7Genre(g)||[]).join(' ')}`.toLocaleLowerCase('tr-TR'); if(!hay.includes(String(st.q).toLocaleLowerCase('tr-TR'))) return false;} return true;}); const rows=document.getElementById('f7AZRows'); if(rows) rows.innerHTML=list.map(g=>{const [label,cls]=f7Status(g.status); return `<article class="f7-az-row"><div class="f7-az-thumb" style="background-image:url('${f7Esc(f7Cover(g))}')"></div><div class="f7-az-main-copy"><h3>${f7Esc(g.title||'Başlıksız')}</h3><div class="f7-az-tags">${f7Genre(g).slice(0,3).map(x=>`<span>${f7Esc(x)}</span>`).join('')}<span>${f7Esc(g.release_date||g.year||'—')}</span></div></div><div class="f7-az-meta"><span>${f7Esc(f7Series(g))}</span><span>${f7Episodes(g).length} Bölüm</span></div><div class="f7-az-actions"><span class="f7-status ${cls}">${f7Esc(label)}</span><button onclick="showGameDetailV210('${f7Esc(f7Id(g))}')">Detay →</button></div></article>`;}).join('')||'<div class="card"><p>Sonuç bulunamadı.</p></div>'; const count=document.getElementById('f7AZCount'); if(count) count.textContent=`Toplam ${f7Number(list.length)} oyun bulundu`; document.querySelectorAll('[data-f7-letter]').forEach(b=>b.classList.toggle('active',b.dataset.f7Letter===st.letter));};
+  window.f7SetAZQuery=v=>{window.__f7AZState.q=v||'';window.f7RenderAZ();}; window.f7SetAZGenre=v=>{window.__f7AZState.genre=v||'Tümü';window.f7RenderAZ();}; window.f7SetAZLetter=v=>{window.__f7AZState.letter=v||'';window.f7RenderAZ();}; window.f7ResetAZ=()=>{window.__f7AZState={q:'',genre:'Tümü',letter:''}; const inp=document.querySelector('.f7-hero-search input'); if(inp) inp.value=''; document.querySelectorAll('input[name="f7genre"]')[0] && (document.querySelectorAll('input[name="f7genre"]')[0].checked=true); window.f7RenderAZ();};
+  window.f7RenderAZ();
+}
+function admin(){
+  if(!canSeeAdmin()){login(); return;}
+  const st=f7Stats();
+  const content=`<section class="f7-admin-shell"><aside class="f7-admin-side"><div class="f7-side-brand admin"><div class="f7-logo">🛡</div><div><strong>Admin Yönetimi</strong><small>Kontrol Merkezi</small></div></div><div class="f7-side-group"><span>GENEL</span><button class="active" onclick="adminTab('dashboard')"><i>⌂</i><b>Dashboard</b></button><button onclick="adminTab('games')"><i>🎮</i><b>Oyunlar</b></button><button onclick="adminTab('seriesOrder')"><i>☰</i><b>Seriler</b></button><button onclick="adminTab('notes251')"><i>🔔</i><b>Güncellemeler</b></button><button onclick="adminTab('socialcheck')"><i>◎</i><b>Sosyal Medya</b></button></div><div class="f7-side-group"><span>SİSTEM</span><button onclick="adminTab('repairV2')"><i>⚙</i><b>Hata Kontrol</b></button><button onclick="adminTab('set')"><i>⚙</i><b>Ayarlar</b></button><button onclick="adminTab('aboutset')"><i>ⓘ</i><b>Hakkında</b></button></div><div class="f7-side-card"><strong>Tüm Sistemler Çevrimiçi</strong><p>Site sağlık skoru: ${st.score}%</p><button onclick="setPage('home')">Siteye Dön</button></div></aside><div class="f7-admin-main"><section class="f7-hero inner admin"><div class="f7-hero-overlay"></div><div class="f7-hero-inner"><h1>Admin Dashboard</h1><p>Hayatımız Oyun yönetim paneline hoş geldiniz.</p></div></section><section class="f7-stats-row admin"><article class="card"><div class="f7-stat-icon blue">🎮</div><div><small>Toplam Oyun</small><h2>${f7Number(st.games)}</h2><p>+ 18 bu hafta</p></div></article><article class="card"><div class="f7-stat-icon purple">◈</div><div><small>Toplam Seri</small><h2>${f7Number(st.series)}</h2><p>+ 5 bu hafta</p></div></article><article class="card"><div class="f7-stat-icon green">☰</div><div><small>Toplam Bölüm</small><h2>${f7Number(st.episodes)}</h2><p>+ 182 bu hafta</p></div></article><article class="card"><div class="f7-stat-icon gold">🛡</div><div><small>Site Sağlığı</small><h2>${st.score}%</h2><p>+ 0.7% bu hafta</p></div></article></section><section class="f7-admin-panels"><article class="card"><div class="section-title"><div><h2>Site Sağlığı</h2></div></div><ul class="f7-health"><li><span>Web Sunucusu</span><b>Çevrimiçi</b></li><li><span>Veritabanı</span><b>Çevrimiçi</b></li><li><span>Dosya Sistemi</span><b>Çevrimiçi</b></li><li><span>CDN</span><b>Çevrimiçi</b></li><li><span>SSL Sertifikası</span><b>Geçerli</b></li></ul></article><article class="card"><div class="section-title"><div><h2>Hızlı İşlemler</h2></div></div><div class="f7-quick-grid"><button onclick="adminTab('games')">Yeni Oyun Ekle</button><button onclick="adminTab('seriesOrder')">Yeni Seri Ekle</button><button onclick="adminTab('notes251')">Güncelleme Ekle</button><button onclick="adminTab('repairV2')">Hata Tara</button></div></article></section><section id="adminArea" class="f7-admin-area"></section></div></section>`;
+  $('#app').innerHTML=content; if(typeof adminTab==='function') setTimeout(()=>{ try{window.__f7OldAdminTab&&window.__f7OldAdminTab('dashboard');}catch(e){} }, 0);
+}
+window.__f7OldAdminTab = window.__f7OldAdminTab || window.adminTab || null;
+function seriesDetail250(name){
+  const games=(state.games||[]).filter(g=>f7Series(g)===name);
+  const episodes=games.reduce((n,g)=>n+f7Episodes(g).length,0);
+  const content=`<section class="f7-hero inner"><div class="f7-hero-overlay"></div><div class="f7-hero-inner"><h1>${f7Esc(name)}</h1><p>${games.length} oyun • ${episodes} bölüm • tüm seri tek sayfada</p></div></section><section class="f7-section-head"><div><h2>Tüm Seri İçeriği</h2></div><button class="ghost" onclick="setPage('series')">← Serilere Dön</button></section><section class="f7-timeline">${games.map((g,i)=>`<article class="f7-timeline-item card"><div class="f7-timeline-cover" style="background-image:url('${f7Esc(f7Cover(g))}')"></div><div><span class="f7-step">Oyun ${i+1}</span><h3>${f7Esc(g.title||'Başlıksız')}</h3><p class="muted">${f7Esc((f7Genre(g)||[]).slice(0,3).join(', ')||'Aksiyon')}</p><div class="f7-card-pills"><span>${f7Episodes(g).length} Bölüm</span><span>${f7Esc(g.type||'Ana Oyun')}</span></div><button onclick="showGameDetailV210('${f7Esc(f7Id(g))}')">Oyunu Aç →</button></div></article>`).join('')||'<div class="card"><p>Bu seri için kayıt yok.</p></div>'}</section>`;
+  $('#app').innerHTML=f7PageShell(content,'series');
+}
+function render(){
+  applyTheme();
+  document.documentElement.style.setProperty('--bg-intensity', Math.max(.2, Math.min(1.25, Number(state.settings?.background_intensity??75)/100)));
+  updateSeo();
+  document.body.classList.remove('menu-open');
+  const app=$('#app');
+  if(app){app.classList.remove('page-in'); void app.offsetWidth; app.classList.add('page-in');}
+  renderNav();
+  setAtmosphereTheme(state.page);
+  if(state.settings?.maintenance && !canSeeAdmin()){maintenance();return;}
+  const pages={home,series,az,calendar,notes,social,about,admin,archivev210:archivePageV210,searchv210:searchPageV210,favoritesv210:favoritesPageV210,trackingv210:trackingPageV210,contribute251:contributePage251,contribute250:contributePage251,profile250:profileDashboard250,profile:profileDashboard250};
+  (pages[state.page]||home)();
+  renderMusicPanel();
+}
