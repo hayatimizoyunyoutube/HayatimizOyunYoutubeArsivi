@@ -1,0 +1,20 @@
+{
+  "name": "hayatimiz-oyun-v3-0-0-public",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Hayatımız Oyun V3.0.0 - normal site açılışı ve kullanıcı bilgilendirme",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev",
+    "build": "node -e \"console.log('V3.0.0 public build ok')\"",
+    "clean-api": "node scripts/clean-api.js"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "@supabase/supabase-js": "latest",
+    "bcryptjs": "latest"
+  },
+  "devDependencies": {
+    "vercel": "latest"
+  }
+}
