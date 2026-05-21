@@ -635,3 +635,7 @@ alter table games add column if not exists thumbnail text;
 -- V2.1.0 Fix 1: Kategori/nav düzeni, admin oyun kartları, tümünü seç/toplu güncelleme ve güncelleme notları sıralaması düzeltildi.
 
 -- V2.2.0: Tüm kaydet/toplu işlem progress yüzdesi, admin panel ve oyun kartları profesyonel stabilite düzeni eklendi.
+
+-- V3.0.0 Fix 1: A-Z/Seriler arama, V3.0.0 sürüm metni, ByNoGame yuvarlak ikon ve sosyal medya hata kontrol eklendi.
+
+-- V2.2.0 V3 Açılış Sistemi: Site sürümü V2.2.0 bırakıldı, loading/açılış ekranı V3.0.0 açılış mantığıyla otomatik yüzdeye bağlandı.

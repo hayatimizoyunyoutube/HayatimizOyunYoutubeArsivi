@@ -1,42 +1,26 @@
-# Hayatımız Oyun V2.2.0
+# Hayatımız Oyun V2.2.0 - V3.0.0 Açılış Sistemi Fix
 
-V2.2.0, siteyi ve admin panelini acele yama yerine daha profesyonel/stabil hale getiren geniş düzenleme paketidir.
+Bu paket sürüm ayrımını düzeltir:
 
-## Yeni Özellikler
+- **Site sürümü:** V2.2.0
+- **Site açılış/loading sistemi:** V3.0.0 açılış ekranı mantığı
 
-### Tüm Kaydetme / Toplu İşlem Yüzde Sistemi
-- Toplu oyun güncelleme işlemlerinde canlı yüzde gösterilir.
-- Toplu onarım işleminde canlı yüzde gösterilir.
-- Toplu silme işleminde canlı yüzde gösterilir.
-- Genel kaydetme işlemleri için progress kutusu eklendi.
-- İşlem logu görünür: hangi kayıt başladı, hangisi tamamlandı, hangisi hata verdi.
+## Düzeltilenler
 
-### Admin Panel V2.2.0
-- Oyunlar bölümü yeniden profesyonel kart yapısına alındı.
-- Oyun kapakları daha düzgün ve tam görünür.
-- Kart butonları düzenli grid yapıya alındı.
-- Tümünü seç / seçili sayısı / toplu güncelleme alanı yeniden düzenlendi.
-- Durum, seri, tip ve etiket toplu güncelleme alanları eklendi.
-- V2.2.0 Stabilite Merkezi eklendi.
-
-### Site Genel Düzen
-- Ana sayfaya V2.2.0 duyuru kartı eklendi.
-- Üst kategori/nav butonları daha stabil düzenlendi.
-- Mobilde nav taşması azaltıldı.
-- Kartlar, borderlar, arka plan ve spacing daha profesyonel hale getirildi.
-
-### Güncelleme Notları
-- Sürüm skoru sistemi güçlendirildi.
-- V2.2.0 / V2.1.0 / V2.0.3 gibi sürümler karışmadan sıralanır.
-- En yeni not EN YENİ etiketiyle gösterilir.
-
-## Korunanlar
-
-- V2.1.0 arşiv, arama, favoriler ve takip sistemi
-- V2.1.0 admin merkezi
-- V2.0.3 hakkında yönetimi
-- Sosyal ikon düzeltmeleri
-- Supabase schema-safe kayıt düzeltmeleri
+- Site artık V3.0.0 sürümüne geçirilmiş gibi görünmez.
+- Genel site sürüm etiketi V2.2.0 kalır.
+- Açılış/loading ekranında V3.0.0 açılış sistemi metni görünür.
+- Loading yüzdesi sabit/yanlış değil, adımlara göre otomatik ilerler:
+  - V3.0.0 açılış sistemi hazırlanıyor
+  - Site ayarları yükleniyor
+  - Oyunlar ve kapaklar hazırlanıyor
+  - Güncelleme notları sıralanıyor
+  - Takvim ve duyurular kontrol ediliyor
+  - V2.2.0 site arayüzü açılıyor
+- A-Z/Seriler arama düzeltmeleri korunur.
+- ByNoGame yuvarlak ikon düzeltmesi korunur.
+- Sosyal Medya Hata Kontrol bölümü korunur.
+- JS syntax kontrolünden geçti.
 
 ## Temiz Kurulum
 
@@ -50,7 +34,7 @@ ZIP içeriğini klasöre çıkar.
 
 ```powershell
 git add .
-git commit -m "V2.2.0 profesyonel stabilite guncellemesi"
+git commit -m "V2.2.0 v3 acilis sistemi duzeltmesi"
 git push -f origin main
 ```
 
