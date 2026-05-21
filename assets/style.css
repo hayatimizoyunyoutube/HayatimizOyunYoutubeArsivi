@@ -953,3 +953,66 @@ body{background:
   .admin-game-grid-fixed-v211{grid-template-columns:1fr!important}
   .note-fixed-v211{grid-template-columns:1fr!important}
 }
+
+
+/* V2.2.0 - Profesyonel stabilite, admin, kayıt ilerleme */
+
+:root{--v220-line:rgba(255,255,255,.11);--v220-card:linear-gradient(180deg,rgba(15,23,42,.95),rgba(7,12,24,.96));}
+body{background:
+  radial-gradient(circle at 10% -10%,rgba(225,29,72,.18),transparent 34%),
+  radial-gradient(circle at 90% 0%,rgba(99,102,241,.16),transparent 34%),
+  linear-gradient(180deg,#070a14,#0b1020 45%,#080b16)!important;
+}
+.top{display:flex!important;align-items:center!important;gap:12px!important;flex-wrap:wrap!important}
+#nav{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;flex-wrap:wrap!important;width:100%!important;max-width:100%!important;overflow:visible!important}
+#nav button,#nav .nav-v220-group button,#nav .nav-v210-group button{min-height:38px!important;height:38px!important;padding:8px 12px!important;border-radius:13px!important;white-space:nowrap!important;line-height:1!important;font-size:13px!important}
+#nav .nav-v220-group,#nav .nav-v210-group{display:flex!important;gap:8px!important;flex-wrap:wrap!important;align-items:center!important;justify-content:center!important}
+.hero{border-radius:32px!important;border:1px solid var(--v220-line)!important;box-shadow:0 26px 85px rgba(0,0,0,.30)!important}
+.card{border-color:var(--v220-line)!important;background:var(--v220-card)!important}
+.v220-banner{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;margin:0 0 18px!important;border-color:rgba(34,197,94,.30)!important;background:linear-gradient(135deg,rgba(34,197,94,.11),rgba(99,102,241,.09),rgba(225,29,72,.06))!important}
+.v220-banner h2{margin:8px 0 6px!important}
+.global-progress-v220{margin:0 0 16px!important;border-color:rgba(34,197,94,.30)!important;background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(99,102,241,.08),rgba(255,255,255,.035))!important}
+.progress-head-v220{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important}
+.progress-head-v220 h2{margin:6px 0 4px!important}
+.progress-head-v220 strong{min-width:72px!important;text-align:center!important;border-radius:999px!important;padding:11px 13px!important;background:rgba(34,197,94,.15)!important;border:1px solid rgba(34,197,94,.30)!important;color:#bbf7d0!important}
+.progress-track-v220{height:12px!important;border-radius:999px!important;background:rgba(255,255,255,.10)!important;overflow:hidden!important;margin:14px 0 10px!important}
+.progress-track-v220 b{display:block!important;height:100%!important;width:0;border-radius:999px!important;background:linear-gradient(90deg,#22c55e,#84cc16,#fde047)!important;transition:width .22s ease!important}
+.progress-log-v220{display:grid!important;gap:6px!important;max-height:170px!important;overflow:auto!important}
+.progress-log-v220 div{border:1px solid rgba(255,255,255,.08)!important;background:rgba(0,0,0,.18)!important;border-radius:10px!important;padding:8px 10px!important;color:#d1d5db!important;font-size:12px!important}
+.admin-toolbar-final,.admin-shell-final .admin-tabs{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;gap:8px!important;position:static!important;overflow:visible!important;width:100%!important}
+.admin-toolbar-final button,.admin-shell-final .admin-tabs button{width:100%!important;min-height:40px!important;height:auto!important;padding:9px 10px!important;justify-content:flex-start!important}
+.bulk-toolbar-v220{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;margin:0 0 16px!important;border-color:rgba(34,197,94,.28)!important;background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(99,102,241,.08),rgba(255,255,255,.03))!important}
+.bulk-toolbar-v220 h2{margin:6px 0!important}
+.bulk-grid-v220{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;gap:9px!important;align-items:center!important}
+.bulk-grid-v220 input,.bulk-grid-v220 select,.bulk-grid-v220 button{width:100%!important;min-height:40px!important}
+.select-all-v220{display:flex!important;align-items:center!important;gap:8px!important;font-weight:900!important;border:1px solid rgba(255,255,255,.10)!important;border-radius:13px!important;padding:10px!important;background:rgba(255,255,255,.045)!important}
+.admin-games-v220{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(320px,1fr))!important;gap:18px!important;align-items:stretch!important}
+.admin-game-v220{position:relative!important;overflow:hidden!important;border:1px solid rgba(255,255,255,.11)!important;border-radius:24px!important;background:linear-gradient(180deg,rgba(17,24,39,.94),rgba(10,15,28,.96))!important;box-shadow:0 18px 45px rgba(0,0,0,.24)!important}
+.select-v220{position:absolute!important;z-index:5!important;right:12px!important;top:12px!important;display:flex!important;align-items:center!important;gap:6px!important;padding:7px 10px!important;border-radius:999px!important;background:rgba(7,10,20,.88)!important;border:1px solid rgba(255,255,255,.16)!important;font-size:12px!important;font-weight:900!important}
+.cover-v220{height:210px!important;background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;background-color:#0b1020!important;border-bottom:1px solid rgba(255,255,255,.08)!important;position:relative!important}
+.cover-v220 span{position:absolute!important;left:12px!important;top:12px!important;border-radius:999px!important;padding:7px 10px!important;background:rgba(7,10,20,.88)!important;border:1px solid rgba(255,255,255,.14)!important;font-size:12px!important;font-weight:900!important}
+.body-v220{padding:16px!important}.body-v220 h3{margin:0 0 8px!important;font-size:20px!important;line-height:1.15!important}
+.issue-row-v220{display:flex!important;gap:6px!important;flex-wrap:wrap!important;margin:10px 0!important}
+.issue-row-v220 small{border-radius:999px!important;padding:6px 8px!important;font-size:11px!important;font-weight:800!important}
+.issue-row-v220 .warn{background:rgba(245,158,11,.13)!important;border:1px solid rgba(245,158,11,.26)!important;color:#fde68a!important}
+.issue-row-v220 .ok{background:rgba(34,197,94,.12)!important;border:1px solid rgba(34,197,94,.25)!important;color:#bbf7d0!important}
+.actions-v220{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-top:12px!important}
+.actions-v220 button{width:100%!important;min-height:38px!important;padding:8px 10px!important}
+.notes-v220{display:grid!important;gap:12px!important}
+.note-v220{display:grid!important;grid-template-columns:175px 1fr!important;gap:16px!important;align-items:flex-start!important}
+.note-v220.latest{border-color:rgba(34,197,94,.35)!important;background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(255,255,255,.03))!important}
+.note-v220 aside{display:grid!important;gap:8px!important}
+.note-v220 aside b{font-size:21px!important}
+.note-v220 aside span,.note-v220 aside em{display:inline-flex!important;width:max-content;border-radius:999px!important;padding:6px 9px!important;background:rgba(99,102,241,.14)!important;border:1px solid rgba(99,102,241,.24)!important;font-size:11px!important;font-weight:900!important;font-style:normal!important}
+.note-v220 aside em{background:rgba(34,197,94,.14)!important;border-color:rgba(34,197,94,.28)!important;color:#bbf7d0!important}
+.v220-center .grid .card{text-align:center!important}
+@media(max-width:720px){
+  #nav{justify-content:flex-start!important;overflow-x:auto!important;flex-wrap:nowrap!important;padding-bottom:6px!important}
+  #nav .nav-v220-group,#nav .nav-v210-group{flex-wrap:nowrap!important}
+  .v220-banner{display:block!important}.v220-banner button{width:100%!important;margin-top:10px!important}
+  .progress-head-v220{display:block!important}.progress-head-v220 strong{display:inline-block!important;margin-top:10px!important}
+  .admin-games-v220{grid-template-columns:1fr!important}
+  .cover-v220{height:185px!important}
+  .actions-v220{grid-template-columns:1fr!important}
+  .note-v220{grid-template-columns:1fr!important}
+}
