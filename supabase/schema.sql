@@ -626,4 +626,6 @@ alter table games add column if not exists thumbnail text;
 
 -- V2.0.3 Fix Social: Site normal açılır; ByNoGame ve TikTok sosyal ikonları görünür hale getirildi.
 
--- V3.0.0 Public Release: Site tamamen V3.0.0 olarak normal açılır; kullanıcı bilgilendirme kartı ve güncelleme notu eklendi.
+-- V2.0.3 Current: V3.0.0 duyuruları kaldırıldı, site güncel sürüm V2.0.3 olarak normal açılır.
+
+-- V2.0.3 Fix 1: Oyunlar sekmesine tümünü seç/toplu düzenleme, admin kapak düzeltmesi ve hakkında yönetimi eklendi.

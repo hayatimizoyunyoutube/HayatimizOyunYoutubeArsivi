@@ -1,15 +1,27 @@
-# Hayatımız Oyun V3.0.0 Public Release
+# Hayatımız Oyun V2.0.3 Fix 1
 
-Bu paket siteyi tamamen V3.0.0 olarak açar. Zorunlu bakım modu yoktur; site normal çalışır.
+Bu paket V2.0.3 üzerine gelen admin panel, kapak ve hakkında sayfası düzeltmesidir.
 
-## Düzeltmeler
+## Yeni Özellikler
 
-- Sürüm etiketi tamamen V3.0.0 yapıldı.
-- Site normal şekilde V3.0.0 olarak açılır.
-- Kullanıcıların haberi olması için ana sayfaya V3.0.0 duyuru kartı eklendi.
-- Güncelleme notlarına V3.0.0 yayında notu eklendi.
-- ByNoGame ve TikTok ikon görünümü düzeltmesi korundu.
-- Loading metinleri V3.0.0 olarak güncellendi.
+- Oyunlar sekmesine **Tüm oyunları seç** eklendi.
+- Seçili oyunları toplu düzenleme eklendi.
+- Seçili oyunları toplu onarma eklendi.
+- Admin paneline **Hakkında** yönetim bölümü eklendi.
+- Hakkında bilgileri admin panelinden düzenlenebilir hale geldi.
+- Hakkında metni için **Yapay Zeka ile Oluştur** butonu eklendi.
+- Hakkında sayfasında temiz istatistik alanı eklendi.
+
+## Fixler
+
+- Admin panelindeki oyun kapakları daha düzgün ve tam görünecek şekilde düzeltildi.
+- Kapak alanlarında `contain` kullanıldı.
+- Oyun kartlarına admin seçim kutusu eklendi.
+- Hakkında sayfasındaki oyun/seri/hata bildir karışıklığı temizlendi.
+- V3 duyuru kartı kapalı tutuldu.
+- ByNoGame ve TikTok ikon düzeltmeleri korundu.
+- `adminTab` async hatası düzeltildi.
+- JS syntax kontrolünden geçti.
 
 ## Temiz Kurulum
 
@@ -22,12 +34,8 @@ Get-ChildItem -Force | Where-Object { $_.Name -ne ".git" } | Remove-Item -Recurs
 ZIP içeriğini klasöre çıkar.
 
 ```powershell
-git init
-git branch -M main
-git remote remove origin
-git remote add origin https://github.com/hayatimizoyunyoutube/HayatimizOyunYoutubeArsivi.git
 git add .
-git commit -m "V3.0.0 public release"
+git commit -m "V2.0.3 Fix 1 admin kapak hakkında düzeltmeleri"
 git push -f origin main
 ```
 
