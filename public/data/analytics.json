@@ -1,0 +1,36 @@
+{
+  "completionRate": 56,
+  "averageScore": 9.2,
+  "activeSeries": 3,
+  "plannedSeries": 1,
+  "qualityAverage": 91,
+  "missingData": 0,
+  "topTags": [
+    "Korku",
+    "Hikaye",
+    "Aksiyon",
+    "Türkçe",
+    "Devam Ediyor"
+  ],
+  "todayWatchMinutes": 126,
+  "aiConfidence": 88,
+  "notifications": 3,
+  "automationRules": 6,
+  "testScore": 96,
+  "criticalBugs": 0,
+  "warningBugs": 3,
+  "checkedScreens": 12,
+  "readyForEveningTest": true,
+  "mergedVersionCount": 6,
+  "mergedVersions": [
+    "v2.0.6",
+    "v2.0.7",
+    "v2.0.8",
+    "v2.0.9",
+    "v2.1.0",
+    "v2.1.1"
+  ],
+  "totalGamesMerged": 15,
+  "totalUpdateNotesMerged": 11,
+  "versionCoverage": "v2.0.6 - v2.1.1"
+}

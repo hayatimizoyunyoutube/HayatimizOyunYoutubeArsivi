@@ -1,0 +1,25 @@
+FIX MANIFEST
+============
+
+Ana hedefler:
+1. Vercel 404 NOT_FOUND hatasını azaltmak için root-level proje + vercel.json.
+2. Supabase versiyon SQL dosyalarını tek dosyada birleştirmek.
+
+Yeni/yenilenen dosyalar:
+- vercel.json
+- vite.config.js
+- public/_redirects
+- public/404.html
+- supabase/schema.sql
+- docs/SUPABASE-TEK-SCHEMA-KURULUM.md
+- docs/legacy-supabase-versions/schema-v207.sql
+- docs/legacy-supabase-versions/schema-v208.sql
+- docs/legacy-supabase-versions/schema-v209.sql
+- docs/legacy-supabase-versions/schema-v210.sql
+- docs/legacy-supabase-versions/schema-v211.sql
+
+Çalıştırılacak Supabase dosyası:
+- supabase/schema.sql
+
+Çalıştırılmayacak eski dosyalar:
+- docs/legacy-supabase-versions/*.sql
