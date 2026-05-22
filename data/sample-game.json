@@ -1,0 +1,11 @@
+{
+  "title": "Örnek Oyun",
+  "series": "Örnek Seri",
+  "status": "Devam Ediyor",
+  "genre": "Aksiyon, Macera",
+  "tags": ["Türkçe Altyazılı", "Hikaye Odaklı"],
+  "description": "Admin panelinden silip kendi oyunlarını ekleyebilirsin.",
+  "episodes": [
+    { "no": 1, "title": "1. Bölüm", "videoId": "dQw4w9WgXcQ", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+  ]
+}
