@@ -1,0 +1,37 @@
+[
+  {
+    "time": "17:11",
+    "source": "Test Merkezi",
+    "status": "Başarılı",
+    "count": 12,
+    "note": "UI, API, ENV, mobil ve deploy kontrol maddeleri oluşturuldu"
+  },
+  {
+    "time": "16:44",
+    "source": "Local JSON",
+    "status": "Başarılı",
+    "count": 5,
+    "note": "Oyun arşivi ve izleme ilerlemesi okundu"
+  },
+  {
+    "time": "16:43",
+    "source": "Öneri motoru",
+    "status": "Başarılı",
+    "count": 4,
+    "note": "Etiket ve ilerleme verisine göre öneriler üretildi"
+  },
+  {
+    "time": "16:42",
+    "source": "Bildirim merkezi",
+    "status": "Uyarı",
+    "count": 3,
+    "note": "Eksik kapak ve sıradaki bölüm kontrol edildi"
+  },
+  {
+    "time": "16:41",
+    "source": "Supabase",
+    "status": "Pasif",
+    "count": 0,
+    "note": "ENV anahtarı bağlanınca aktif olacak"
+  }
+]

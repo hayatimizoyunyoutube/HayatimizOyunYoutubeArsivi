@@ -1,0 +1,20 @@
+{
+  "name": "hayatimiz-oyun-ui-safe-v2-1-1",
+  "version": "2.1.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "lucide-react": "latest"
+  },
+  "devDependencies": {},
+  "description": "Hayatımız Oyun v2.1.1 - akşam test öncesi test merkezi, hata raporlama, API/ENV durum paneli ve güvenli UI düzeltmeleri"
+}

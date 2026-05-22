@@ -1,0 +1,11 @@
+{
+  "safeRollbackVersion": "v2.1.0",
+  "steps": [
+    ".git klasörünü silme",
+    "v2.1.0 ZIP içeriğini temiz klasöre tekrar çıkar",
+    "git add .",
+    "git commit -m \"rollback v2.1.0\"",
+    "git push -f origin main",
+    "Vercel > Deployments > Redeploy"
+  ]
+}

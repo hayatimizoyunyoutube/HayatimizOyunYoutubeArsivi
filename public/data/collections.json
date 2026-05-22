@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Korku Gecesi",
+    "count": 3,
+    "description": "Korku ve gerilim serileri tek alanda.",
+    "tag": "Korku"
+  },
+  {
+    "name": "Hikaye Maratonu",
+    "count": 2,
+    "description": "Hikaye odaklı oyunların izleme listesi.",
+    "tag": "Hikaye"
+  },
+  {
+    "name": "Tamamlanan Efsaneler",
+    "count": 1,
+    "description": "Finali yapılmış arşivleri saklar.",
+    "tag": "Final"
+  }
+]

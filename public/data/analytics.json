@@ -1,0 +1,24 @@
+{
+  "completionRate": 56,
+  "averageScore": 9.2,
+  "activeSeries": 3,
+  "plannedSeries": 1,
+  "qualityAverage": 91,
+  "missingData": 0,
+  "topTags": [
+    "Korku",
+    "Hikaye",
+    "Aksiyon",
+    "Türkçe",
+    "Devam Ediyor"
+  ],
+  "todayWatchMinutes": 126,
+  "aiConfidence": 88,
+  "notifications": 3,
+  "automationRules": 6,
+  "testScore": 96,
+  "criticalBugs": 0,
+  "warningBugs": 3,
+  "checkedScreens": 12,
+  "readyForEveningTest": true
+}
