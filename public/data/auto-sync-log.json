@@ -1,0 +1,93 @@
+[
+  {
+    "time": "22.05.2026 16:40",
+    "source": "Local JSON",
+    "status": "Başarılı",
+    "count": 8,
+    "note": "Oyun listesi güncellendi"
+  },
+  {
+    "time": "22.05.2026 16:38",
+    "source": "Akıllı Eşleştirme",
+    "status": "Başarılı",
+    "count": 2,
+    "note": "Kopya başlık kontrolü yapıldı"
+  },
+  {
+    "time": "22.05.2026 16:35",
+    "source": "YouTube API",
+    "status": "Beklemede",
+    "count": 0,
+    "note": "API anahtarı bağlanınca aktif olur"
+  },
+  {
+    "time": "22.05.2026 16:30",
+    "source": "Supabase",
+    "status": "Hazır",
+    "count": 0,
+    "note": "Şema dosyası pakete eklendi"
+  },
+  {
+    "time": "22.05.2026 16:45",
+    "source": "v2.0.9 Kontrol Merkezi",
+    "status": "Tamamlandı",
+    "count": 10,
+    "note": "Oyunlar kalite skoru ile eşleştirildi"
+  },
+  {
+    "time": "22.05.2026 16:42",
+    "source": "Yayın Takvimi",
+    "status": "Hazır",
+    "count": 4,
+    "note": "Sıradaki bölüm kartları üretildi"
+  },
+  {
+    "time": "22.05.2026 16:38",
+    "source": "Koleksiyonlar",
+    "status": "Hazır",
+    "count": 3,
+    "note": "Korku, hikaye ve tamamlanan arşiv ayrıldı"
+  },
+  {
+    "time": "22.05.2026 16:31",
+    "source": "Fallback Güvenliği",
+    "status": "Aktif",
+    "count": 1,
+    "note": "Veri gelmezse yedek katman devreye girer"
+  },
+  {
+    "time": "16:44",
+    "source": "Local JSON",
+    "status": "Başarılı",
+    "count": 5,
+    "note": "Oyun arşivi ve izleme ilerlemesi okundu"
+  },
+  {
+    "time": "16:43",
+    "source": "Öneri motoru",
+    "status": "Başarılı",
+    "count": 4,
+    "note": "Etiket ve ilerleme verisine göre öneriler üretildi"
+  },
+  {
+    "time": "16:42",
+    "source": "Bildirim merkezi",
+    "status": "Uyarı",
+    "count": 3,
+    "note": "Eksik kapak ve sıradaki bölüm kontrol edildi"
+  },
+  {
+    "time": "16:41",
+    "source": "Supabase",
+    "status": "Pasif",
+    "count": 0,
+    "note": "ENV anahtarı bağlanınca aktif olacak"
+  },
+  {
+    "time": "17:11",
+    "source": "Test Merkezi",
+    "status": "Başarılı",
+    "count": 12,
+    "note": "UI, API, ENV, mobil ve deploy kontrol maddeleri oluşturuldu"
+  }
+]

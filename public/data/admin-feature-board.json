@@ -1,0 +1,31 @@
+{
+  "version": "v2.1.3",
+  "added": [
+    "Supabase tablo kayıt sistemi",
+    "Tek serverless API",
+    "Admin test şifresi arayüzden kaldırıldı",
+    "Özellik Planı paneli",
+    "schema.sql v2.1.3 güncellemesi"
+  ],
+  "needed": [
+    "Supabase Auth + e-posta doğrulama",
+    "Admin oyun ekleme Supabase kaydı",
+    "Profil fotoğrafı Storage yükleme",
+    "YouTube cron otomasyonu",
+    "RAWG kapak onay ekranı"
+  ],
+  "missed": [
+    "Bakım modu alt sayfa testi",
+    "Mobil admin menü testi",
+    "Clear Build Cache kontrolü",
+    "schema.sql eski tablo uyumu",
+    "Aynı e-posta tekrar kayıt uyarısı"
+  ],
+  "adminIdeas": [
+    "Bugün ne eksik butonu",
+    "Anonim izleme istatistiği",
+    "Eksik kapak uyarısı",
+    "Admin güncelleme notu editörü",
+    "Bakım ekranı metin editörü"
+  ]
+}
