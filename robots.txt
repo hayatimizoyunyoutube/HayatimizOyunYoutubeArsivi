@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://hayatimiz-oyun-youtube-arsivi.vercel.app/sitemap.xml
