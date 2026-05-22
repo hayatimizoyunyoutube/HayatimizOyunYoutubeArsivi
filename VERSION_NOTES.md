@@ -14,3 +14,10 @@
 Çalıştırılacak tek dosya: `supabase/schema.sql`
 
 Yeni tablo: `public.site_users`
+
+## v2.1.3 Fix 1
+
+- Vercel `404: NOT_FOUND` için API route düzeltmesi yapıldı.
+- Kayıt/giriş istekleri artık `/api` üzerinden çalışır.
+- SPA rewrite ile API rewrite çakışması azaltıldı.
+- Service role key ve admin password güvenlik uyarıları eklendi.

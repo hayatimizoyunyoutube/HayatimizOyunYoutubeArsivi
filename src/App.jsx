@@ -18,7 +18,7 @@ const hiddenAdminPages = [
 const adminFeatureBoard = {
   added: [
     'Supabase tablo kayıt sistemi: yeni kullanıcılar public.site_users tablosuna yazılır.',
-    'Tek serverless API: Vercel Hobby limitini aşmadan /api/index üzerinden kayıt/giriş çalışır.',
+    'Tek serverless API: Vercel Hobby limitini aşmadan /api üzerinden kayıt/giriş çalışır.',
     'Admin test şifresi arayüzden kaldırıldı; parola sadece Vercel ADMIN_PASSWORD üzerinden kontrol edilir.',
     'Yönetim Paneline Özellik Planı alanı eklendi.',
     'schema.sql v2.1.3 tabloları ve güncelleme notlarıyla yenilendi.'
@@ -73,7 +73,7 @@ function saveSession(session) {
 }
 
 async function callAuthApi(action, payload = {}) {
-  const response = await fetch(`/api/index?action=${encodeURIComponent(action)}`, {
+  const response = await fetch(`/api?action=${encodeURIComponent(action)}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -371,7 +371,7 @@ function AdminUsersPanel({ onAction = () => {} }) {
     <section className="sectionBlock userTableBlock">
       <div className="sectionTitle"><h2>Kullanıcı Kayıtları</h2><span><Cloud size={14}/> Supabase public.site_users</span></div>
       <div className="userTableInfo">
-        <article className="adminCard large"><div className="cardHeader"><UserCheck/><strong>Kayıt Akışı</strong></div><p>Kayıt Ol formu /api/index?action=register adresine gider. Vercel içindeki SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY ile Supabase REST API üzerinden public.site_users tablosuna kayıt eklenir.</p><ul><li><CheckCircle2/> Şifre düz metin kaydedilmez, SHA-256 hash + salt kaydedilir.</li><li><CheckCircle2/> Normal kullanıcı rolü user olarak düşer.</li><li><CheckCircle2/> Aynı e-posta tekrar kayıt olamaz.</li></ul></article>
+        <article className="adminCard large"><div className="cardHeader"><UserCheck/><strong>Kayıt Akışı</strong></div><p>Kayıt Ol formu /api?action=register adresine gider. Vercel içindeki SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY ile Supabase REST API üzerinden public.site_users tablosuna kayıt eklenir.</p><ul><li><CheckCircle2/> Şifre düz metin kaydedilmez, SHA-256 hash + salt kaydedilir.</li><li><CheckCircle2/> Normal kullanıcı rolü user olarak düşer.</li><li><CheckCircle2/> Aynı e-posta tekrar kayıt olamaz.</li></ul></article>
         <article className="adminCard"><div className="cardHeader"><Database/><strong>Tablo Durumu</strong></div><p>{health ? (health.supabaseConfigured ? 'Vercel ENV hazır görünüyor.' : 'ENV eksik veya API ulaşamadı.') : 'Kontrol için butona bas.'}</p>{health?.error && <em>{health.error}</em>}<button type="button" className="primaryBtn" onClick={check} disabled={checking}>{checking ? 'Kontrol ediliyor...' : 'Supabase Bağlantısını Kontrol Et'}</button></article>
         <article className="adminCard"><div className="cardHeader"><ListChecks/><strong>Supabase’te Bakılacak Yer</strong></div><p>Supabase Dashboard → Table Editor → public.site_users tablosu. Yeni kayıtlar burada name, email, role ve created_at alanlarıyla görünür.</p></article>
       </div>

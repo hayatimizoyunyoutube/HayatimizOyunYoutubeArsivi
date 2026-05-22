@@ -46,15 +46,32 @@ async function findUser(email) {
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return json(res, 200, { ok: true });
+
+  const parsedUrl = new URL(req.url || '/api', 'https://hayatimiz-oyun.local');
+  const pathAction = parsedUrl.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean)[0];
+  const action = req.query?.action || parsedUrl.searchParams.get('action') || pathAction || 'health';
+
+  if (action === 'health' && req.method === 'GET') {
+    return json(res, 200, {
+      ok: true,
+      version: 'v2.1.3-fix-1',
+      route: parsedUrl.pathname,
+      supabaseConfigured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+      adminPasswordConfigured: Boolean(process.env.ADMIN_PASSWORD)
+    });
+  }
+
   if (req.method !== 'POST') return json(res, 405, { ok: false, error: 'Sadece POST desteklenir.' });
-  const action = req.query?.action || 'health';
-  const body = typeof req.body === 'object' ? req.body : JSON.parse(req.body || '{}');
+
+  let body = {};
+  try { body = typeof req.body === 'object' ? (req.body || {}) : JSON.parse(req.body || '{}'); }
+  catch { return json(res, 400, { ok: false, error: 'Geçersiz JSON isteği.' }); }
 
   try {
     if (action === 'health') {
       return json(res, 200, {
         ok: true,
-        version: 'v2.1.3',
+        version: 'v2.1.3-fix-1',
         supabaseConfigured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
         adminPasswordConfigured: Boolean(process.env.ADMIN_PASSWORD)
       });
