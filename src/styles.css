@@ -12,3 +12,60 @@
 /* v2.1.1 Full Merged - all UI Safe versions combined */
 .mergedBadge, .versionMergeNote { border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 12px 14px; background: rgba(255,255,255,.06); }
 .heroCard::after { content: 'v2.0.6 → v2.1.1 birleşik'; position: absolute; right: 18px; bottom: 14px; font-size: 12px; color: rgba(255,255,255,.55); }
+
+/* v2.1.1 Fix 1 - Button routing + overflow safe layout */
+html, body, #root { max-width: 100%; overflow-x: hidden; }
+.topbar { grid-template-columns: minmax(210px, 300px) minmax(180px, 1fr) minmax(160px, auto); gap: 12px; }
+.brand, .topActions, .heroActions, .filterPanel, .adminTop { min-width: 0; }
+.logoMark, .avatar, .iconBtn { width: 38px; height: 38px; border-radius: 13px; flex: 0 0 auto; }
+.profilePill { max-width: 190px; min-width: 0; }
+.profilePill div:last-child { min-width: 0; }
+.profilePill strong, .profilePill span, .brand strong, .brand span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 210px; }
+.categoryRail { top: 67px; gap: 8px; padding: 10px clamp(10px, 1.8vw, 22px); scrollbar-width: none; max-width: 100%; }
+.categoryRail::-webkit-scrollbar { display: none; }
+.categoryRail button, .filterPanel button, .ghostBtn, .primaryBtn, .watchCard button, .recommendCard button, .adminSide button { font-size: 13px; line-height: 1.1; padding: 8px 11px; min-height: 36px; max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.primaryBtn, .ghostBtn, .syncPill { flex: 0 1 auto; }
+.heroActions { display: flex; flex-wrap: wrap; align-items: center; }
+.heroActions .primaryBtn, .heroActions .ghostBtn { max-width: 220px; }
+.syncPill { height: 38px; padding: 0 11px; }
+.searchBox { height: 42px; min-width: 0; }
+.pageWrap { width: min(1380px, calc(100% - 28px)); }
+.heroText h1 { font-size: clamp(30px, 4.2vw, 54px); }
+.statGrid { grid-template-columns: repeat(auto-fit, minmax(138px, 1fr)); }
+.gameGrid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.recommendGrid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.watchGrid { grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); }
+.scheduleGrid, .collectionGrid, .roadmap { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.testGrid, .errorGrid, .apiGrid, .checkGrid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.adminShell { grid-template-columns: 220px minmax(0, 1fr); }
+.adminSide { min-width: 0; }
+.adminSide button { width: 100%; max-width: none; display: block; }
+.adminGrid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.adminCard.wide { grid-column: span 2; }
+.adminMain { min-width: 0; }
+.sectionBlock, .heroCard, .filterPanel, .adminShell { max-width: 100%; }
+
+@media(max-width: 900px){
+  .topbar { grid-template-columns: 1fr; top: 0; }
+  .categoryRail { top: 0; position: relative; }
+  .topActions { justify-self: stretch; justify-content: space-between; width: 100%; }
+  .searchBox { width: 100%; }
+  .profilePill { max-width: 180px; }
+  .adminShell { grid-template-columns: 1fr; }
+  .adminCard.wide { grid-column: auto; }
+}
+
+@media(max-width: 520px){
+  .pageWrap { width: calc(100% - 18px); }
+  .topbar { padding: 10px; gap: 10px; }
+  .categoryRail button, .filterPanel button, .ghostBtn, .primaryBtn, .watchCard button, .recommendCard button { font-size: 12px; padding: 7px 9px; min-height: 32px; max-width: 145px; }
+  .syncPill span { display: none; }
+  .profilePill { display: none; }
+  .heroCard { padding: 18px; border-radius: 20px; }
+  .heroText h1 { font-size: 28px; }
+  .heroStats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .heroStats div { min-height: 92px; padding: 14px; }
+  .heroStats strong { font-size: 22px; }
+  .sectionBlock { padding: 15px; }
+  .gameGrid, .recommendGrid, .watchGrid, .statGrid, .testGrid, .errorGrid, .apiGrid, .checkGrid { grid-template-columns: 1fr; }
+}

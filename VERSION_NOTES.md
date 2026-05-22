@@ -1,46 +1,19 @@
-# Hayatımız Oyun v2.1.1 Full Merged - Hobby Function Fix
+# Hayatımız Oyun v2.1.1 Fix 1
 
-Bu sürüm, v2.1.1 Full Merged + Supabase Key Fix üzerine hazırlanmıştır.
+Bu sürüm v2.1.1 Full Merged + Vercel Hobby Function Fix üzerine hazırlanmıştır.
 
-## Düzeltme
+## Fixlenen hatalar
 
-- Vercel Hobby planındaki 12 Serverless Function sınırı aşıldığı için deploy Error veriyordu.
-- `api/` klasöründeki 13 ayrı API dosyası tek dosyada birleştirildi.
-- Yeni API router: `api/index.js`
-- Vercel rewrite ayarı güncellendi.
-- Supabase tek schema sistemi korunmuştur.
-- `site_settings.key` hotfix dosyası korunmuştur.
+- Butonlar tıklanınca her şey aynı sayfada üst üste görünüyordu; artık sayfalar koşullu açılır.
+- Hero butonları aktif hale getirildi: Test Merkezi, Hata Raporları, API Durumu ve Yönetim Paneli.
+- Yönetim Paneli sol menü butonları ilgili sayfalara yönlendirildi.
+- Kategori butonları ve aksiyon butonları küçültüldü.
+- Sağa taşan butonlar için overflow güvenlik CSS'i eklendi.
+- Mobil görünümde üst bar, kategori rayı, filtreler ve kart gridleri güçlendirildi.
 
-## Kullanılacak Supabase dosyaları
+## Korunan fixler
 
-Önce gerekirse:
-
-```txt
-supabase/SUPABASE-HOTFIX-site-settings-key.sql
-```
-
-Sonra ana birleşik schema:
-
-```txt
-supabase/schema.sql
-```
-# v2.1.1 Full Merged - Supabase + Vercel Fix
-
-## Düzeltmeler
-
-- Vercel `404 NOT_FOUND` hatası için `vercel.json` eklendi.
-- Vite build ayarı için `vite.config.js` eklendi.
-- SPA route fallback için `public/_redirects` ve `public/404.html` eklendi.
-- Supabase sürümleri tek dosyada birleştirildi: `supabase/schema.sql`.
-- Eski `schema-v207` / `schema-v208` / `schema-v209` / `schema-v210` / `schema-v211` dosyaları `docs/legacy-supabase-versions/` içine taşındı.
-- ZIP yapısı kök dizin uyumlu hale getirildi; Vercel'in yanlış klasörü deploy etme riski azaltıldı.
-
-## Çalıştırılacak tek Supabase dosyası
-
-`supabase/schema.sql`
-
-
-## v2.1.1 Supabase Key Hotfix
-- `site_settings` eski tablo yapısında `key` kolonu yoksa otomatik eklenir.
-- Tek schema dosyası güncellendi: `supabase/schema.sql`.
-- Hızlı düzeltme dosyası eklendi: `supabase/SUPABASE-HOTFIX-site-settings-key.sql`.
+- Vercel Hobby plan için tek serverless function: `api/index.js`
+- Supabase tek schema: `supabase/schema.sql`
+- Site settings key hotfix: `supabase/SUPABASE-HOTFIX-site-settings-key.sql`
+- Vite build ayarı, Vercel 404 fix ve temiz kurulum komutları
