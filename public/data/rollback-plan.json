@@ -1,0 +1,13 @@
+{
+  "safeRollbackVersion": "v2.1.1 veya önceki klasörler",
+  "steps": [
+    ".git klasörünü silme",
+    "Birleşik ZIP içeriğini proje klasörüne çıkar",
+    "npm install",
+    "npm run build ile test et",
+    "git add .",
+    "git commit -m \"v2.1.1 full merged\"",
+    "git push -f origin main",
+    "Vercel Redeploy yap"
+  ]
+}
