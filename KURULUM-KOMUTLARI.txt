@@ -1,0 +1,15 @@
+TEMİZ KURULUM KOMUTLARI
+
+cd "C:\Users\Mevlüt Yeni Pc\Desktop\Youtube Yayın Hazırlıkları\Youtube\Youtube Arşiv Sitesi Güncel\hayatimiz-oyun site vercel"
+
+# .git klasörünü silme.
+# Eski dosyaları temizle, birleşik ZIP içeriğini klasörün içine çıkar.
+
+npm install
+npm run build
+git add .
+git commit -m "v2.1.1 full merged"
+git remote set-url origin https://github.com/hayatimizoyunyoutube/HayatimizOyunYoutubeArsivi.git
+git push -f origin main
+
+# Sonra Vercel panelinden Redeploy yap.
