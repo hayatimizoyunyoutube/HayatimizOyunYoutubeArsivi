@@ -1,0 +1,23 @@
+[
+  {
+    "level": "info",
+    "title": "Vercel keyleri eklendi",
+    "area": "Environment Variables",
+    "status": "Tamam",
+    "fix": "Bu keyler güvenlik için tarayıcıdan okunmaz; Vercel içinde kalması doğru."
+  },
+  {
+    "level": "info",
+    "title": "Supabase arayüz testi için zorunlu değil",
+    "area": "Veritabanı",
+    "status": "Bilgi",
+    "fix": "Site local JSON ile açılır. Gerçek kayıt/otomatik çekme bağlanacağı zaman schema.sql çalıştırılır."
+  },
+  {
+    "level": "info",
+    "title": "Test notları hazır",
+    "area": "Akşam Testi",
+    "status": "Hazır",
+    "fix": "Eksik/hata gördüğün ekranın adını ve ekran görüntüsünü yaz."
+  }
+]

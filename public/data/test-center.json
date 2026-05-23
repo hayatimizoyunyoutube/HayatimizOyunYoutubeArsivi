@@ -1,0 +1,47 @@
+{
+  "version": "v2.1.1 Fix 4",
+  "status": "Vercel ENV uyarıları düzeltildi",
+  "overallScore": 99,
+  "critical": 0,
+  "warnings": 0,
+  "checkedAt": "2026-05-22 17:11",
+  "modules": [
+    {
+      "name": "Ana Sayfa",
+      "state": "Geçti",
+      "note": "Hero, arama, kategori ve kart düzeni sağlam."
+    },
+    {
+      "name": "Yönetim Paneli",
+      "state": "Geçti",
+      "note": "Fix 3 buton davranışı korundu; sekmeler panel içinde açılıyor."
+    },
+    {
+      "name": "Vercel ENV",
+      "state": "Geçti",
+      "note": "Keyler Vercel içinde tanımlı; tarayıcıda görünmemesi normal."
+    },
+    {
+      "name": "API Uyarıları",
+      "state": "Geçti",
+      "note": "Yanlış 'API anahtarı yok' uyarısı kaldırıldı."
+    },
+    {
+      "name": "Supabase Bilgisi",
+      "state": "Geçti",
+      "note": "Arayüz testi için Supabase zorunlu değil; local JSON aktif."
+    },
+    {
+      "name": "Fallback Veri",
+      "state": "Geçti",
+      "note": "API gelmezse site yedek JSON ile açılır."
+    }
+  ],
+  "eveningNotes": [
+    "Yönetim paneli sekmeleri doğru yerde açılıyor mu?",
+    "API/ENV panelinde yanlış uyarı kalmış mı?",
+    "Hata raporları sadece gerçek test notlarını gösteriyor mu?",
+    "Vercel deploy sonrası console hatası var mı?",
+    "Mobilde buton/kategori taşması var mı?"
+  ]
+}

@@ -1,0 +1,166 @@
+[
+  {
+    "version": "v2.1.3 Fix 6",
+    "title": "Kullanıcı ana sayfası temizlendi, teknik özet yönetim paneline taşındı",
+    "date": "2026-05-23",
+    "items": [
+      "Supabase/test skoru/kritik hata/veri durumu kartları kullanıcı hero ekranından kaldırıldı",
+      "Kullanıcı ana sayfasına sade oyun arşivi başlığı ve kullanıcı istatistikleri eklendi",
+      "Teknik durum kartları Yönetim Paneli > Genel Bakış içine taşındı",
+      "Güncelleme notları kullanıcı ana sayfasından kaldırıldı, admin panelinde tutuldu",
+      "Bakım ve rol sistemi Fix 5 haliyle korundu"
+    ]
+  },
+  {
+    "version": "v2.1.3 Fix 3",
+    "title": "Global bakım modu ve kullanıcı yetki yönetimi",
+    "items": [
+      "Bakım modu Supabase global ayardan okunur",
+      "Kullanıcı yetki verme/silme/banlama paneli eklendi",
+      "Supabase role=admin ile yetkili yapma desteklendi"
+    ]
+  },
+  {
+    "version": "v2.1.3",
+    "title": "Supabase kullanıcı kayıtları, admin özellik planı ve gizli admin şifre fixi",
+    "date": "2026-05-22",
+    "items": [
+      "Kayıt Ol formu Supabase public.site_users tablosuna bağlandı",
+      "Tek api/index.js ile Vercel Hobby uyumu korundu",
+      "Admin giriş ekranındaki test şifresi görünürlüğü kaldırıldı",
+      "Yönetim Paneline Özellik Planı eklendi",
+      "Eklenen özellikler, siteye gelmesi gerekenler, gözden kaçanlar ve admin önerileri paneli eklendi",
+      "schema.sql v2.1.3 tabloları ve seed güncelleme notlarıyla yenilendi"
+    ]
+  },
+  {
+    "version": "v2.1.2",
+    "title": "Kullanıcı menüsü, bakım modu ve çalışan buton fixleri",
+    "items": [
+      "Gizli admin/test/API alanları ana kategoriden kaldırıldı",
+      "Bakım modu eklendi",
+      "Tüm görünür butonlara aksiyon bağlandı",
+      "Yönetim Paneli sekme davranışı güçlendirildi",
+      "Vercel Hobby statik build uyumu korundu"
+    ]
+  },
+  {
+    "version": "v2.1.1",
+    "title": "Akşam test öncesi Test Merkezi, hata raporlama ve UI sağlık kontrolü",
+    "date": "2026-05-22",
+    "items": [
+      "Test Merkezi eklendi",
+      "Hata raporlama kartları eklendi",
+      "API/ENV durum paneli eklendi",
+      "Deploy ve rollback kontrol listesi eklendi",
+      "Konsol hata yakalama yardımcı katmanı eklendi",
+      "Mobil ve kategori hizalama için ek CSS güvenlik fixleri eklendi"
+    ]
+  },
+  {
+    "version": "v2.1.0",
+    "title": "AI öneri, izleme ilerleme, bildirim merkezi ve otomasyon stüdyosu",
+    "date": "2026-05-22",
+    "items": [
+      "AI öneri paneli eklendi",
+      "Kaldığın yerden devam kartları eklendi",
+      "Bildirim merkezi eklendi",
+      "Tema preset sistemi eklendi",
+      "Otomasyon stüdyosu ve yol haritası eklendi"
+    ]
+  },
+  {
+    "version": "v2.0.9",
+    "title": "Kontrol merkezi, sezon/bölüm takip ve arşiv istatistikleri",
+    "date": "2026-05-22",
+    "items": [
+      "Sezon takip",
+      "Yayın takvimi",
+      "Kalite skoru"
+    ]
+  },
+  {
+    "version": "v2.0.8",
+    "title": "Akıllı arşiv ve gelişmiş otomatik çekme",
+    "date": "2026-05-22",
+    "items": [
+      "Akıllı filtre paneli",
+      "Kopya kontrol",
+      "Seri ilerleme yüzdesi"
+    ]
+  },
+  {
+    "version": "v2.0.8",
+    "title": "Smart Archive filtreleri ve otomatik çekme geçmişi",
+    "date": "2026-05-22",
+    "items": [
+      "Akıllı filtre",
+      "Kopya kontrol",
+      "Toplu içe aktarma hazırlığı"
+    ]
+  },
+  {
+    "version": "v2.0.7",
+    "title": "Otomatik çekme katmanı eklendi",
+    "date": "2026-05-22",
+    "items": [
+      "Oyun listesi JSON üzerinden okunur",
+      "Güncelleme notları otomatik yüklenir",
+      "Veri yoksa fallback devreye girer"
+    ]
+  },
+  {
+    "version": "v2.0.7",
+    "title": "Otomatik çekme altyapısı",
+    "date": "2026-05-22",
+    "items": [
+      "JSON veri sistemi",
+      "Fallback veri",
+      "Vercel API örneği"
+    ]
+  },
+  {
+    "version": "v2.0.6 UI Safe Fix",
+    "date": "2026-05-22",
+    "type": "UI / Fix",
+    "title": "Arayüz Bozmadan Profesyonel Düzenleme",
+    "items": [
+      "Kategori taşma sorunu düzeltildi.",
+      "Yönetim Paneli ismi ve sol sidebar düzeni eklendi.",
+      "Profil sağ üst alana taşındı.",
+      "Admin oyun ekleme, kapak yükleme ve hata kontrol kartları hazırlandı.",
+      "Mobil görünümde menü, kart ve kategori taşmaları engellendi.",
+      "Bakım modu, hakkında ve güncelleme notları için UI blokları eklendi."
+    ]
+  },
+  {
+    "version": "v2.0.6",
+    "title": "UI Safe Fix paketi",
+    "date": "2026-05-22",
+    "items": [
+      "Kategori taşma fixi",
+      "Yönetim Paneli sidebar",
+      "Profil sağ üst düzeni"
+    ]
+  },
+  {
+    "version": "v2.0.6",
+    "title": "Güvenli arayüz fixleri",
+    "date": "2026-05-22",
+    "items": [
+      "Kategori taşma fixi",
+      "Yönetim Paneli sidebar",
+      "Profil sağ üst düzeni"
+    ]
+  },
+  {
+    "version": "v2.0.5",
+    "title": "Admin panel ve kapak sistemi planı",
+    "date": "2026-05-21",
+    "items": [
+      "Kapak sistemi",
+      "Bakım modu",
+      "Hata kontrol"
+    ]
+  }
+]
