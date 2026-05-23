@@ -1,0 +1,6 @@
+[
+  {"version":"v2.1.4.1","title":"Arayüz yenileme","note":"Kullanıcı ana sayfası, yönetim paneli, özellik planı ve kart yapıları daha profesyonel görünüme taşındı."},
+  {"version":"v2.1.4.1","title":"Görsel kurulum rehberi","note":"Yazılı kurulum notu yerine ZIP içinde PNG görsellerle adım adım kurulum klasörü eklendi."},
+  {"version":"v2.1.4.1","title":"Akıllı uygulama sistemi korundu","note":"Özellik yaz, onayla ve Siteye Uygula sistemi korunup arayüzü yenilendi."},
+  {"version":"v2.1.4.1","title":"Oyun Ekle modülü","note":"Özellik Planı üzerinden açılınca Oyunlar sekmesinde Oyun Ekle butonu görünür."}
+]

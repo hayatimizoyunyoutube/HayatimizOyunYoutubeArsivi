@@ -1,0 +1,30 @@
+HAYATIMIZ OYUN v2.1.4.3 KURULUM SIRASI
+
+1) Supabase tam sıfır isteniyorsa:
+   supabase/00-TUM-TABLOLARI-SIFIRLA.sql
+
+2) Supabase ana kurulum:
+   supabase/schema.sql
+
+3) Hesabını kurucu yapmak için:
+   supabase/YETKI-ORNEK-SQL-v2142.sql dosyasındaki mail alanını kendi mailinle değiştirip çalıştır.
+
+4) Bilgisayarda proje klasörüne git.
+   .git klasörü silinmeyecek.
+
+5) İstersen önce:
+   01-siteyi-temizle-git-ve-bat-haric.bat
+   Bu BAT sadece .git ve .bat dosyalarını korur, site dosyalarını temizler.
+
+6) ZIP içindeki dosyaları proje klasörünün içine çıkar.
+
+7) GitHub’a göndermek için:
+   02-githuba-otomatik-gonder.bat
+
+8) Vercel panelinde:
+   Deployments > Redeploy > Clear Build Cache
+
+9) Test:
+   Siteye giriş yap, kurucu rolünü kontrol et, yönetim panelinden güncelleme notları ve site görsellerini test et.
+
+NOT: Şifre/API key ZIP içinde yoktur. Vercel Environment Variables içinde durmalıdır.
