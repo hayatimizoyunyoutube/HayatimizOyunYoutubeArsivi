@@ -1,0 +1,8 @@
+Gelecek güncelleme özellikleri ve resimleri - v2.1.4.5
+
+Bu klasör sonraki sürümler için referanstır.
+- Özellik uygulama sonrası kontrol raporu
+- Oyun düzenleme formu
+- RAWG kapak manuel onay ekranı
+- Kapak eşleşme güven puanı
+- Özellik geçmişi ve geri alma sistemi

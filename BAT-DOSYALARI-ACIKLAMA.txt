@@ -1,0 +1,22 @@
+Hayatımız Oyun v2.1.4.5 BAT Dosyaları
+
+Bu sürümde mobil BAT dosyası kaldırıldı. Yanlışlık olmaması için sadece 2 BAT dosyası var.
+
+1) 01-siteyi-temizle-git-ve-bat-haric.bat
+- Proje klasöründe çalıştırılır.
+- .git klasörünü silmez.
+- .bat dosyalarını silmez.
+- Diğer site dosyalarını temizler.
+- Sonra yeni ZIP içeriğini aynı proje klasörüne çıkarırsın.
+
+2) 02-githuba-otomatik-gonder.bat
+- Proje klasöründeki güncel dosyaları GitHub reposuna force push yapar.
+- Repo: https://github.com/hayatimizoyunyoutube/HayatimizOyunYoutubeArsivi.git
+
+Sıra:
+1. Supabase schema.sql
+2. Gerekirse yetki SQL
+3. 01 BAT ile temizle
+4. ZIP içeriğini proje klasörüne çıkar
+5. 02 BAT ile GitHub'a gönder
+6. Vercel Redeploy > Clear Build Cache

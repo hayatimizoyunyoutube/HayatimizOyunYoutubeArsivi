@@ -1,0 +1,13 @@
+Hayatımız Oyun v2.1.4.5 site görselleri
+
+01-akilli-ozellik-duzenle-sil-uygula-yenile.png
+- Akıllı özellik ekleme, öneri, düzenle, sil ve Uygula + Yenile akışı.
+
+02-oyun-ekle-kapak-meta-fix.png
+- Oyun Ekle formu, tür/etiket/kapak çekme ve Otomatik Kapak Çek görünümü.
+
+03-kullanici-ana-sayfasi.png
+- Kullanıcı tarafı ana sayfa görünümü.
+
+04-mobil-gorunum.png
+- Mobil arayüz görünümü.

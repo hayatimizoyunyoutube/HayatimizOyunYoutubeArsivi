@@ -3,7 +3,7 @@ chcp 65001 >nul
 setlocal
 cls
 echo =====================================================
-echo  Hayatımız Oyun - GitHub Otomatik Gonder v2.1.4.4
+echo  Hayatımız Oyun - GitHub Otomatik Gonder v2.1.4.5
  echo =====================================================
 echo.
 echo Bu dosya mevcut klasordeki site dosyalarini GitHub'a force push yapar.
@@ -21,7 +21,7 @@ if not exist "package.json" (
   echo.
 )
 set /p MSG=Commit mesaji yaz veya bos birak: 
-if "%MSG%"=="" set MSG=v2.1.4.4 persistent features session fix
+if "%MSG%"=="" set MSG=v2.1.4.5 feature cover edit refresh fix
 
 echo.
 echo Git islemleri basladi...
