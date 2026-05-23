@@ -1,6 +1,0 @@
-SONRAKI SURUM NOTLARI
-
-- Her yeni ZIP guncellemesinde bu klasor korunacak.
-- Yeni arayuz gorselleri site-gorselleri klasorune eklenecek.
-- Gelecek ozellik planlari ve gorselleri bu klasorde tutulacak.
-- Gizli key, sifre, token dosyalara yazilmayacak.
