@@ -1,0 +1,6 @@
+Site Görselleri
+
+Bu klasörde sitenin nasıl görüneceğini gösteren sürüm görselleri bulunur.
+
+- v2.1.4.3 klasörü: güncel arayüz, yönetim paneli, güncelleme notları ve mobil görünüm.
+- Eski v2.1.4.2 görselleri de geriye dönük referans olarak korunur.
