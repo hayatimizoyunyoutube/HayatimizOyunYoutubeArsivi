@@ -1,0 +1,173 @@
+HAYATIMIZ OYUN v2.1.4 OTOMATIK UYGULAMA MERKEZI KURULUM NOTLARI
+====================================================================
+
+ONEMLI MANTIK
+-------------
+Bu surumden itibaren kucuk/orta ozellikler icin her seferinde ZIP degistirmek zorunda kalmamak hedeflenir.
+Yonetim Paneli > Ozellik Plani icinde hazir ozelliklere "Siteye Uygula" denince ilgili moduller Supabase site_features tablosunda aktif olur.
+Ornek: "Oyunlar sekmesine Oyun Ekle butonu ekle" maddesine Siteye Uygula deyince Yonetim Paneli > Oyunlar sekmesinde + Oyun Ekle butonu gorunur.
+
+Gizli sifre/API key GitHub dosyalarina yazilmaz. Sadece Vercel Environment Variables icinde durur.
+.git klasoru silinmez.
+
+KURULUM SIRASI KISA OZET
+------------------------
+1) Once Supabase SQL dosyalarini calistir.
+2) Sonra bilgisayarda temiz kurulum yap: .git haric her seyi sil, ZIP icindekileri klasore cikar.
+3) Sonra GitHub'a force push yap.
+4) En son Vercel'de Redeploy > Clear Build Cache yap.
+5) Siteye gir, hesap olustur, Supabase'ten kendini kurucu yap, cikis/giris yap.
+6) Yonetim Paneli > Ozellik Plani > Siteye Uygula ile Oyun Ekle butonunu aktif et.
+
+
+1. SUPABASE KURULUMU
+====================
+
+SECENEK A - TAM SIFIR KURULUM
+-----------------------------
+Bu secenek tum Hayatimiz Oyun tablolarini siler. site_users da silinir, yani hesaplar da gider.
+Sifirdan baslamak istiyorsan bunu kullan.
+
+1. Supabase > SQL Editor ac.
+2. Su dosyayi calistir:
+   supabase/00-TUM-TABLOLARI-SIFIRLA.sql
+3. Sonra su dosyayi calistir:
+   supabase/schema.sql
+4. Siteye girip yeniden hesap olustur.
+5. Kendini kurucu yapmak icin su dosyadaki ornek SQL'i kullan:
+   supabase/YETKI-ORNEK-SQL-v214.sql
+
+SECENEK B - HESAPLAR KALSIN, SISTEM TEMIZLENSIN
+------------------------------------------------
+Bu secenek site_users tablosunu silmez. Acilan hesaplar kalir.
+Ozellikler, planlar, notlar, oyunlar, bakim ayari sifirlanir.
+
+1. Supabase > SQL Editor ac.
+2. Once su dosyayi calistir:
+   supabase/RUN-FIRST-v214-constraint-cleanup.sql
+3. Sonra su dosyayi calistir:
+   supabase/schema.sql
+4. Sonra temiz baslangic istiyorsan su dosyayi calistir:
+   supabase/SUPABASE-TEMIZ-BASLANGIC-HESAPLAR-KALSIN.sql
+5. Kendini kurucu yapmak icin su dosyadaki ornek SQL'i kullan:
+   supabase/YETKI-ORNEK-SQL-v214.sql
+
+KENDINI KURUCU YAPMA ORNEGI
+---------------------------
+SQL Editor'da kendi mailini yazarak calistir:
+
+update public.site_users
+set role = 'kurucu',
+    is_active = true,
+    banned_at = null,
+    ban_reason = null,
+    updated_at = now()
+where email = 'MAIL_ADRESINI_BURAYA_YAZ';
+
+Sonra sitede cikis yapip tekrar normal Giris Yap ile gir.
+Ayrica Yetkili/Admin girisi yoktur. Kurucu, yonetici, moderator, editor normal hesapla girer.
+
+
+2. VERCEL ENVIRONMENT VARIABLES
+===============================
+Vercel > Project > Settings > Environment Variables icinde su keyler olmali:
+
+SUPABASE_URL
+SUPABASE_SERVICE_ROLE_KEY
+ADMIN_PASSWORD
+YOUTUBE_API_KEY
+RAWG_API_KEY
+
+Degerleri GitHub'a, README'ye, kod dosyasina veya ekrana yazma.
+Daha once service role key sohbet veya baska yere yazildiysa Supabase'ten yenileyip Vercel ENV'ye yeni degeri koy.
+
+
+3. BILGISAYARDA TEMIZ KURULUM
+=============================
+
+Proje klasoru:
+C:\Users\Mevlüt Yeni Pc\Desktop\Youtube Yayın Hazırlıkları\Youtube\Youtube Arşiv Sitesi Güncel\hayatimiz-oyun site vercel
+
+1. Proje klasorune gir.
+2. .git klasorunu SILME.
+3. .git haric klasordeki tum dosya ve klasorleri sil.
+4. Bu ZIP'in icindeki dosyalari direkt proje klasorunun icine cikar.
+5. Klasorun icinde direkt sunlar gorunmeli:
+   package.json
+   vite.config.js
+   vercel.json
+   index.html
+   src/
+   api/
+   public/
+   supabase/
+   KURULUM-KOMUTLARI.txt
+
+Yanlis ornek:
+hayatimiz-oyun-v2.1.4-.../package.json seklinde ic ice klasor kalmamali.
+
+
+4. GITHUB'A FORCE PUSH
+======================
+PowerShell ac ve sunlari calistir:
+
+cd "C:\Users\Mevlüt Yeni Pc\Desktop\Youtube Yayın Hazırlıkları\Youtube\Youtube Arşiv Sitesi Güncel\hayatimiz-oyun site vercel"
+
+git init
+git branch -M main
+git remote remove origin
+git remote add origin https://github.com/hayatimizoyunyoutube/HayatimizOyunYoutubeArsivi.git
+git add .
+git commit -m "v2.1.4 automatic apply center"
+git push -f origin main
+
+Not: git remote remove origin hata verirse sorun degil, devam et.
+
+
+5. VERCEL DEPLOY
+================
+
+1. Vercel projesini ac.
+2. Deployments sekmesine gir.
+3. Son deploy icin Redeploy de.
+4. Varsa Clear Build Cache sec.
+5. Build ayarlari boyle olsun:
+   Framework Preset: Vite
+   Build Command: npm run build
+   Output Directory: dist
+   Install Command: npm install --no-audit --no-fund
+   Root Directory: bos
+
+
+6. SITEDE TEST SIRASI
+=====================
+
+1. Siteye gir.
+2. Kayit Ol ile hesap olustur.
+3. Supabase > SQL Editor'da kendini kurucu yap.
+4. Sitede cikis yap.
+5. Normal Giris Yap ile tekrar gir.
+6. Yonetim Paneli acilacak.
+7. Yonetim Paneli > Ozellik Plani sekmesine git.
+8. "Oyunlar sekmesine Oyun Ekle butonu ekle" maddesinde Siteye Uygula butonuna bas.
+9. Yonetim Paneli > Oyunlar sekmesine git.
+10. + Oyun Ekle butonu gorunmeli.
+11. Butona bas, formu doldur, kaydet.
+12. Supabase > Table Editor > games tablosunda oyun kaydi gorunmeli.
+
+
+7. OZELLIK UYGULAMA MANTIGI
+===========================
+
+Siteye Uygula butonu sifirdan kod yazmaz.
+Guvenli sistem soyle calisir:
+
+1. Ozellik kodu ZIP icinde hazir ve gizli durur.
+2. Ozellik Plani > Siteye Uygula ile Supabase site_features tablosunda enabled=true olur.
+3. Site aktif ozellikleri Supabase'ten okur.
+4. Ilgili buton/modul yonetim panelinde gorunur.
+5. Ornek: admin_games_add_button aktif olunca Oyunlar sekmesinde + Oyun Ekle gorunur.
+
+Bu sayede her kucuk buton icin yeni ZIP gerekmez.
+Yeni React kodu gerektiren buyuk ozelliklerde yine ZIP guncellemesi gerekir.
+
