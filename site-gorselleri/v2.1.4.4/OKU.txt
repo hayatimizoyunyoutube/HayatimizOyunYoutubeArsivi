@@ -1,0 +1,1 @@
+v2.1.4.4 site görselleri: kullanıcı ana sayfası, akıllı özellik onay sistemi, oyunlar otomatik meta/kapak paneli ve mobil görünüm.
