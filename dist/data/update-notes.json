@@ -1,5 +1,0 @@
-[
-  {"version":"v2.1.4","title":"Otomatik Uygulama Merkezi","note":"Hazır özellikler panelden Siteye Uygula ile aktif edilebilir."},
-  {"version":"v2.1.4","title":"Oyun Ekle butonu","note":"Oyunlar sekmesine Oyun Ekle butonu özellik planından uygulanınca gelir."},
-  {"version":"v2.1.4","title":"Supabase games","note":"Oyun ekleme formu games tablosuna kayıt gönderir."}
-]
