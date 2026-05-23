@@ -1,0 +1,5 @@
+[
+  { "version":"v2.1.3 Fix 9", "title":"Kullanıcı ana sayfası temizlendi", "note":"Teknik kartlar ve yönetim notları sadece panelde görünür." },
+  { "version":"v2.1.3 Fix 9", "title":"Profil ve notlar", "note":"Profil sekmesi ve Admin Notlarım alanı eklendi." },
+  { "version":"v2.1.3 Fix 9", "title":"Temiz Supabase başlangıcı", "note":"Hesapları koruyup yönetim tablolarını yenileyen SQL dosyası eklendi." }
+]
