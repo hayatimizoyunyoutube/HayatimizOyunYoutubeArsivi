@@ -1,0 +1,321 @@
+[
+  {
+    "title": "Resident Evil 4 Remake",
+    "genre": "Korku / Aksiyon",
+    "status": "Devam Ediyor",
+    "episodes": 14,
+    "source": "Local JSON",
+    "updatedAt": "22.05.2026",
+    "cover": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=900&auto=format&fit=crop",
+    "progress": 68,
+    "score": 9.2,
+    "priority": "Haftalık",
+    "platform": "YouTube",
+    "tags": [
+      "Korku",
+      "Aksiyon",
+      "Seri"
+    ],
+    "season": 1,
+    "nextEpisode": "15. Bölüm",
+    "qualityScore": 94,
+    "watchState": "İzleniyor"
+  },
+  {
+    "title": "A Plague Tale Requiem",
+    "genre": "Hikaye Odaklı",
+    "status": "Tamamlandı",
+    "episodes": 22,
+    "source": "Supabase Hazır",
+    "updatedAt": "21.05.2026",
+    "cover": "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=900&auto=format&fit=crop",
+    "progress": 100,
+    "score": 9.0,
+    "priority": "Arşiv",
+    "platform": "YouTube",
+    "tags": [
+      "Hikaye",
+      "Tamamlanan"
+    ],
+    "season": 1,
+    "nextEpisode": "Tamamlandı",
+    "qualityScore": 97,
+    "watchState": "Tamamlandı"
+  },
+  {
+    "title": "Silent Hill 2",
+    "genre": "Psikolojik Korku",
+    "status": "Yakında",
+    "episodes": 0,
+    "source": "YouTube Hazır",
+    "updatedAt": "Planlandı",
+    "cover": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=900&auto=format&fit=crop",
+    "progress": 0,
+    "score": 8.8,
+    "priority": "Öncelikli",
+    "platform": "Plan",
+    "tags": [
+      "Korku",
+      "Yakında"
+    ],
+    "season": 1,
+    "nextEpisode": "Planlanıyor",
+    "qualityScore": 82,
+    "watchState": "Listede"
+  },
+  {
+    "title": "Half-Life 2",
+    "genre": "FPS / Bilim Kurgu",
+    "status": "Tamamlandı",
+    "episodes": 18,
+    "source": "Manuel Panel",
+    "updatedAt": "20.05.2026",
+    "cover": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=900&auto=format&fit=crop",
+    "progress": 100,
+    "score": 9.6,
+    "priority": "Arşiv",
+    "platform": "YouTube",
+    "tags": [
+      "FPS",
+      "Bilim Kurgu"
+    ],
+    "season": 1,
+    "nextEpisode": "Tamamlandı",
+    "qualityScore": 96,
+    "watchState": "Tamamlandı"
+  },
+  {
+    "title": "Alan Wake 2",
+    "genre": "Korku / Hikaye Odaklı",
+    "status": "Devam Ediyor",
+    "episodes": 8,
+    "source": "Local JSON",
+    "updatedAt": "22.05.2026",
+    "cover": "https://images.unsplash.com/photo-1500673922987-e212871fec22?q=80&w=900&auto=format&fit=crop",
+    "progress": 42,
+    "score": 9.1,
+    "priority": "Öncelikli",
+    "platform": "YouTube",
+    "tags": [
+      "Korku",
+      "Hikaye"
+    ],
+    "season": 1,
+    "nextEpisode": "9. Bölüm",
+    "qualityScore": 91,
+    "watchState": "İzleniyor"
+  },
+  {
+    "title": "The Last of Us Part I",
+    "genre": "Aksiyon / Macera",
+    "status": "Yakında",
+    "episodes": 0,
+    "source": "YouTube Hazır",
+    "updatedAt": "Hazırlanıyor",
+    "cover": "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=900&auto=format&fit=crop",
+    "progress": 0,
+    "score": 9.4,
+    "priority": "Planlandı",
+    "platform": "Plan",
+    "tags": [
+      "Macera",
+      "Yakında"
+    ],
+    "season": 1,
+    "nextEpisode": "Planlanıyor",
+    "qualityScore": 86,
+    "watchState": "Listede"
+  },
+  {
+    "title": "Dead Space Remake",
+    "genre": "Uzay Korku",
+    "status": "Devam Ediyor",
+    "episodes": 6,
+    "source": "Akıllı Eşleştirme",
+    "updatedAt": "22.05.2026",
+    "progress": 33,
+    "score": 8.9,
+    "priority": "Yeni",
+    "platform": "YouTube",
+    "tags": [
+      "Korku",
+      "Yeni"
+    ],
+    "cover": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=900&auto=format&fit=crop",
+    "season": 1,
+    "nextEpisode": "7. Bölüm",
+    "qualityScore": 88,
+    "watchState": "İzleniyor"
+  },
+  {
+    "title": "Detroit Become Human",
+    "genre": "Seçimli Hikaye",
+    "status": "Tamamlandı",
+    "episodes": 16,
+    "source": "Seri Takip",
+    "updatedAt": "19.05.2026",
+    "progress": 100,
+    "score": 8.7,
+    "priority": "Önerilen",
+    "platform": "YouTube",
+    "tags": [
+      "Hikaye",
+      "Seçim"
+    ],
+    "cover": "https://images.unsplash.com/photo-1518005020951-eccb494ad742?q=80&w=900&auto=format&fit=crop",
+    "season": 1,
+    "nextEpisode": "Tamamlandı",
+    "qualityScore": 90,
+    "watchState": "Tamamlandı"
+  },
+  {
+    "title": "Metro Exodus",
+    "genre": "Kıyamet / FPS",
+    "status": "Devam Ediyor",
+    "episodes": 5,
+    "season": 1,
+    "nextEpisode": "6. Bölüm",
+    "source": "Yeni v2.0.9",
+    "updatedAt": "22.05.2026",
+    "progress": 28,
+    "score": 8.6,
+    "priority": "Haftalık",
+    "platform": "YouTube",
+    "qualityScore": 84,
+    "watchState": "İzleniyor",
+    "tags": [
+      "FPS",
+      "Kıyamet",
+      "Yeni"
+    ],
+    "cover": "https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=900&auto=format&fit=crop"
+  },
+  {
+    "title": "God of War",
+    "genre": "Aksiyon / Hikaye",
+    "status": "Yakında",
+    "episodes": 0,
+    "season": 1,
+    "nextEpisode": "Hazırlık",
+    "source": "Planlama",
+    "updatedAt": "Hazırlanıyor",
+    "progress": 0,
+    "score": 9.5,
+    "priority": "Öncelikli",
+    "platform": "Plan",
+    "qualityScore": 89,
+    "watchState": "Listede",
+    "tags": [
+      "Aksiyon",
+      "Hikaye",
+      "Plan"
+    ],
+    "cover": "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=900&auto=format&fit=crop"
+  },
+  {
+    "id": "re4r",
+    "title": "Resident Evil 4 Remake",
+    "genre": "Korku / Aksiyon",
+    "status": "Devam Ediyor",
+    "episodes": 14,
+    "season": 1,
+    "nextEpisode": "15. Bölüm",
+    "source": "YouTube taslak",
+    "updatedAt": "2026-05-22",
+    "progress": 68,
+    "score": 9.2,
+    "qualityScore": 94,
+    "priority": "Haftalık",
+    "watchState": "İzleniyor",
+    "tags": [
+      "Korku",
+      "Aksiyon",
+      "Türkçe"
+    ],
+    "cover": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=900&auto=format&fit=crop"
+  },
+  {
+    "id": "alanwake2",
+    "title": "Alan Wake 2",
+    "genre": "Korku / Hikaye Odaklı",
+    "status": "Devam Ediyor",
+    "episodes": 8,
+    "season": 1,
+    "nextEpisode": "9. Bölüm",
+    "source": "Manuel panel",
+    "updatedAt": "2026-05-22",
+    "progress": 42,
+    "score": 9.1,
+    "qualityScore": 91,
+    "priority": "Öncelikli",
+    "watchState": "İzleniyor",
+    "tags": [
+      "Hikaye",
+      "Gerilim"
+    ],
+    "cover": "https://images.unsplash.com/photo-1500673922987-e212871fec22?q=80&w=900&auto=format&fit=crop"
+  },
+  {
+    "id": "tlou",
+    "title": "The Last of Us Part I",
+    "genre": "Hikaye Odaklı / Macera",
+    "status": "Tamamlandı",
+    "episodes": 21,
+    "season": 1,
+    "nextEpisode": "Final tamamlandı",
+    "source": "Arşiv",
+    "updatedAt": "2026-05-21",
+    "progress": 100,
+    "score": 9.6,
+    "qualityScore": 97,
+    "priority": "Tamamlandı",
+    "watchState": "Listede",
+    "tags": [
+      "Dram",
+      "Hikaye"
+    ],
+    "cover": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=900&auto=format&fit=crop"
+  },
+  {
+    "id": "outlast",
+    "title": "Outlast Trials",
+    "genre": "Korku / Co-op",
+    "status": "Yakında",
+    "episodes": 0,
+    "season": 1,
+    "nextEpisode": "1. Bölüm",
+    "source": "Plan",
+    "updatedAt": "2026-05-22",
+    "progress": 0,
+    "score": 8.7,
+    "qualityScore": 84,
+    "priority": "Planlandı",
+    "watchState": "Listede",
+    "tags": [
+      "Korku",
+      "Co-op"
+    ],
+    "cover": "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=900&auto=format&fit=crop"
+  },
+  {
+    "id": "gow",
+    "title": "God of War Ragnarök",
+    "genre": "Aksiyon / Macera",
+    "status": "Devam Ediyor",
+    "episodes": 5,
+    "season": 1,
+    "nextEpisode": "6. Bölüm",
+    "source": "YouTube taslak",
+    "updatedAt": "2026-05-22",
+    "progress": 24,
+    "score": 9.4,
+    "qualityScore": 89,
+    "priority": "Öncelikli",
+    "watchState": "İzleniyor",
+    "tags": [
+      "Aksiyon",
+      "Mitoloji"
+    ],
+    "cover": "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=900&auto=format&fit=crop"
+  }
+]
