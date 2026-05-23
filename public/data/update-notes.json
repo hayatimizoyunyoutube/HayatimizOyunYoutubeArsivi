@@ -1,0 +1,3 @@
+[
+  {"version":"v2.1.3 Fix 8","title":"Beyaz ekran kesin fix","items":["Inline boot fallback eklendi","Güvenli hata ekranı eklendi","Giriş ekranında yetkili/admin sekmesi kaldırıldı","Supabase role alanından kurucu/yönetici/moderatör/editör okunur","Global bakım modu giriş yapmayanlara gösterilir"]}
+]
