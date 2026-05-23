@@ -1,3 +1,0 @@
-SUPABASE_SERVICE_ROLE_KEY gizli bir anahtardır. Sohbette, GitHub'da veya frontend dosyalarında paylaşılmamalıdır.
-Eğer paylaşıldıysa Supabase Project Settings > API bölümünden keyleri yenileyin ve Vercel Environment Variables içindeki değeri güncelleyin.
-ADMIN_PASSWORD da değiştirilmelidir.
