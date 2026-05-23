@@ -1,0 +1,62 @@
+{
+  "heroText": "v2.0.6’dan v2.1.1’e kadar tüm UI Safe sürümleri tek pakette birleştirildi: arayüz fixleri, otomatik çekme, akıllı filtreler, kontrol merkezi, AI öneri, bildirimler ve test merkezi beraber hazır.",
+  "sources": [
+    {
+      "name": "Local JSON",
+      "enabled": true,
+      "priority": 1
+    },
+    {
+      "name": "YouTube hazırlık",
+      "enabled": true,
+      "priority": 2
+    },
+    {
+      "name": "Supabase",
+      "enabled": false,
+      "priority": 3
+    },
+    {
+      "name": "Manuel Panel",
+      "enabled": true,
+      "priority": 4
+    }
+  ],
+  "syncSettings": {
+    "cacheMinutes": 8,
+    "duplicateCheck": true,
+    "autoTagging": true,
+    "safeFallback": true,
+    "qualityScore": true,
+    "exportReady": true,
+    "aiRecommendations": true,
+    "watchProgress": true,
+    "notificationCenter": true,
+    "themePresets": true,
+    "testCenter": true,
+    "errorReports": true,
+    "apiStatusPanel": true,
+    "rollbackNotes": true,
+    "consoleGuard": true,
+    "deployChecklist": true
+  },
+  "homepageWidgets": [
+    "test merkezi",
+    "hata raporlama",
+    "otomatik çekme",
+    "ai öneri",
+    "kontrol merkezi",
+    "sürüm geçmişi"
+  ],
+  "theme": "cinematic-red",
+  "mergedPackage": true,
+  "mergedVersions": [
+    "v2.0.6",
+    "v2.0.7",
+    "v2.0.8",
+    "v2.0.9",
+    "v2.1.0",
+    "v2.1.1"
+  ],
+  "versionName": "v2.1.1 Full Merged"
+}
