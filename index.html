@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hayatımız Oyun</title>
+  <script>
+    window.MutationObserver = window.MutationObserver || function(){ this.observe = function(){}; this.disconnect = function(){}; };
+    window.__HAYATIMIZ_EMERGENCY_HOME__ = function(reason){
+      var root = document.getElementById('root');
+      if(!root) return;
+      if(root.querySelector && root.querySelector('.app')) return;
+      root.dataset.mounted = 'emergency';
+      root.innerHTML = '\n<section class="emergency-app">\n  <header class="emergency-top"><div class="emergency-brand"><span>🎮</span><div><b>Hayatımız Oyun</b><small>v2.1.3 site açılış fix</small></div></div><button onclick="location.reload()">Yenile</button></header>\n  <main class="emergency-main">\n    <section class="emergency-hero"><span class="emergency-pill">Site açık</span><h1>Hayatımız Oyun Arşivi</h1><p>Boş ekranda kalmaması için güvenli açılış sistemi devrede. Ana uygulama modülü yüklenmezse bu ekran siteyi görünür tutar.</p><div class="emergency-grid"><article><b>5</b><span>Örnek oyun</span></article><article><b>v2.1.3</b><span>Storage + not fix</span></article><article><b>Supabase</b><span>schema güncellendi</span></article></div><p class="emergency-note">Sebep: '+ String(reason || 'modül geç yüklendi').replace(/[<>]/g,'') +'</p></section>\n    <section class="emergency-cards"><article><h2>Giriş / Kayıt</h2><p>Asıl uygulama JavaScript dosyası yüklendiğinde giriş, kayıt, admin paneli ve oyun yönetimi normal çalışır.</p></article><article><h2>Yönetim Paneli</h2><p>Supabase tabloları ve storage bucket dosyası bu pakette yeniden düzenlendi.</p></article><article><h2>Vercel Fix</h2><p>Eski “Site yükleniyor” bekleme ekranı kaldırıldı. Boş ekran kalırsa bu acil ana sayfa açılır.</p></article></section>\n  </main>\n</section>';
+    };
+    window.__HAYATIMIZ_BOOT_TIMER__ = setTimeout(function(){
+      var root = document.getElementById('root');
+      if(root && (!root.innerHTML || !root.innerHTML.trim())) window.__HAYATIMIZ_EMERGENCY_HOME__('main.js çalışmadı veya root boş kaldı');
+    }, 1600);
+    window.addEventListener('error', function(e){
+      if(String(e.filename || '').includes('/assets/') || String(e.filename || '').includes('/src/main.js')){
+        setTimeout(function(){ window.__HAYATIMIZ_EMERGENCY_HOME__('JavaScript dosyası yüklenemedi'); }, 250);
+      }
+    }, true);
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <noscript><section class="emergency-app"><main class="emergency-main"><section class="emergency-hero"><h1>JavaScript kapalı</h1><p>Siteyi kullanmak için tarayıcıda JavaScript açık olmalı.</p></section></main></section></noscript>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

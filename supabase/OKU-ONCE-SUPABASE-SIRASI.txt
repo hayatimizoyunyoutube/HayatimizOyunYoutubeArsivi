@@ -1,0 +1,12 @@
+SUPABASE SIRASI - v2.1.3 Fix-5
+
+1) Supabase > SQL Editor aç.
+2) supabase/schema.sql dosyasının tamamını çalıştır.
+3) Ayrı dosya istersen aynı içerik supabase/SUPABASE-GUNCELLEME-FIX-v2.1.3-site-acilis.sql içindedir.
+4) Vercel Environment Variables içinde şu değerler olmalı:
+   SUPABASE_URL
+   SUPABASE_SERVICE_ROLE_KEY
+   JWT_SECRET
+   RAWG_API_KEY varsa ekle
+   YOUTUBE_API_KEY varsa ekle
+5) Sonra GitHub temiz yükleme BAT dosyasını çalıştır ve Vercel'de Redeploy yaparken Build Cache kapalı olsun.
