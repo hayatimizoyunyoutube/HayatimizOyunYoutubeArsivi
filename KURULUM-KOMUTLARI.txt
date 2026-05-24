@@ -1,0 +1,69 @@
+v2.1.4.9 Akıllı Özellik Gerçek Modül Fix
+- Akıllı Özellik Ekle artık oyunları düzenle/sil ve aktif özellikleri tümünü sil isteklerini hazır modüle eşleştirir.
+- Oyunlar sekmesinde Düzenle/Sil butonları gerçek çalışır.
+- Özellikleri Olan Özellikler bölümüne Tüm Aktif Özellikleri Pasif Yap butonu eklendi.
+- Uygula + Siteyi Yenile akışı oturumdan çıkarmadan panel verilerini yeniler.
+
+HAYATIMIZ OYUN v2.1.4.8 KURULUM SIRASI
+
+SÜRÜM AMACI:
+- Supabase Table Editor içindeki kırmızı UNRESTRICTED / RLS disabled uyarılarını güvenli şekilde düzeltir.
+- Akıllı Özellik Ekle fixleri korunur.
+- Kullanıcı oturumu korunur, çıkış sadece sen Çıkış butonuna basınca olur.
+- ZIP içinde gizli şifre/API key yoktur.
+
+1) SUPABASE GÜNCELLEME
+   1.1 Supabase SQL Editor aç.
+   1.2 Normal güncelleme için önce çalıştır:
+       supabase/01-GUNCELLEME-GUVENLI-KURULUM.sql
+   1.3 Sonra çalıştır:
+       supabase/schema.sql
+   1.4 Kırmızı UNRESTRICTED / RLS disabled uyarılarını düzeltmek için çalıştır:
+       supabase/02-SUPABASE-RLS-GUVENLIK.sql
+   1.5 Kontrol etmek istersen çalıştır:
+       supabase/03-SUPABASE-RLS-KONTROL.sql
+
+2) TAM SIFIR KURULUM İSTİYORSAN
+   DİKKAT: Bu işlem hesapları da siler.
+   2.1 supabase/00-TUM-TABLOLARI-SIFIRLA.sql
+   2.2 supabase/schema.sql
+   2.3 supabase/02-SUPABASE-RLS-GUVENLIK.sql
+   2.4 Siteye kayıt ol.
+   2.5 supabase/YETKI-ORNEK-SQL-v2148.sql ile kendi hesabını kurucu yap.
+
+3) HESAPLAR KALSIN TEMİZ BAŞLANGIÇ İSTİYORSAN
+   3.1 supabase/01-GUNCELLEME-GUVENLI-KURULUM.sql
+   3.2 supabase/schema.sql
+   3.3 supabase/SUPABASE-TEMIZ-BASLANGIC-HESAPLAR-KALSIN.sql
+   3.4 supabase/02-SUPABASE-RLS-GUVENLIK.sql
+
+4) BİLGİSAYARDA TEMİZ KURULUM
+   4.1 Proje klasörünü aç:
+       C:\Users\Mevlüt Yeni Pc\Desktop\Youtube Yayın Hazırlıkları\Youtube\Youtube Arşiv Sitesi Güncel\hayatimiz-oyun site vercel
+   4.2 .git klasörü silinmeyecek.
+   4.3 .bat dosyaları silinmeyecek.
+   4.4 İstersen 01-siteyi-temizle-git-ve-bat-haric.bat çalıştır.
+   4.5 ZIP içindeki dosyaları direkt proje klasörüne çıkar.
+
+5) GITHUB GÖNDERME
+   5.1 02-githuba-otomatik-gonder.bat çalıştır.
+   5.2 Alternatif komut:
+       git add .
+       git commit -m "v2.1.4.8 supabase rls security fix"
+       git push -f origin main
+
+6) VERCEL
+   6.1 Vercel > Deployments
+   6.2 Redeploy
+   6.3 Clear Build Cache seç.
+
+7) TEST
+   7.1 Site açılıyor mu kontrol et.
+   7.2 Giriş yap.
+   7.3 Yönetim paneline gir.
+   7.4 Supabase Table Editor kırmızı UNRESTRICTED uyarıları azaldı/kalktı mı kontrol et.
+
+ÖNEMLİ:
+- RLS açmak siteyi bozarsa önce Vercel ENV değerlerini kontrol et.
+- Site işlemleri Vercel API + SUPABASE_SERVICE_ROLE_KEY üzerinden çalışır.
+- Gizli keyleri ZIP veya GitHub içine yazma.

@@ -1,0 +1,16 @@
+{
+  "name": "hayatimiz-oyun-v2149-smart-feature-real-modules-fix",
+  "version": "2.1.4-9",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {}
+}
