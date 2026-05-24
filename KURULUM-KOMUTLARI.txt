@@ -1,0 +1,28 @@
+HAYATIMIZ OYUN - BUILD HATA DUZELTME KURULUM SIRASI
+
+Bu paket yeni surum degildir. Vercel Building uzun kalmasin diye node_modules, dist, package-lock ve gereksiz build yukleri temizlenmistir.
+
+SIRA:
+1) Vercel'de donen build varsa Cancel yap.
+2) Bilgisayardaki proje klasorune gir.
+3) 01-siteyi-temizle-git-ve-bat-haric.bat dosyasini calistir.
+   - .git silinmez.
+   - .bat dosyalari silinmez.
+   - node_modules, dist ve eski dosyalar silinir.
+4) Bu ZIP icindeki dosyalari proje klasorunun icine cikar.
+5) 02-githuba-otomatik-gonder.bat dosyasini calistir.
+   - git add -A kullanir.
+   - GitHub'da kalmis eski node_modules/dist dosyalarini da siler.
+6) Vercel > Deployments > Redeploy.
+7) Redeploy yaparken Clear Build Cache sec.
+8) Vercel ayarlari:
+   Framework: Vite
+   Install Command: npm install --no-audit --no-fund
+   Build Command: npm run build
+   Output Directory: dist
+
+ONEMLI:
+- node_modules ZIP'e konmaz.
+- package-lock konmaz; eski internal lock yuzunden Vercel takilmasin.
+- .npmrc public npm registry kullanir.
+- Bu hata duzeltmedir, yeni versiyon sayilmaz.
