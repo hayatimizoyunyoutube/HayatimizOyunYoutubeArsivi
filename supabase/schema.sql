@@ -731,3 +731,8 @@ select 'Hayatimiz Oyun v2.2.3 FIX 4 schema hazir. Seri siralama ve AI Ozellik ak
 
 
 select 'Hayatimiz Oyun v2.2.3 FIX 7 schema hazir. Vercel 404 final root fix aktif.' as status;
+
+
+-- v2.2.3 FIX 8 - Oyun Ekle ve AI Ayrı Stabil
+insert into public.site_runtime_config (key,value,updated_at) values ('schema_version', jsonb_build_object('version','v2.2.3 FIX 8','applied_at', now(), 'note', 'Oyun Ekle ile AI Özellik Ekle ayrıldı; v223FixAdminGames açılış hatası giderildi.'), now()) on conflict (key) do update set value=excluded.value, updated_at=now();
+select 'Hayatimiz Oyun v2.2.3 FIX 8 schema hazir. Oyun Ekle ve AI Ozellik Ekle ayrimi aktif.' as status;

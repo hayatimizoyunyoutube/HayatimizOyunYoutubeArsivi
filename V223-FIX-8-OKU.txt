@@ -1,0 +1,16 @@
+# v2.2.3 FIX 8 - Oyun Ekle ve AI Özellik Ekle Ayrı Stabil
+
+Bu paket şu hatayı düzeltir:
+- ReferenceError: v223FixAdminGames is not defined
+
+Yapılanlar:
+- Oyun Ekle ekranı sadece oyun ekleme/düzenleme olarak kaldı.
+- AI Özellik Ekle yönetim panelinde ayrı menü/sayfa olarak sabitlendi.
+- Oyunlar sayfasındaki AI butonu kaldırıldı.
+- v223FixAdminGames fonksiyonu güvenli şekilde tanımlandı.
+- Admin body/panel final override ile tekrar stabilize edildi.
+- Build testi başarılı geçti.
+
+Vercel için:
+- GitHub ana dizininde package.json, index.html, vercel.json, src, api, public, supabase direkt görünmeli.
+- Vercel redeploy yaparken Clear Build Cache seç.

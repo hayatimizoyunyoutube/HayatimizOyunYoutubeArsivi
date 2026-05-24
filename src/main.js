@@ -1,6 +1,6 @@
 import './styles.css';
 
-const VERSION = 'v2.2.3 FIX 7 - Vercel 404 Final';
+const VERSION = 'v2.2.3 FIX 8 - Oyun Ekle ve AI Ayrı Stabil';
 const STAFF_ROLES = ['kurucu', 'yonetici', 'moderator', 'editor'];
 const OWNER_ROLES = ['kurucu', 'yonetici'];
 const ROLE_LABELS = { kurucu:'Kurucu', yonetici:'Yönetici', moderator:'Moderatör', editor:'Editör', user:'Kullanıcı', banned:'Banlı' };
@@ -4042,7 +4042,11 @@ function v223Fix3GameEditForm(){ const current=state.games.find(g=>String(g.id)=
 function v223Fix3AdminGames(){
   const tab=localStorage.getItem(V223_FIX3_GAME_TAB)||'list';
   const list=(typeof fix8ExistingGamesPanel==='function'?fix8ExistingGamesPanel():adminGamesTable());
-  return `<section class="v223Fix3GamesAdmin"><div class="card wide"><div class="sectionHead"><div><span class="eyebrow">Yönetim Paneli</span><h1>Oyunlar</h1><p class="muted">Oyun ekleme sistemi düzeltildi. AI özellik ekleme bu ekrandan ayrıldı.</p></div><div class="rowActions"><button class="btn ${tab==='add'?'primary':''}" data-v223-game-tab="add">+ Oyun Ekle</button><button class="btn ${tab==='list'?'primary':''}" data-v223-game-tab="list">Mevcut Oyunlar</button><button class="btn" data-admin="AI Özellik Ekle">AI Özellik Ekle</button></div></div></div>${tab==='add'?`${v223Fix3GameAddForm()}${rawgCandidatePanel()}${coverSuggestionPanel()}`:list}${state.editingGameId?v223Fix3GameEditForm():''}</section>`;
+  return `<section class="v223Fix3GamesAdmin"><div class="card wide"><div class="sectionHead"><div><span class="eyebrow">Yönetim Paneli</span><h1>Oyunlar</h1><p class="muted">Oyun ekleme sistemi düzeltildi. AI özellik ekleme bu ekrandan ayrıldı.</p></div><div class="rowActions"><button class="btn ${tab==='add'?'primary':''}" data-v223-game-tab="add">+ Oyun Ekle</button><button class="btn ${tab==='list'?'primary':''}" data-v223-game-tab="list">Mevcut Oyunlar</button></div></div></div>${tab==='add'?`${v223Fix3GameAddForm()}${rawgCandidatePanel()}${coverSuggestionPanel()}`:list}${state.editingGameId?v223Fix3GameEditForm():''}</section>`;
+}
+
+function v223FixAdminGames(){
+  return v223Fix3AdminGames();
 }
 function v223Fix3AiCenter(){
   const draft=localStorage.getItem(V223_FIX3_AI_DRAFT)||'Örneğin: Oyun arşivine gelişmiş kapak doğrulama ve versiyon notu otomasyonu ekle.';
@@ -4066,7 +4070,7 @@ function v223Fix3AdminPanel(){
 // Güvenli final override: eski recursive adminPanel/adminBody zincirini devre dışı bırakır.
 const v223Fix3BaseAdminBody = typeof adminBody === 'function' ? adminBody : null;
 adminBody = function(){
-  if(state.adminPage === 'Oyunlar') return v223Fix3AdminGames();
+  if(state.adminPage === 'Oyunlar') return v223FixAdminGames();
   if(state.adminPage === 'AI Özellik Ekle' || state.adminPage === 'AI Özellik Merkezi') return v223Fix3AiCenter();
   return v223Fix3BaseAdminBody ? v223Fix3BaseAdminBody() : overviewAdmin();
 };
@@ -4209,7 +4213,7 @@ const v223Fix4OldAdminBody = adminBody;
 adminBody = function(){
   if(state.adminPage === 'Seri İzleme') return v223Fix4SeriesSort();
   if(state.adminPage === 'AI Özellik Ekle' || state.adminPage === 'AI Özellik Merkezi') return v223Fix4AiCenter();
-  if(state.adminPage === 'Oyunlar') return v223Fix3AdminGames();
+  if(state.adminPage === 'Oyunlar') return v223FixAdminGames();
   if(state.adminPage === 'Kullanıcı Yetkileri') return usersPanel();
   if(state.adminPage === 'Güncelleme Notları') return updateNotes();
   if(state.adminPage === 'Bakım Modu') return maintenanceAdmin();
@@ -4234,5 +4238,48 @@ onAction = async function(e){
   if(action === 'fix4-refresh-ai-suggestions'){ e.preventDefault(); const current=Number(localStorage.getItem(V223_FIX4_AI_OFFSET_KEY)||0); localStorage.setItem(V223_FIX4_AI_OFFSET_KEY, String(current+10)); localStorage.setItem(V223_FIX4_AI_VIEW_KEY,'new'); render(); return; }
   if(action === 'fix4-save-series-orders'){ e.preventDefault(); await saveSeriesOrders(); setToast('Seri sıralaması kalıcı kaydedildi.'); return; }
   return v223Fix4OldOnAction(e);
+};
+try{ render(); }catch(error){ showBootError(error); }
+
+
+/* v2.2.3 FIX 8 - Oyun Ekle ve AI Ayrı Stabil Son Katman */
+function v223Fix8GameAdmin(){
+  const tab = localStorage.getItem(V223_FIX3_GAME_TAB) || 'list';
+  const list = (typeof fix8ExistingGamesPanel === 'function' ? fix8ExistingGamesPanel() : (typeof adminGamesTableFix8 === 'function' ? adminGamesTableFix8() : adminGamesTable()));
+  return `<section class="v223Fix3GamesAdmin v223Fix8GamesOnly"><div class="card wide"><div class="sectionHead"><div><span class="eyebrow">Yönetim Paneli</span><h1>Oyunlar</h1><p class="muted">Bu alan sadece oyun ekleme ve mevcut oyun düzenleme içindir. AI Özellik Ekle ayrı menüdedir.</p></div><div class="rowActions"><button class="btn ${tab==='add'?'primary':''}" data-v223-game-tab="add">+ Oyun Ekle</button><button class="btn ${tab==='list'?'primary':''}" data-v223-game-tab="list">Mevcut Oyunlar</button></div></div></div>${tab==='add'?`${v223Fix3GameAddForm()}${rawgCandidatePanel()}${coverSuggestionPanel()}`:list}${state.editingGameId?v223Fix3GameEditForm():''}</section>`;
+}
+function v223FixAdminGames(){ return v223Fix8GameAdmin(); }
+function v223Fix8AiAdmin(){ return v223Fix4AiCenter ? v223Fix4AiCenter() : v223Fix3AiCenter(); }
+const v223Fix8AdminBodyPrevious = adminBody;
+adminBody = function(){
+  if(state.adminPage === 'Oyunlar') return v223Fix8GameAdmin();
+  if(state.adminPage === 'AI Özellik Ekle' || state.adminPage === 'AI Özellik Merkezi') return v223Fix8AiAdmin();
+  if(state.adminPage === 'Seri İzleme') return (typeof v223Fix4SeriesSort === 'function' ? v223Fix4SeriesSort() : seriesAdmin());
+  if(state.adminPage === 'Kullanıcı Yetkileri') return usersPanel();
+  if(state.adminPage === 'Güncelleme Notları') return updateNotes();
+  if(state.adminPage === 'Bakım Modu') return maintenanceAdmin();
+  if(state.adminPage === 'API/ENV Durumu') return apiStatus();
+  if(state.adminPage === 'Ayarlar') return settingsPanel();
+  if(state.adminPage === 'Profil') return profilePage();
+  return overviewAdmin();
+};
+const v223Fix8AdminPanelPrevious = adminPanel;
+adminPanel = function(){
+  if(!isStaff()) return `<section class="card"><h2>Yetki gerekiyor</h2><p>Yönetim paneli sadece yetkili hesaplara görünür.</p></section>`;
+  const pages=['Genel Bakış','Oyunlar','Seri İzleme','AI Özellik Ekle','Profil','Kullanıcı Yetkileri','Güncelleme Notları','Bakım Modu','API/ENV Durumu','Ayarlar'];
+  if(!pages.includes(state.adminPage)) state.adminPage='Genel Bakış';
+  const links=[
+    ['Genel Bakış','Panel durumu'],['Oyunlar','Sadece oyun ekle/düzenle'],['Seri İzleme','Seri sıralama'],['AI Özellik Ekle','Ayrı özellik paneli'],['Güncelleme Notları','Sürüm notları'],['Bakım Modu','Bakım ekranı'],['Kullanıcı Yetkileri','Roller'],['API/ENV Durumu','Bağlantı'],['Ayarlar','Site ayarları']
+  ];
+  return `<section class="fix5AdminShell v223Fix3AdminShell v223Fix8AdminShell"><aside class="fix5AdminSidebar"><div class="sideLogo"><span class="logoMark">🎮</span><div><b>Hayatımız Oyun</b><small>Yönetim Paneli</small></div></div><div class="sideNavLabel">MENÜ</div><button class="sideNavItem" data-page="Ana Sayfa"><span>⌂</span>Ana Sayfa</button><button class="sideNavItem" data-page="Oyun Arşivi"><span>🎮</span>Oyun Arşivi</button><button class="sideNavItem" data-page="Seriler"><span>◈</span>Seriler</button><div class="sideNavLabel">YÖNETİM</div><div class="adminAccordion open"><button class="adminAccordionHead active"><span>👑</span><div><b>Yönetim Paneli</b><small>${esc(state.session?.full_name||'Yetkili')}</small></div><strong>⌄</strong></button><div class="adminAccordionBody">${links.map(([page,cap])=>`<button class="adminSubLink ${state.adminPage===page?'active':''}" data-admin="${esc(page)}"><span class="subDot"></span><div><b>${esc(page)}</b><small>${esc(cap)}</small></div></button>`).join('')}</div></div></aside><div class="adminContent fix5AdminContent"><div class="fix5AdminHeader"><div><div class="adminBreadcrumb">Yönetim Paneli <span>›</span> ${esc(state.adminPage)}</div><h1>${esc(state.adminPage)}</h1><p>${state.adminPage==='AI Özellik Ekle'?'AI özellik paneli oyun ekleme ekranından tamamen ayrıdır.':adminSubtitle(state.adminPage)}</p></div>${state.adminPage==='Oyunlar'?'<button class="btn primary" data-v223-game-tab="add">+ Oyun Ekle</button>':state.adminPage==='AI Özellik Ekle'?'<span class="pill green">Oyun Ekle’den ayrı</span>':''}</div>${adminBody()}</div></section>`;
+};
+const v223Fix8BindPrevious = bind;
+bind = function(){
+  try{ v223Fix8BindPrevious(); }catch(err){ console.warn('FIX8 önceki bind atlandı', err); }
+  document.querySelectorAll('[data-v223-game-tab]').forEach(btn=>btn.addEventListener('click', e=>{ e.preventDefault(); e.stopImmediatePropagation(); const tab=btn.dataset.v223GameTab||'list'; localStorage.setItem(V223_FIX3_GAME_TAB,tab); if(tab==='add'){ clearGameDraft(); state.editingGameId=null; state.rawgCandidates=[]; state.coverSuggestions=[]; } render(); }, true));
+  document.querySelectorAll('[data-v223-meta]').forEach(btn=>btn.addEventListener('click', async e=>{ e.preventDefault(); e.stopImmediatePropagation(); await v223Fix3MetaFill(btn.closest('form')); }, true));
+  document.querySelectorAll('[data-v223-story]').forEach(btn=>btn.addEventListener('click', e=>{ e.preventDefault(); e.stopImmediatePropagation(); v223Fix3RefetchStory(btn.closest('form')); }, true));
+  document.querySelectorAll('[data-v223-genres]').forEach(btn=>btn.addEventListener('click', e=>{ e.preventDefault(); e.stopImmediatePropagation(); v223Fix3RefetchGenres(btn.closest('form')); }, true));
+  document.querySelectorAll('[data-admin="AI Özellik Ekle"]').forEach(btn=>btn.addEventListener('click', e=>{ e.preventDefault(); e.stopImmediatePropagation(); adminNavigate('AI Özellik Ekle'); }, true));
 };
 try{ render(); }catch(error){ showBootError(error); }
