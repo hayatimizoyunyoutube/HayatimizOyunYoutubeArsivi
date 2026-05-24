@@ -1,0 +1,7 @@
+[
+  {"version":"v2.1.4.4","title":"Kalıcı özellik sistemi","note":"Siteden eklenen özellikler artık güncelleme sonrası kaybolmaz; site_features ve site_admin_planner tablolarında kalır."},
+  {"version":"v2.1.4.4","title":"Oturum koruma","note":"Site güncellenince kullanıcı otomatik çıkış yapmaz; çıkış sadece kullanıcı Çıkış butonuna basınca olur."},
+  {"version":"v2.1.4.4","title":"Akıllı özellik öneri akışı","note":"Özellik yazınca sistem öneri gösterir, Bunu mu uygulamamı istiyorsunuz diye onay ister, düzenleme ve silme seçenekleri verir."},
+  {"version":"v2.1.4.4","title":"Oyun meta ve kapak düzeltmeleri","note":"Oyun adından tür, etiket ve kapak önerisi doldurma; eksik kapak uyarısı ve kapak fallback sistemi iyileştirildi."},
+  {"version":"v2.1.4.3","title":"Arayüz fix","note":"Kullanıcı ana sayfasındaki gereksiz teknik alanlar kaldırıldı ve güncelleme notları admin paneline taşındı."}
+]

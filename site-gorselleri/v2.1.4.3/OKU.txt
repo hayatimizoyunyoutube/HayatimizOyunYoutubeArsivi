@@ -1,0 +1,7 @@
+Hayatımız Oyun v2.1.4.3 site görselleri
+
+01 - Kullanıcı ana sayfası
+02 - Yönetim paneli
+03 - Güncelleme notları paneli
+04 - Profesyonel mobil görünüm
+05 - Özellik planı / Siteye Uygula paneli
