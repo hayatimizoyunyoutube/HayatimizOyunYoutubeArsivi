@@ -1,0 +1,33 @@
+Akıllı Özellik Düzenle Stabil Fix
+- Bu paket yeni sürüm değildir; sadece Özellik Planı / Akıllı Özellik sayfasını düzeltir.
+- Tarayıcı prompt düzenleme penceresi kaldırıldı.
+- Sayfa içi profesyonel özellik düzenleme modalı eklendi.
+- Düzenle > Kaydet aynı sayfada çalışır, kart anında güncellenir.
+- Siteye Uygula aynı sayfada kalır ve özellik yeşil Sitede aktif durumuna döner.
+- AI öneri seçme akışı korunur ve daha stabil hale getirildi.
+- ZIP içinde gizli API key/şifre yoktur.
+
+HAYATIMIZ OYUN - AKILLI ÖZELLİK / SİTEYE UYGULA HATA DÜZELTME
+
+Bu paket yeni sürüm değildir. Özellik Planı ve Siteye Uygula hatasını düzeltir.
+
+Kurulum sırası:
+1. Vercel'de açık build varsa Cancel yap.
+2. Proje klasöründe 01-siteyi-temizle-git-ve-bat-haric.bat çalıştır.
+3. Bu ZIP içindeki dosyaları proje klasörünün içine çıkar.
+4. 02-githuba-otomatik-gonder.bat çalıştır.
+5. Vercel'de Redeploy > Clear Build Cache yap.
+
+Supabase:
+- Normalde yeniden tablo sıfırlama yapma.
+- schema.sql sadece eksik tablo/kolon hatası varsa çalıştır.
+- Siteye Uygula özellikleri site_features ve site_admin_planner tablolarında kalır.
+
+Test:
+1. Yönetim Paneli > Özellik Planı aç.
+2. AI Akıllı Özellik Merkezi alanına şunu yaz: oyunları düzenle sil butonu ekle
+3. AI önerilerinden Oyunları düzenle ve sil butonlarını aktif et seç.
+4. Seç + Siteye Uygula de.
+5. Sayfa başka sekmeye atmamalı.
+6. Kart yeşile dönmeli ve Aktif Site Modülleri içinde görünmeli.
+7. Oyunlar sekmesine kendin gidince oyun kartlarında Düzenle / Sil görünmeli.
