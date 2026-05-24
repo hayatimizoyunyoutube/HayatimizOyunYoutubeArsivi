@@ -1,0 +1,11 @@
+node_modules
+dist
+*.zip
+site-gorselleri
+kurulum-gorselleri
+gelecek-guncelleme-ozellikleri-ve-resimler
+guncelleme-dokumani
+*.png
+*.jpg
+*.jpeg
+*.webp
