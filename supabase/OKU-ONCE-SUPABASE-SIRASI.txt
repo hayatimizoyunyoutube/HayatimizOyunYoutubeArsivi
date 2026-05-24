@@ -1,0 +1,14 @@
+Hayatımız Oyun v2.1.3 Supabase sırası
+
+NORMAL GÜNCELLEMEDE:
+1) supabase/schema.sql çalıştır.
+2) Gerekirse supabase/YETKI-ORNEK-SQL-v213.sql içinde e-postanı yazıp çalıştır.
+
+OPSIYONEL klasöründekiler normal güncellemede çalıştırılmaz:
+- 00-TUM-TABLOLARI-SIFIRLA.sql: tüm tabloları sıfırlar.
+- 01-GUNCELLEME-GUVENLI-KURULUM.sql: duplicate/constraint hatası temizliği içindir.
+- 02-SUPABASE-RLS-GUVENLIK.sql: RLS güvenlik ayarı içindir.
+- 03-SUPABASE-RLS-KONTROL.sql: RLS kontrol sorgusudur.
+- SUPABASE-TEMIZ-BASLANGIC-HESAPLAR-KALSIN.sql: hesaplar kalsın, içerik temizlensin içindir.
+
+Bu fixte schema başlığı ve içerikleri v2.1.3'e göre düzeltildi; eski v2.1.4.4 yazıları kaldırıldı.

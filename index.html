@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hayatımız Oyun</title>
+  <script>
+    window.__HAYATIMIZ_BOOT_TIMER__ = setTimeout(function(){
+      var root = document.getElementById('root');
+      if(root && !root.dataset.mounted){
+        root.innerHTML = '<section style="min-height:100vh;display:grid;place-items:center;background:#0b0d14;color:white;font-family:Arial;padding:24px"><div style="max-width:720px;background:#171b26;border:1px solid #2a3042;border-radius:24px;padding:28px"><h1>Site yükleniyor...</h1><p>Güvenli başlangıç ekranı aktif oldu. Bu ekranda kalırsa JS/CSS dosyaları yüklenmemiş olabilir; bu paket assets rewrite fix içerir. Vercel Clear Build Cache ile tekrar deploy edin.</p></div></section>';
+      }
+    }, 2500);
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

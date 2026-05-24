@@ -1,0 +1,20 @@
+v2.1.3 opsiyonel Supabase dosyaları
+
+Bu klasördeki dosyalar normal güncellemede çalıştırılmaz.
+Normal kurulum için sadece ../schema.sql yeterlidir.
+
+00-TUM-TABLOLARI-SIFIRLA.sql
+- Tüm site tablolarını siler. Hesapları da siler.
+
+01-GUNCELLEME-GUVENLI-KURULUM.sql
+- Veri silmeden duplicate/constraint temizliği yapar.
+- Schema hata verirse önce bunu, sonra ../schema.sql çalıştır.
+
+02-SUPABASE-RLS-GUVENLIK.sql
+- RLS/policy denemesi içindir. Yanlış kullanılırsa site kayıt/giriş bozulabilir.
+
+03-SUPABASE-RLS-KONTROL.sql
+- RLS durumunu kontrol eder.
+
+SUPABASE-TEMIZ-BASLANGIC-HESAPLAR-KALSIN.sql
+- Hesapları tutup içerik tablolarını temizlemek için kullanılır.
