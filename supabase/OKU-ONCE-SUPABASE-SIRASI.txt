@@ -1,0 +1,25 @@
+HAYATIMIZ OYUN v2.1.2 - SUPABASE KLASORU
+
+NORMAL GUNCELLEMEDE SADECE SUNLARI KULLAN:
+1) schema.sql
+2) YETKI-ORNEK-SQL-v212.sql  (sadece kurucu/yonetici yetkisi vermek istersen)
+
+OPSİYONEL KLASORU:
+- opsiyonel/00-TUM-TABLOLARI-SIFIRLA.sql
+  Tum tablolari sifirlar. Normal guncellemede kullanma.
+
+- opsiyonel/SUPABASE-TEMIZ-BASLANGIC-HESAPLAR-KALSIN.sql
+  Hesaplari tutup test/guncelleme verilerini temizlemek icin.
+
+- opsiyonel/01-GUNCELLEME-GUVENLI-KURULUM.sql
+  Eski duplicate/constraint hatalari kalirsa yardimci temizlik dosyasi.
+
+- opsiyonel/02-SUPABASE-RLS-GUVENLIK.sql
+- opsiyonel/03-SUPABASE-RLS-KONTROL.sql
+  RLS/guvenlik uyarilarini duzenlemek icin. Site calisiyorsa zorunlu degil.
+
+KISA SIRA:
+1) Supabase SQL Editor > schema.sql calistir.
+2) Gerekirse YETKI-ORNEK-SQL-v212.sql icinde e-postani yazip calistir.
+3) Proje dosyalarini .git silmeden temiz kurulumla yukle.
+4) GitHub'a gonder, Vercel Redeploy > Clear Build Cache yap.
