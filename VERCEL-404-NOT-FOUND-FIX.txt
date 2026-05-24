@@ -1,0 +1,23 @@
+# Vercel 404: NOT_FOUND FIX
+
+Bu paket v2.2.3 FIX 5 olarak hazırlandı.
+
+Düzeltilenler:
+- vercel.json SPA fallback rewrite yeniden düzenlendi.
+- /api route sırası güvenli hale getirildi.
+- /assets ve /data yolları korunacak şekilde rewrite eklendi.
+- vite.config.js base '/' olarak sabitlendi.
+- .vercelignore içinden dist kaldırıldı; eski/yanlış çıktı klasörü sorunu azaltıldı.
+- index.html cache kapatıldı; Vercel eski JS dosyasını tutmasın diye header eklendi.
+
+Vercel ayarları:
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm install
+Root Directory: boş kalmalı veya projenin package.json olduğu klasör olmalı.
+
+Önemli:
+ZIP içindeki dosyalar proje klasörünün direkt içine çıkarılmalı.
+Proje kökünde package.json, index.html, vercel.json, src ve api klasörü görünmeli.
+Eğer GitHub'da bunlar bir alt klasörün içinde kalırsa Vercel 404 verir.
