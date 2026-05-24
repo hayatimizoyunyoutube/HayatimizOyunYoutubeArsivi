@@ -1,0 +1,27 @@
+[
+  {
+    "version": "v2.1.3",
+    "title": "Stabilizasyon + Koleksiyon Fix",
+    "note": "Sürüm karışıklığı temizlendi; package, README, schema, update-notes ve plan/tamamlanan dosyaları v2.1.3 çizgisine çekildi."
+  },
+  {
+    "version": "v2.1.3",
+    "title": "Dinamik koleksiyon sistemi",
+    "note": "Koleksiyonlar durum, tür, etiket, seri ve favori verilerine göre daha geniş şekilde hesaplanır."
+  },
+  {
+    "version": "v2.1.3",
+    "title": "Koleksiyon sayacı düzeltildi",
+    "note": "Koleksiyon sayısı filtre seçildiğinde görünen/toplam mantığıyla daha doğru gösterilir."
+  },
+  {
+    "version": "v2.1.3",
+    "title": "Supabase kurulum notları temizlendi",
+    "note": "schema.sql ve kurulum rehberindeki v2.1.4.x / v2.1.5 karışıklığı giderildi."
+  },
+  {
+    "version": "v2.1.2",
+    "title": "Stabil temel korundu",
+    "note": "Oyun yönetimi, RAWG meta, seri, playlist ve admin panel özellikleri korunarak üzerine fix yapıldı."
+  }
+]
