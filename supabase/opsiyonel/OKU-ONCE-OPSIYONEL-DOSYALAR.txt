@@ -1,4 +1,0 @@
-Bu klasordeki SQL dosyalari normal kurulum icin zorunlu degildir.
-
-Normal guncellemede supabase/schema.sql yeterlidir.
-Buradaki dosyalari sadece hata/temiz baslangic/guvenlik ayari icin kullan.
