@@ -1,0 +1,37 @@
+Hayatımız Oyun v2.1.1 Kurulum Sırası
+
+1) Supabase
+- Supabase paneline gir.
+- SQL Editor aç.
+- supabase/schema.sql dosyasını çalıştır.
+- Hata yoksa devam et.
+
+2) Temiz kurulum
+- Proje klasörünü aç.
+- 01-siteyi-temizle-git-ve-bat-haric.bat dosyasını çalıştır.
+- .git klasörü ve .bat dosyaları korunur.
+
+3) ZIP çıkarma
+- Bu ZIP içindeki dosyaları proje klasörünün içine çıkar.
+- Eski dosyaların üstüne karışık kopyalama yapma; temiz klasöre çıkar.
+
+4) GitHub gönderme
+- 02-githuba-otomatik-gonder.bat dosyasını çalıştır.
+- Dosyalar GitHub main branch üzerine gönderilir.
+
+5) Vercel
+- Vercel paneline gir.
+- Redeploy seç.
+- Clear Build Cache işaretle.
+- Deploy bitince siteyi test et.
+
+6) Test
+- Yönetim Paneli > Oyunlar aç.
+- + Oyun Ekle de.
+- Oyun adı yaz.
+- Oyun adından kapak/tarih/tür çek butonuna bas.
+- Form dolmalı, oyun otomatik eklenmemeli.
+- Kaydet dersen oyun Supabase games tablosuna düşmeli.
+- Ana sayfadaki Koleksiyon sayısı gerçek koleksiyon sayısını göstermeli.
+
+Gizli şifre/API key ZIP içine yazılmaz. Vercel Environment Variables içinde kalır.

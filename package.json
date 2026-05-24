@@ -1,0 +1,17 @@
+{
+  "name": "hayatimiz-oyun-v211-oyun-ekle-meta-koleksiyon-fix",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.19"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "version": "2.1.1"
+}
