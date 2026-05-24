@@ -1,0 +1,17 @@
+v2.1.5 TEMİZ KURULUM
+
+1) .git ve BAT dosyalarını silme.
+2) ZIP içeriğini mevcut proje klasörüne çıkar.
+3) Terminal:
+   npm install
+   npm run build
+
+4) GitHub gönderimi:
+   02-githuba-otomatik-gonder.bat
+
+5) Vercel:
+   Redeploy > Clear Build Cache
+
+6) Supabase:
+   supabase/schema.sql dosyasını SQL Editor içinde çalıştır.
+   Storage bucket için: profile-photos public bucket oluştur.
