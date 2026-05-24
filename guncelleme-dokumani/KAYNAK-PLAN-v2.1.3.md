@@ -1,0 +1,28 @@
+# Gelecek Güncelleme Özellikleri - v2.1.3
+
+v2.1.2 tamamlandıktan sonra sıradaki plan klasörü olarak açıldı.
+
+## v2.1.3 için önerilenler
+
+1. Supabase Storage gerçek kapak yükleme: cover-images bucket ile dosyayı URL’ye çevirme.
+2. RAWG sonucu seçerken kapak kırpma/önizleme ve manuel alternatif kapak ekleme.
+3. YouTube oynatma listesi bölüm listesini çekip bölüm başlıklarını ayrı tabloya yazma.
+4. Seri sayfası: aynı seriye ait oyunları özel sayfada kronolojik sıralama.
+5. Favori koleksiyonları Supabase hesabına bağlama ve cihazlar arası senkronizasyon.
+6. Wikipedia / resmi site kaynaklı Türkçe açıklama alanı için güvenli kaynak seçme paneli.
+7. Oyun düzenleme geçmişi ve geri alma sistemi.
+8. Mobil oyun kartlarında yatay kaydırmalı etiket/seri görünümü.
+9. Koleksiyon filtrelerinde çoklu seçim ve sıralama seçenekleri.
+10. Admin panelinde “Eksik meta” kontrol raporu.
+11. ana sayfadaki profesyonel oyuncu arşivi kapağı gereksiz ve çok buyük yer kaplıyor
+12. Güncelleme notları eksik sitede
+13. güncelleme notlarının sırası yanlış admin panelinde en üstteki yeni aşağı doğru eski olacak şekilde düzelt
+14. notları silme getir komple düzenleme getir silme getir
+15. bakım moduna güncelelme notlarını ekle animasyon yüklenme şeklinde olsun
+16. profilde resim ekleme düzgün çalışmıyor ve profil düzenleme düzgün bir profesyonel olarak gelebilir.
+17. oyunlar kısmında profesyonel düzenleme olacak çok kötü duruyor kapak ve yazılar fixlenecek düzgünce gözükecek
+18. Koleksiyonlar bölümü gereksiz
+19. sitede izle butonu gelebilir ( Yakında serilerinde tıklanamaz Yakında gelebilir)
+20. Alfabedik sıralama gelebilir A Serisi B serisi C serisi gibi şeritlerle ayrıca harfe git gelebilir harf olması gerekmiyor illa oyun adı ne ise 1 ise 1de olmalı
+21. istatistik paneli daha profesyonel olabilir çok buyük bide
+22. playlistten çekiliyor bölüm sayısı ama forma işlenmiyor
