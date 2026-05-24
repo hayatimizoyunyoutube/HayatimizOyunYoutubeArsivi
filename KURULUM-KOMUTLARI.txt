@@ -1,0 +1,37 @@
+HAYATIMIZ OYUN - v2.2.3 FIX 6 VERCEL 404 KURULUM
+
+1) Proje klasörünü aç:
+C:\Users\Mevlüt Yeni Pc\Desktop\Youtube Yayın Hazırlıkları\Youtube\Youtube Arşiv Sitesi Güncel\hayatimiz-oyun site vercel
+
+2) .git klasörünü SİLME.
+3) Varsa .env dosyanı SİLME.
+4) Eski proje dosyalarını temizle.
+5) Bu ZIP'in içeriğini direkt proje klasörüne çıkar.
+
+Proje klasöründe doğrudan şunlar görünmeli:
+package.json
+index.html
+vercel.json
+vite.config.js
+src
+api
+public
+supabase
+
+6) Terminal:
+npm install
+npm run build
+
+git add .
+git commit -m "v2.2.3 FIX 6 vercel 404 root fix"
+git push -f origin main
+
+7) Vercel:
+Deployments > Redeploy > Clear Build Cache
+
+8) Vercel Project Settings kontrol:
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm install
+Root Directory: boş
