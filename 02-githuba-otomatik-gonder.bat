@@ -1,27 +1,51 @@
 @echo off
 chcp 65001 >nul
-title Hayatımız Oyun - GitHub Temiz Force Push
-cd /d "%~dp0"
-
+setlocal
+cls
+echo =====================================================
+echo  Hayatımız Oyun - GitHub Temiz Gonderim / Build Fix
+echo =====================================================
 echo.
-echo GitHub'a temiz yukleme basliyor...
-echo DİKKAT: Bu islem GitHub main branch icerigini bu klasorle degistirir.
+echo Bu dosya node_modules, dist ve eski agir dosyalari GitHub'dan da temizler.
+echo Yeni surum degil; sadece hata duzeltme gonderimidir.
 echo.
-
-if not exist package.json (
-  echo HATA: package.json yok. Yanlis klasordesin.
+where git >nul 2>nul
+if errorlevel 1 (
+  echo Git bulunamadi. Once Git kurulmali.
+  echo PowerShell: winget install --id Git.Git -e --source winget
   pause
   exit /b 1
 )
+if exist "node_modules" (
+  echo node_modules klasoru bulundu, siliniyor...
+  rmdir /s /q "node_modules"
+)
+if exist "dist" (
+  echo dist klasoru bulundu, siliniyor...
+  rmdir /s /q "dist"
+)
+if exist ".vercel" (
+  echo .vercel klasoru bulundu, siliniyor...
+  rmdir /s /q ".vercel"
+)
 
+echo.
+echo Git temizleme basladi...
 git init
 git branch -M main
-git remote remove origin 2>nul
+git remote remove origin >nul 2>nul
 git remote add origin https://github.com/hayatimizoyunyoutube/HayatimizOyunYoutubeArsivi.git
-git add .
-git commit -m "v2.2.3 FIX 7 Vercel 404 final root fix"
+
+echo Eski node_modules/dist GitHub takibinden kaldiriliyor...
+git rm -r --cached node_modules dist .vercel >nul 2>nul
+
+echo Tum degisiklikler ekleniyor...
+git add -A
+
+git commit -m "build hata duzeltme node_modules temizlendi"
 git push -f origin main
 
 echo.
-echo GitHub push tamamlandiysa Vercel > Redeploy > Clear Build Cache yap.
+echo Bitti. Vercel'de Deployments sayfasindan yeni redeploy yap.
+echo Clear Build Cache secili olsun.
 pause
