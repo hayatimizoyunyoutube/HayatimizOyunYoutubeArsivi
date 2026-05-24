@@ -1,0 +1,24 @@
+Hayatımız Oyun v2.1.7 - Gelişmiş Otomasyon + Kalıcı Bölüm Senkronizasyonu
+
+1) .git ve BAT dosyalarını silme.
+2) 01-siteyi-temizle-git-ve-bat-haric.bat çalıştır.
+3) ZIP içeriğini proje klasörüne çıkar.
+4) 02-githuba-otomatik-gonder.bat çalıştır.
+5) Vercel üzerinde Redeploy > Clear Build Cache yap.
+6) Supabase SQL Editor içinde supabase/schema.sql dosyasını çalıştır.
+7) Playlist import için Vercel ENV içine YOUTUBE_API_KEY ekle.
+
+schema.sql sonunda v2.1.7 - Gelişmiş Otomasyon + Kalıcı Bölüm Senkronizasyonu
+
+
+## v2.1.7 - Gelişmiş Otomasyon + Kalıcı Bölüm Senkronizasyonu
+- Yönetim panelindeki form alt butonları düzenlendi.
+- Hikayesi/Açıklama alanı Türkçe hikaye çekme butonuyla doldurulur.
+- Playlistten bölüm çekme sonrası bölüm listesi ve toplam bölüm formda kalıcı görünür.
+- Edit formunda Meta/Playlist işlemleri formu sıfırlamaz.
+
+
+## v2.1.7 Notu
+- Supabase schema.sql tekrar çalıştırılmalı.
+- Bölüm izlendi kaydı artık Supabase games.episodes ve watched_episode_count alanlarına yazılır.
+- Seriler kategorisi yönetim panelindeki seri sıra numarasını kullanır.
