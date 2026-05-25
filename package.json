@@ -1,0 +1,14 @@
+{
+  "name": "hayatimiz-oyun-v240-fix15-temiz-surum-ozellik-yaz-ai-uygula",
+  "private": true,
+  "type": "module",
+  "version": "2.4.0-fix.15",
+  "scripts": {
+    "build": "echo DIST_HAZIR_FIX15",
+    "dev": "echo Bu hızlı deploy paketinde canlı kaynak src klasöründe durur; geliştirme için package.dev.json kullan.",
+    "preview": "echo Vercel hazır dist klasörünü yayınlar."
+  },
+  "devDependencies": {
+    "vite": "^5.4.19"
+  }
+}
