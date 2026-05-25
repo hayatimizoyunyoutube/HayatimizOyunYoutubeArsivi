@@ -1,0 +1,1 @@
+Vercel bu dosyayı görüyorsa public klasörü doğru deploy ediliyor. v2.2.3 FIX 7
