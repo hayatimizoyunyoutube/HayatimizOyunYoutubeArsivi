@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "installCommand": "echo HIZLI_STATIK_DEPLOY: install yok",
+  "buildCommand": "echo HIZLI_STATIK_DEPLOY: build yok, kokteki hazir index.html kullaniliyor",
+  "outputDirectory": ".",
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/data/(.*)", "destination": "/data/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/index.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "X-Hayatimiz-Oyun-Deploy", "value": "v2.4.0-FIX-2-ULTRA-STATIC" }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}
