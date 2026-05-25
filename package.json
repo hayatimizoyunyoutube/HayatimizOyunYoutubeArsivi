@@ -1,0 +1,17 @@
+{
+  "name": "hayatimiz-oyun-v240-fix19-site-yukleniyor-build-fix",
+  "private": true,
+  "type": "module",
+  "version": "2.4.0-fix.19",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build && node scripts/postbuild-fix19.mjs",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.19"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
