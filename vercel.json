@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "installCommand": "echo \"FIX37: npm install atlandi, hazir dist kullaniliyor; Google/Internet DLC kapak havuzu eklendi\"",
+  "buildCommand": "node scripts/vercel-static-build-check.mjs",
+  "outputDirectory": "dist",
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "X-Hayatimiz-Oyun-Fix",
+          "value": "v2.4.0-FIX-37-GOOGLE-DLC-KAPAK"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
