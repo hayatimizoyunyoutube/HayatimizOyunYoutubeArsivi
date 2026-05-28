@@ -1,0 +1,18 @@
+{
+  "name": "hayatimiz-oyun-v247-fix10-video-seri-toplu-guncelleme",
+  "private": true,
+  "type": "module",
+  "version": "2.4.7-fix.10",
+  "scripts": {
+    "build": "node scripts/vercel-static-build-check.mjs",
+    "dev": "vite --host 127.0.0.1 --port 5173 --open /",
+    "local": "vite --host 127.0.0.1 --port 5173 --open /",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --open /"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "vite": "^5.4.19"
+  }
+}
