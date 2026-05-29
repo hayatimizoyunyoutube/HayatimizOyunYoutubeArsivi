@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hayatımız Oyun - v2.5.4 FIX10</title>
+  <script>
+    (function(){
+      var formActions = ['ho240f42-refetch-release','ho240f41-refetch-release','ho240f42-find-covers','ho240f41-find-covers','ho240f11-find-covers','ho240f10-find-covers','ho240f42-refetch-genres','ho240f41-refetch-genres','fix12-refetch-genres','fix10-refetch-genres','ho240f42-refetch-description','fix12-refetch-story','fix10-refetch-story','fetch-game-story','fetch-game-story-edit','ho240f42-fetch-all','auto-game-meta','auto-game-meta-edit','estimate-playlist-episodes','estimate-playlist-episodes-edit','ho240f58-steam-check','ho240f58-apply-steam','ho240f55-reset-add-form','ho240f56-reset-add-form'];
+      function isFormAction(action){ return formActions.indexOf(String(action || '')) >= 0; }
+      function inGameForm(el){ return !!(el && el.closest && el.closest('#gameAddForm,#gameEditForm,.ho240f47ModalBackdrop,.ho240f49ModalBackdrop,.ho240f46GameForm,.fix6GameForm')); }
+      formActions.push('v222-refetch-genres','v222-refetch-story','ho240f51-detailed-story','ho240f55-reset-add-form','ho240f56-reset-add-form');
+      window.__HO240F50_FORM_ACTIONS__ = formActions;
+      window.__HAYATIMIZ_BOOT_TIMER__ = null;
+      window.addEventListener('error', function(e){ console.error('Hayatımız Oyun açılış hatası:', e.message || e.error); });
+      window.addEventListener('unhandledrejection', function(e){ console.error('Hayatımız Oyun promise hatası:', e.reason); });
+      document.addEventListener('click', function(e){
+        var el = e.target && e.target.closest && e.target.closest('[data-action]');
+        if(!el) return;
+        var action = el.dataset.action || '';
+        if(!isFormAction(action) || !inGameForm(el)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if(window.HO240F50_HANDLE_FORM_ACTION) window.HO240F50_HANDLE_FORM_ACTION(action, el);
+      }, true);
+      document.addEventListener('submit', function(e){
+        var form = e.target;
+        if(!form || !form.matches || !form.matches('#gameAddForm,#gameEditForm,.gameForm')) return;
+        var submitter = e.submitter;
+        if(window.HO240F51_SAVE_FORM){
+          e.preventDefault();
+          e.stopPropagation();
+          if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+          window.HO240F51_SAVE_FORM(form);
+          return;
+        }
+        if(submitter && submitter.dataset && isFormAction(submitter.dataset.action)){
+          e.preventDefault();
+          e.stopPropagation();
+          if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+          if(window.HO240F50_HANDLE_FORM_ACTION) window.HO240F50_HANDLE_FORM_ACTION(submitter.dataset.action, submitter);
+        }
+      }, true);
+    })();
+  </script>
+  <script type="module" crossorigin src="/assets/hayatimiz-app-fix64.js?v=fix64-seri-kart-bakim-temizlik"></script>
+  <link rel="stylesheet" crossorigin href="/assets/hayatimiz-style-fix64.css?v=fix64-seri-kart-bakim-temizlik">
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>
