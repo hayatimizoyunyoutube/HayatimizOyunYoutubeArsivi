@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hayatımız Oyun - v2.5.6 Temiz Çalışan</title>
+  <meta name="theme-color" content="#05080d" />
+  <script>
+    window.addEventListener('error', function(e){
+      setTimeout(function(){
+        var root=document.getElementById('root');
+        if(root && !root.textContent.trim()) root.innerHTML='<main class="fatal"><h1>Site açılış hatası</h1><p>'+String(e.message||'Bilinmeyen hata')+'</p><button onclick="location.href='/'">Ana Sayfa</button></main>';
+      }, 100);
+    });
+  </script>
+  <script type="module" crossorigin src="/src/main.js"></script>
+  <link rel="stylesheet" crossorigin href="/src/styles.css">
+</head>
+<body>
+  <div id="root"><main style="min-height:100vh;display:grid;place-items:center;background:#05080d;color:white;font-family:system-ui"><div><h1>Hayatımız Oyun yükleniyor...</h1><p>v2.5.6 temiz çalışan sürüm açılıyor.</p></div></main></div>
+  <noscript>JavaScript kapalı olduğu için site çalışmaz.</noscript>
+</body>
+</html>
