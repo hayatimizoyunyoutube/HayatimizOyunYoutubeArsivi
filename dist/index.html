@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hayatımız Oyun - v2.5.4 FIX8</title>
+  <script>
+    (function(){
+      var formActions = ['ho240f42-refetch-release','ho240f41-refetch-release','ho240f42-find-covers','ho240f41-find-covers','ho240f11-find-covers','ho240f10-find-covers','ho240f42-refetch-genres','ho240f41-refetch-genres','fix12-refetch-genres','fix10-refetch-genres','ho240f42-refetch-description','fix12-refetch-story','fix10-refetch-story','fetch-game-story','fetch-game-story-edit','ho240f42-fetch-all','auto-game-meta','auto-game-meta-edit','estimate-playlist-episodes','estimate-playlist-episodes-edit','ho240f58-steam-check','ho240f58-apply-steam'];
+      function isFormAction(action){ return formActions.indexOf(String(action || '')) >= 0; }
+      function inGameForm(el){ return !!(el && el.closest && el.closest('#gameAddForm,#gameEditForm,.ho240f47ModalBackdrop,.ho240f49ModalBackdrop,.ho240f46GameForm,.fix6GameForm')); }
+      window.__HO240F50_FORM_ACTIONS__ = formActions;
+      window.__HAYATIMIZ_BOOT_TIMER__ = null;
+      window.addEventListener('error', function(e){ console.error('Hayatımız Oyun açılış hatası:', e.message || e.error); });
+      window.addEventListener('unhandledrejection', function(e){ console.error('Hayatımız Oyun promise hatası:', e.reason); });
+      document.addEventListener('click', function(e){
+        var el = e.target && e.target.closest && e.target.closest('[data-action]');
+        if(!el) return;
+        var action = el.dataset.action || '';
+        if(!isFormAction(action) || !inGameForm(el)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if(window.HO240F50_HANDLE_FORM_ACTION) window.HO240F50_HANDLE_FORM_ACTION(action, el);
+      }, true);
+      document.addEventListener('submit', function(e){
+        var form = e.target;
+        if(!form || !form.matches || !form.matches('#gameAddForm,#gameEditForm,.gameForm')) return;
+        var submitter = e.submitter;
+        if(submitter && submitter.dataset && isFormAction(submitter.dataset.action)){
+          e.preventDefault();
+          e.stopPropagation();
+          if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+          if(window.HO240F50_HANDLE_FORM_ACTION) window.HO240F50_HANDLE_FORM_ACTION(submitter.dataset.action, submitter);
+        }
+      }, true);
+    })();
+  </script>
+  <script type="module" crossorigin src="/assets/hayatimiz-app-fix64.js?v=fix8-tam-stabil-site"></script>
+  <link rel="stylesheet" crossorigin href="/assets/hayatimiz-style-fix64.css?v=fix8-tam-stabil-site">
+
+<style>
+.ho254FallbackShell{min-height:100vh;display:grid;grid-template-columns:240px 1fr;background:#05080d;color:#fff;font-family:Inter,system-ui,Arial,sans-serif}
+.ho254FallbackShell aside{padding:24px;border-right:1px solid #1f2937;background:#080b11;display:flex;flex-direction:column;gap:12px}
+.ho254FallbackShell aside b{font-size:20px;margin-bottom:16px}.ho254FallbackShell aside em{color:#ff2348;font-style:normal}
+.ho254FallbackShell aside button{border:1px solid #263244;background:#111827;color:#fff;border-radius:12px;padding:12px;text-align:left;font-weight:800;cursor:pointer}
+.ho254FallbackMain{padding:28px}
+.ho254FallbackHero{border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:22px;margin-bottom:18px;background:linear-gradient(135deg,rgba(136,19,55,.22),rgba(15,23,42,.95))}
+.ho254FallbackHero span{display:inline-flex;padding:7px 12px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.3);color:#bbf7d0;font-weight:900}
+.ho254FallbackHero h1{font-size:44px;margin:12px 0 8px}.ho254FallbackHero p{color:#cbd5e1}
+.ho254FallbackCols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ho254FallbackCols section,.ho254FallbackForm{border:1px solid rgba(255,255,255,.10);border-radius:20px;padding:18px;background:#0b1220}
+.ho254FallbackCard,.ho254FallbackEvent{border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:14px;margin:10px 0;background:rgba(255,255,255,.04)}
+.ho254FallbackCard b{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(96,165,250,.15);color:#bfdbfe}.ho254FallbackCard.planned b{background:rgba(244,63,94,.16);color:#fecdd3}
+.ho254FallbackCard h3{margin:10px 0 6px}.ho254FallbackCard p,.ho254FallbackEvent p{color:#cbd5e1}
+.ho254FallbackForm label{display:grid;gap:6px;margin:10px 0;font-weight:800}.ho254FallbackForm input,.ho254FallbackForm textarea{background:#111827;color:#fff;border:1px solid #334155;border-radius:12px;padding:12px}
+.ho254FallbackForm button,.ho254FallbackEvent button{border:0;border-radius:999px;background:linear-gradient(135deg,#ff224b,#ef4444);color:#fff;padding:11px 16px;font-weight:900;cursor:pointer}
+.ho254FallbackEvent small{display:block;color:#93c5fd;margin:4px 0}
+@media(max-width:900px){.ho254FallbackShell,.ho254FallbackCols{grid-template-columns:1fr}.ho254FallbackShell aside{position:relative}.ho254FallbackHero h1{font-size:32px}}
+</style>
+
+
+<script>
+(function(){
+  if(window.__HO254_FIX2_HTML_FALLBACK__) return;
+  window.__HO254_FIX2_HTML_FALLBACK__ = true;
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});}
+  function pathPage(){
+    var raw=(location.pathname+' '+location.hash+' '+location.search).toLocaleLowerCase('tr-TR');
+    if(raw.indexOf('yayin-takvimi')>=0 || raw.indexOf('yayın-takvimi')>=0) return 'takvim';
+    if(raw.indexOf('guncelleme-notlari')>=0 || raw.indexOf('güncelleme-notları')>=0 || raw.indexOf('guncellemeler')>=0) return 'notlar';
+    return '';
+  }
+  function rootBlank(){
+    var root=document.getElementById('root');
+    if(!root) return false;
+    var txt=(root.textContent||'').trim();
+    return txt.length < 40 && !root.querySelector('.fix5AdminShell,.ho254f2CalendarAdmin,.ho254f2NotesPage,.ho254FallbackShell');
+  }
+  function notesHtml(){
+    var done=[
+      ['v2.5.4 FIX2','Boş Sayfa Kesin Fix','Güncelleme Notları ve Yayın Takvimi siyah/boş ekrana düşmeyecek şekilde düzeltildi.'],
+      ['v2.5.4','Bakım Modu V2 ve Yayın Takvimi Kalıcı Kayıt','Takvim manuel kayıt standardına bağlandı; oyunlardan sadece öneri gelir.'],
+      ['v2.5.3 FIX6','Admin Notlar ve Takvim Görünürlük Fix','Yönetim paneli görünürlük düzeltmeleri korundu.']
+    ];
+    var plan=[
+      ['v2.5.5','Güncelleme Notları V2 ve Sürüm Zaman Çizelgesi'],
+      ['v2.5.6','Yayın Takvimi V2 ve Canlı Yayın Planlama'],
+      ['v2.6.0','Kullanıcı Profil ve İzleme Merkezi'],
+      ['v2.7.0','Video İzleme Deneyimi ve Bölüm Merkezi'],
+      ['v2.8.0','Arşiv Veri Güvenliği ve Otomatik Yedekleme'],
+      ['v2.9.0','Yayın Öncesi Kontrol ve Performans Paketi'],
+      ['v3.0.0','Ana Açılış ve İlk Yayın Sürümü']
+    ];
+    function card(n,cls){return '<article class="ho254FallbackCard '+(cls||'')+'"><b>'+esc(n[0])+'</b><h3>'+esc(n[1])+'</h3><p>'+esc(n[2]||'Planlandı.')+'</p></article>'}
+    return '<div class="ho254FallbackHero"><span>v2.5.4 FIX2</span><h1>Güncelleme Notları</h1><p>Profesyonel sürüm arşivi. Ana uygulama geç yüklenirse bu güvenli panel devreye girer.</p></div><div class="ho254FallbackCols"><section><h2>Tamamlanan Güncellemeler</h2>'+done.map(function(n){return card(n)}).join('')+'</section><section><h2>Planlanan Güncellemeler</h2>'+plan.map(function(n){return card(n,'planned')}).join('')+'</section></div>';
+  }
+  function getEvents(){try{return JSON.parse(localStorage.getItem('hayatimiz_v254_fix2_calendar_events')||localStorage.getItem('hayatimiz_calendar_events_stable_v253f4')||'[]')||[]}catch(e){return []}}
+  function setEvents(rows){localStorage.setItem('hayatimiz_v254_fix2_calendar_events',JSON.stringify(rows||[]));localStorage.setItem('hayatimiz_calendar_events_stable_v253f4',JSON.stringify(rows||[]));}
+  function takvimHtml(){
+    var rows=getEvents();
+    var list=rows.length?rows.map(function(e,i){return '<article class="ho254FallbackEvent"><b>'+esc(e.title||'Yayın')+'</b><small>'+esc(e.date||'')+' • '+esc(e.time||'20:00')+'</small><p>'+esc(e.note||e.type||'')+'</p><button data-fb-del="'+i+'">Sil</button></article>'}).join(''):'<p class="muted">Henüz manuel yayın yok. Formdan tarih ve saat girip ekle.</p>';
+    return '<div class="ho254FallbackHero"><span>v2.5.4 FIX2</span><h1>Yayın Takvimi</h1><p>Otomatik sahte kayıt oluşturmaz. Manuel ekle, kayıtlar local olarak korunur.</p></div><div class="ho254FallbackCols"><form class="ho254FallbackForm" id="ho254FallbackCalForm"><h2>Manuel Yayın Ekle</h2><label>Başlık<input name="title" required placeholder="Örn: Alan Wake 2 yayını"></label><label>Tarih<input name="date" type="date" required></label><label>Saat<input name="time" value="20:00"></label><label>Tür<input name="type" value="Ana Yayın"></label><label>Kapak URL<input name="cover" placeholder="https://..."></label><label>Video URL<input name="videoUrl" placeholder="https://youtube.com/..."></label><label>Not<textarea name="note"></textarea></label><button type="submit">Etkinliği Kaydet</button></form><section><h2>Manuel Takvim Kayıtları</h2><div id="ho254FallbackEvents">'+list+'</div></section></div>';
+  }
+  function inject(){
+    var page=pathPage();
+    if(!page || !rootBlank()) return;
+    var root=document.getElementById('root');
+    root.innerHTML='<main class="ho254FallbackShell"><aside><b>HAYATIMIZ <em>OYUN</em></b><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button><button onclick="location.href=\'/yonetim/yayin-takvimi\'">Yayın Takvimi</button><button onclick="location.href=\'/\'">Ana Sayfa</button></aside><section class="ho254FallbackMain">'+(page==='takvim'?takvimHtml():notesHtml())+'</section></main>';
+  }
+  document.addEventListener('submit',function(e){
+    if(e.target && e.target.id==='ho254FallbackCalForm'){
+      e.preventDefault();
+      var fd=new FormData(e.target), rows=getEvents();
+      rows.unshift({id:'local-'+Date.now(),title:fd.get('title'),date:fd.get('date'),time:fd.get('time')||'20:00',type:fd.get('type')||'Ana Yayın',cover:fd.get('cover')||'',videoUrl:fd.get('videoUrl')||'',note:fd.get('note')||''});
+      setEvents(rows); inject(); location.reload();
+    }
+  },true);
+  document.addEventListener('click',function(e){
+    var b=e.target && e.target.closest && e.target.closest('[data-fb-del]');
+    if(!b) return;
+    var rows=getEvents(); rows.splice(Number(b.dataset.fbDel),1); setEvents(rows); location.reload();
+  },true);
+  setTimeout(inject,900);
+  setTimeout(inject,2200);
+  setTimeout(inject,4500);
+})();
+</script>
+
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
