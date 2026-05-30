@@ -1,0 +1,12 @@
+Hayatımız Oyun v2.5.4 FIX8 Supabase Sırası
+
+1) Supabase > SQL Editor aç.
+2) Bu paketteki supabase/schema.sql dosyasının tamamını yapıştır.
+3) Run çalıştır.
+4) Çıktıda şu mesajı görmelisin:
+   Hayatımız Oyun v2.5.4 FIX8 schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.
+
+ÖNEMLİ:
+- Bu schema mevcut oyunları, kullanıcıları, bakım modunu, takvimi ve notları silmez.
+- Bakım modu sadece kayıt yoksa varsayılan kapalı olarak eklenir; mevcut maintenance_mode değeri overwrite edilmez.
+- Vercel tarafında env değişkenleri yine aynı kalır: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, opsiyonel YOUTUBE_API_KEY.
