@@ -1,10 +1,10 @@
-Hayatımız Oyun v2.5.4 FIX8 Supabase Sırası
+Hayatımız Oyun v2.0.0 Stabil Koruma Supabase Sırası
 
 1) Supabase > SQL Editor aç.
 2) Bu paketteki supabase/schema.sql dosyasının tamamını yapıştır.
 3) Run çalıştır.
 4) Çıktıda şu mesajı görmelisin:
-   Hayatımız Oyun v2.5.4 FIX8 schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.
+   Hayatımız Oyun v2.0.0 Stabil Koruma schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.
 
 ÖNEMLİ:
 - Bu schema mevcut oyunları, kullanıcıları, bakım modunu, takvimi ve notları silmez.

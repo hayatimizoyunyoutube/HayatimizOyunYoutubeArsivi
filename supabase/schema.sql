@@ -1,4 +1,4 @@
--- Hayatımız Oyun v2.5.4 FIX9 - Tam stabil site schema
+-- Hayatımız Oyun v2.0.0 - Tam stabil site schema
 -- Güvenli migration: mevcut oyun, kullanıcı, bakım, takvim ve not kayıtlarını SİLMEZ.
 set statement_timeout = '25s';
 set lock_timeout = '3s';
@@ -399,37 +399,37 @@ insert into public.site_runtime_config (key, value, updated_at)
 values
 (
   'schema_version',
-  jsonb_build_object('version','v2.5.4 FIX9', 'status','Tam stabil site fix schema hazır.', 'updated_at', now()),
+  jsonb_build_object('version','v2.0.0', 'status','Tam stabil site fix schema hazır.', 'updated_at', now()),
   now()
 ),
 (
   'update_notes_center',
-  jsonb_build_object('enabled', true, 'version','v2.5.4 FIX9', 'editable', true, 'stable_layer', true, 'updated_at', now()),
+  jsonb_build_object('enabled', true, 'version','v2.0.0', 'editable', true, 'stable_layer', true, 'updated_at', now()),
   now()
 ),
 (
   'calendar_events_standard',
-  jsonb_build_object('enabled', true, 'version','v2.5.4 FIX9', 'mode','manual', 'auto_create', false, 'updated_at', now()),
+  jsonb_build_object('enabled', true, 'version','v2.0.0', 'mode','manual', 'auto_create', false, 'updated_at', now()),
   now()
 )
 on conflict (key) do update set value = excluded.value, updated_at = now();
 
 insert into public.site_update_notes (version, title, summary, note, description, status, pinned, planned, created_at, updated_at)
 select
-  'v2.5.4 FIX9',
+  'v2.0.0',
   'Tam Stabil Site Fix',
   'Eksik Supabase tabloları, admin boş sayfaları, oyun ekleme, yayın takvimi, güncelleme notları, bakım modu ve Vercel dist senkronizasyonu düzeltildi.',
-  'FIX9 ile tek stabil admin katmanı eklendi; site boş/siyah ekrana düşmeyecek şekilde güvenli hale getirildi.',
+  'v2.0.0 ile tek stabil admin katmanı eklendi; site boş/siyah ekrana düşmeyecek şekilde güvenli hale getirildi.',
   'Oyun Ekle, Mevcut Oyunlar, Yayın Takvimi, Güncelleme Notları ve Bakım Modu local fallback + Supabase API ile çalışır.',
   'published',
   true,
   false,
   now(),
   now()
-where not exists (select 1 from public.site_update_notes where version = 'v2.5.4 FIX9');
+where not exists (select 1 from public.site_update_notes where version = 'v2.0.0');
 
 insert into public.site_schema_versions (version, note, created_at, updated_at)
-select 'v2.5.4 FIX9', 'Tam stabil site schema: eksik tablolar, takvim video URL, not alias, bakım koruması.', now(), now()
-where not exists (select 1 from public.site_schema_versions where version = 'v2.5.4 FIX9');
+select 'v2.0.0', 'Tam stabil site schema: eksik tablolar, takvim video URL, not alias, bakım koruması.', now(), now()
+where not exists (select 1 from public.site_schema_versions where version = 'v2.0.0');
 
-select 'Hayatımız Oyun v2.5.4 FIX9 schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.' as status;
+select 'Hayatımız Oyun v2.0.0 schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.' as status;

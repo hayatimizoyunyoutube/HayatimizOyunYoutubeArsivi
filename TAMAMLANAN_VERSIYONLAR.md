@@ -1392,7 +1392,7 @@ Bu paket yeni büyük güncelleme değildir; v2.2.0 hattında stabil fix paketid
 
 - v2.4.6 FIX8: Supabase schema.sql içindeki ON CONFLICT(version) hatası düzeltildi.
 
-- v2.4.6 FIX9: Steam Kontrol Et eksik form alanlarını tamamlar, puan varsa çeker, schema.sql güncellendi.
+- v2.4.6 v2.0.0: Steam Kontrol Et eksik form alanlarını tamamlar, puan varsa çeker, schema.sql güncellendi.
 
 - v2.4.7: XP/Level V2 planı genişletildi; Steam + Google puan ortalaması, profesyonel video/seri kartları, üst kaydet/güncelle butonları, DLC rozeti ve gelişmiş rehber eklendi.
 
@@ -1412,7 +1412,7 @@ Bu paket yeni büyük güncelleme değildir; v2.2.0 hattında stabil fix paketid
 
 - v2.4.7 FIX8: Puan çekme, forma canlı işleme ve Supabase kaydetme kalıcı düzeltildi.
 
-- v2.4.7 FIX9: Mevcut oyun düzenlemede etiket ve puan silinmesi engellendi.
+- v2.4.7 v2.0.0: Mevcut oyun düzenlemede etiket ve puan silinmesi engellendi.
 
 - v2.4.7 FIX10: Videolarda tür/etiket ayrımı, seri alt oyun kaydırmalı liste, canlı puan/YouTube önizleme ve tüm mevcut oyunları toplu tekrar çekme eklendi.
 
@@ -1442,7 +1442,7 @@ Bu paket yeni büyük güncelleme değildir; v2.2.0 hattında stabil fix paketid
 
 - v2.4.9 FIX8: Kapak galerisine Tüm Kayıtları Sil ve RAWG Oyunlarını Çek butonları eklendi.
 
-- v2.4.9 FIX9: RAWG/Google/Steam kapak sonuçları oyun adına göre sıkı filtrelenir; yanlış oyun/DLC kapakları elenir.
+- v2.4.9 v2.0.0: RAWG/Google/Steam kapak sonuçları oyun adına göre sıkı filtrelenir; yanlış oyun/DLC kapakları elenir.
 
 - v2.5.0: Supabase Veri Senkronizasyon Merkezi ve Otomatik/Manuel Puan Seçimi tamamlandı.
 
@@ -1478,7 +1478,7 @@ Bu paket yeni büyük güncelleme değildir; v2.2.0 hattında stabil fix paketid
 
 - v2.5.2 FIX8: Güncelleme notları panelinden yanlış kartlar temizlendi; bildirim panelinin kapanması engellendi.
 
-- v2.5.2 FIX9: Ana sayfadaki FIX barı kaldırıldı; Güncelleme Notları paneli sadece sürüm notlarını gösterecek şekilde temizlendi.
+- v2.5.2 v2.0.0: Ana sayfadaki FIX barı kaldırıldı; Güncelleme Notları paneli sadece sürüm notlarını gösterecek şekilde temizlendi.
 
 - v2.5.2 FIX10: v2.5.2 ana güncellemesi ve Duyuru Merkezi yönetim panelinde görünür hale getirildi.
 
@@ -1504,4 +1504,4 @@ Bu paket yeni büyük güncelleme değildir; v2.2.0 hattında stabil fix paketid
 
 - v2.5.4 FIX6: Takvim, Güncelleme Notları ve Oyun Ekle final fix uygulandı.
 
-- v2.5.4 FIX7: Temiz admin takvim, güncelleme notları ve oyun ekleme kesin fix uygulandı.
+- v2.0.0 Temiz Başlangıç: Temiz admin takvim, güncelleme notları ve oyun ekleme kesin fix uygulandı.

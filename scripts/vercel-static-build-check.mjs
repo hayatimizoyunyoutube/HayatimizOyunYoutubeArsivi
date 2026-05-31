@@ -21,13 +21,13 @@ fs.copyFileSync(srcCss, path.join(assets, 'hayatimiz-style-fix64.css'));
 fs.copyFileSync(srcCss, path.join(assets, 'hayatimiz-style.css'));
 
 let html = fs.readFileSync(srcHtml, 'utf8');
-html = html.replace(/<title>[^<]*<\/title>/, '<title>Hayatımız Oyun - v2.5.4 FIX9</title>');
-html = html.replace(/<link rel="stylesheet" href="\/src\/styles\.css"\s*\/?>/, '<script type="module" crossorigin src="/assets/hayatimiz-app-fix64.js?v=fix9-ana-sayfa-bos-ekran-fix"></script>\n  <link rel="stylesheet" crossorigin href="/assets/hayatimiz-style-fix64.css?v=fix9-ana-sayfa-bos-ekran-fix">');
+html = html.replace(/<title>[^<]*<\/title>/, '<title>Hayatımız Oyun - v2.0.0</title>');
+html = html.replace(/<link rel="stylesheet" href="\/src\/styles\.css"\s*\/?>/, '<script type="module" crossorigin src="/assets/hayatimiz-app-fix64.js?v=v200-temiz-baslangic"></script>\n  <link rel="stylesheet" crossorigin href="/assets/hayatimiz-style-fix64.css?v=v200-temiz-baslangic">');
 if(!html.includes('/assets/hayatimiz-app-fix64.js')){
-  html = html.replace('</head>', '  <script type="module" crossorigin src="/assets/hayatimiz-app-fix64.js?v=fix9-ana-sayfa-bos-ekran-fix"></script>\n  <link rel="stylesheet" crossorigin href="/assets/hayatimiz-style-fix64.css?v=fix9-ana-sayfa-bos-ekran-fix">\n</head>');
+  html = html.replace('</head>', '  <script type="module" crossorigin src="/assets/hayatimiz-app-fix64.js?v=v200-temiz-baslangic"></script>\n  <link rel="stylesheet" crossorigin href="/assets/hayatimiz-style-fix64.css?v=v200-temiz-baslangic">\n</head>');
 }
 
-// FIX9: dist içinde /src/main.js ikinci modül referansı kalırsa Vercel rewrite HTML döndürür ve tarayıcıda modül MIME hatası oluşur. Bu yüzden build çıktısında sadece /assets paketini bırak.
+// v2.0.0: dist içinde /src/main.js ikinci modül referansı kalırsa Vercel rewrite HTML döndürür ve tarayıcıda modül MIME hatası oluşur. Bu yüzden build çıktısında sadece /assets paketini bırak.
 html = html.replace(/\s*<script\s+type=["']module["']\s+src=["']\/src\/main\.js["']\s*><\/script>\s*/g, '\n');
 
 fs.writeFileSync(distHtml, html);
@@ -35,16 +35,16 @@ fs.writeFileSync(distHtml, html);
 const redirects = '/* /index.html 200\n';
 fs.writeFileSync(path.join(dist, '_redirects'), redirects);
 fs.writeFileSync(path.join(dist, '404.html'), html);
-fs.writeFileSync(path.join(dist, 'vercel-root-check.txt'), 'v2.5.4 FIX9 build ok\n');
+fs.writeFileSync(path.join(dist, 'vercel-root-check.txt'), 'v2.0.0 build ok\n');
 
 const js = fs.readFileSync(path.join(assets, 'hayatimiz-app-fix64.js'), 'utf8');
 const css = fs.readFileSync(path.join(assets, 'hayatimiz-style-fix64.css'), 'utf8');
 const checks = [
-  ['JS FIX8 marker', js.includes('v2.5.4 FIX9 - Tam stabil admin')],
+  ['JS FIX8 marker', js.includes('v2.0.0 - Tam stabil admin')],
   ['window.state exposure', js.includes('window.state = state')],
-  ['CSS FIX8 marker', css.includes('v2.5.4 FIX9 - stabil admin')],
-  ['schema FIX8', fs.readFileSync(path.join(root, 'supabase', 'schema.sql'), 'utf8').includes('v2.5.4 FIX9')],
-  ['API FIX8', fs.readFileSync(path.join(root, 'api', 'index.js'), 'utf8').includes("version:'v2.5.4 FIX9'")]
+  ['CSS FIX8 marker', css.includes('v2.0.0 - stabil admin')],
+  ['schema FIX8', fs.readFileSync(path.join(root, 'supabase', 'schema.sql'), 'utf8').includes('v2.0.0')],
+  ['API FIX8', fs.readFileSync(path.join(root, 'api', 'index.js'), 'utf8').includes("version:'v2.0.0'")]
 ];
 for(const [label, ok] of checks){
   if(!ok){
@@ -56,5 +56,5 @@ if(/import\s+['"]\.\/styles\.css['"]/.test(js)){
   console.error('Tarayıcıyı yükleniyor ekranında bırakan CSS import bulundu.');
   process.exit(1);
 }
-console.log('v2.5.4 FIX9: src -> dist senkronizasyonu başarılı.');
-console.log('v2.5.4 FIX9: Admin, takvim, notlar, oyun ekleme, bakım ve schema stabil.');
+console.log('v2.0.0: src -> dist senkronizasyonu başarılı.');
+console.log('v2.0.0: Admin, takvim, notlar, oyun ekleme, bakım ve schema stabil.');

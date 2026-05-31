@@ -1,34 +1,20 @@
-# Gelecek Güncellemeler
+# Gelecek Güncellemeler - v2.0.0 Temiz Başlangıç Sonrası
 
-## v2.5.4 - Bakım Modu V2 ve Yayın Takvimi Kalıcı Kayıt
+v2.0.0 ile proje tekrar temiz başlangıç seviyesine çekildi. Bundan sonra büyük karışık fix paketleri yerine her hata ayrı küçük sürümle çözülecek.
 
-- Planlandı.
+## Sıradaki Plan
 
-## v2.5.5 - Güncelleme Notları V2 ve Sürüm Zaman Çizelgesi
+1. **v2.0.1** - Ana Sayfa ve Menü Kontrolü
+2. **v2.0.2** - Admin Panel Hata Temizliği
+3. **v2.0.3** - Oyun Ekle / Düzenle Akışı
+4. **v2.0.4** - Yayın Takvimi Kalıcı Kayıt
+5. **v2.0.5** - Güncelleme Notları Merkezi
+6. **v2.0.6** - Bakım Modu ve Site Ayarları
+7. **v2.1.0** - Public Yayına Hazırlık
 
-- Planlandı.
+## Kural
 
-## v2.5.6 - Yayın Takvimi V2 ve Canlı Yayın Planlama
-
-- Planlandı.
-
-## v2.6.0 - Kullanıcı Profil ve İzleme Merkezi
-
-- Planlandı.
-
-## v2.7.0 - Video İzleme Deneyimi ve Bölüm Merkezi
-
-- Planlandı.
-
-## v2.8.0 - Arşiv Veri Güvenliği ve Otomatik Yedekleme
-
-- Planlandı.
-
-## v2.9.0 - Yayın Öncesi Kontrol ve Performans Paketi
-
-- Planlandı.
-
-## v3.0.0 - Ana Açılış ve İlk Yayın Sürümü
-
-- Planlandı.
-
+- Önce hata ekran görüntüsü veya hata mesajı alınacak.
+- Sonra sadece ilgili küçük alan düzeltilecek.
+- Her düzeltme ayrı tamamlanan dosyasına yazılacak.
+- Supabase gerekiyorsa sürüm notunda açıkça belirtilecek.

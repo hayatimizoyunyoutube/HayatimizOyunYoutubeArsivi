@@ -325,5 +325,5 @@ Seri Sıralama paneline sürükle bırak oyun sıralama sistemi eklendi.
 Devam eden serilerde playlistten çekilen videolara göre **Kaldığımız Bölüm** göstergesi eklendi. İzleyici ana sayfadan veya seri kartından doğrudan kaldığımız bölümü açabilir.
 
 
-## v2.5.4 FIX9 Notu
-Bu paket tam stabil site fix paketidir. `npm run build` src dosyalarını dist içine senkronize eder. Supabase için `supabase/schema.sql` çalıştırılmalıdır; mevcut kayıtlar ve bakım modu korunur.
+## v2.0.0 Notu
+Bu paket v2.0.0 temiz başlangıç paketidir. Çalışan stabil katman korunur, eski FIX karmaşası public sürüm göstergesinden temizlenir. `npm run build` src dosyalarını dist içine senkronize eder. Supabase için gerekirse `supabase/schema.sql` çalıştırılabilir; mevcut kayıtlar ve bakım modu korunur.

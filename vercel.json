@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "echo \"FIX9: npm install atlandi, src dist ile senkronize ediliyor\"",
+  "installCommand": "echo \"v2.0.0: npm install atlandi, src dist ile senkronize ediliyor\"",
   "buildCommand": "node scripts/vercel-static-build-check.mjs",
   "outputDirectory": "dist",
   "cleanUrls": false,
@@ -29,7 +29,7 @@
         },
         {
           "key": "X-Hayatimiz-Oyun-Fix",
-          "value": "v2.5.4-FIX9-TAM-STABIL-SITE"
+          "value": "v2.0.0-TEMIZ-BASLANGIC"
         }
       ]
     },

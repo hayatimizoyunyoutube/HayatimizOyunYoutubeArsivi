@@ -12462,7 +12462,7 @@ function ho242LaunchCenter(){
     <section class="ho242StatusCard ${tone}">
       <div>
         <h2>${title}</h2>
-        <p>${audit.isLaunchReady ? 'Tüm oyunlarda kapak, tarih, açıklama ve playlist/video kontrolü tamamlandı.' : 'Aşağıdaki eksikleri tamamlamadan v3.0.0 açılışına geçme.'}</p>
+        <p>${audit.isLaunchReady ? 'Tüm oyunlarda kapak, tarih, açıklama ve playlist/video kontrolü tamamlandı.' : 'Aşağıdaki eksikleri tamamlamadan v2.1.0 ara hedefe geçme.'}</p>
       </div>
       <span class="pill ${audit.isLaunchReady?'green':'banned'}">${audit.isLaunchReady?'Açılışa Hazır':'Hazır Değil'}</span>
     </section>
@@ -14199,7 +14199,7 @@ try{
 }catch(error){ console.warn('FIX9 Steam eksik tamamlama override atlandı:', error); }
 try{
   if(Array.isArray(VERSION_NOTES_ARCHIVE) && !VERSION_NOTES_ARCHIVE.some(n=>n.version===HO246F9_INTERNAL_VERSION)){
-    VERSION_NOTES_ARCHIVE.unshift({ version:HO246F9_INTERNAL_VERSION, title:'Steam Kontrol Et Eksikleri Tamamlar', summary:'Steam Kontrol Et butonu eksik kapak, çıkış tarihi, tür, açıklama ve varsa Steam puanını forma otomatik işler.', image:'previews/hayatimiz-oyun-v246-fix9-steam-eksik-tamamla.png', written:'FIX9 ile Steam kontrolü sadece rapor vermez; formdaki eksik alanları doldurur. Steam puanı yoksa varsayılan/eski puan kullanılmaz.' });
+    VERSION_NOTES_ARCHIVE.unshift({ version:HO246F9_INTERNAL_VERSION, title:'Steam Kontrol Et Eksikleri Tamamlar', summary:'Steam Kontrol Et butonu eksik kapak, çıkış tarihi, tür, açıklama ve varsa Steam puanını forma otomatik işler.', image:'previews/hayatimiz-oyun-v246-fix9-steam-eksik-tamamla.png', written:'v2.0.0 ile Steam kontrolü sadece rapor vermez; formdaki eksik alanları doldurur. Steam puanı yoksa varsayılan/eski puan kullanılmaz.' });
   }
   localStorage.setItem('hayatimiz_last_fix_version', HO246F9_INTERNAL_VERSION);
 }catch(error){ console.warn('FIX9 version note atlandı:', error); }
@@ -15582,7 +15582,7 @@ try{
 }catch(error){ console.warn('FIX9 puan eventleri atlandı:', error); }
 try{
   if(Array.isArray(VERSION_NOTES_ARCHIVE) && !VERSION_NOTES_ARCHIVE.some(n=>n.version===HO247F8_INTERNAL_VERSION)){
-    VERSION_NOTES_ARCHIVE.unshift({version:HO247F8_INTERNAL_VERSION,title:'Puan Çekme ve Kaydetme Kalıcı Düzeltme',summary:'Steam/Google/Epic/Ubisoft puanı forma canlı yazılır ve kaydet/güncelle sırasında Supabase score alanına korunarak gönderilir.',written:'v2.4.7 FIX9 ile eski submit guardlarının puanı silmesi engellendi. scoreSource alanı eklenerek çekilen puan kaydetme sırasında korunur.'});
+    VERSION_NOTES_ARCHIVE.unshift({version:HO247F8_INTERNAL_VERSION,title:'Puan Çekme ve Kaydetme Kalıcı Düzeltme',summary:'Steam/Google/Epic/Ubisoft puanı forma canlı yazılır ve kaydet/güncelle sırasında Supabase score alanına korunarak gönderilir.',written:'v2.4.7 v2.0.0 ile eski submit guardlarının puanı silmesi engellendi. scoreSource alanı eklenerek çekilen puan kaydetme sırasında korunur.'});
   }
   localStorage.setItem('hayatimiz_last_fix_version', HO247F8_INTERNAL_VERSION);
 }catch(error){ console.warn('FIX9 final not atlandı:', error); }
@@ -18716,14 +18716,14 @@ try{
 
 
 
-/* v2.5.4 FIX7 - Temiz Admin Takvim / Notlar / Oyun Ekle Kesin Fix
-   Önceki v2.5.4 patch zinciri temizlenerek tek stabil katman bırakıldı.
+/* v2.0.0 Temiz Başlangıç - Temiz Admin Takvim / Notlar / Oyun Ekle Kesin Fix
+   v2.0.0 temiz başlangıç için eski patch karmaşası tek stabil katmana toplandı.
 */
 (function(){
   if(window.__HO254_FIX7_CLEAN_ADMIN__) return;
   window.__HO254_FIX7_CLEAN_ADMIN__ = true;
 
-  const VERSION = 'v2.5.4 FIX7';
+  const VERSION = 'v2.0.0 Temiz Başlangıç';
   const CAL_KEY = 'hayatimiz_v254_fix7_calendar_events';
   const NOTES_KEY = 'hayatimiz_v254_fix7_update_notes';
   const HIDDEN_NOTES_KEY = 'hayatimiz_v254_fix7_hidden_notes';
@@ -19124,18 +19124,18 @@ try{
   }
 
   const builtNotes = [
-    {id:'v254f7', version:'v2.5.4 FIX7', title:'Temiz Takvim / Notlar / Oyun Ekle Kesin Fix', summary:'Önceki v2.5.4 patch zinciri temizlendi; yayın takvimi kaybolma, oyun ekle boş sayfa ve güncelleme notu yazma sorunları düzeltildi.', detail:'Açılış öncesi tek stabil admin katmanı bırakıldı.', status:'Tamamlandı', locked:true},
-    {id:'v254f6', version:'v2.5.4 FIX6', title:'Takvim, Güncelleme Notları ve Oyun Ekle Final', summary:'Yayın takvimi ve oyun ekleme korumaları güçlendirildi.', detail:'Önceki fix korunur.', status:'Tamamlandı', locked:true},
-    {id:'v254', version:'v2.5.4', title:'Bakım Modu V2 ve Yayın Takvimi Kalıcı Kayıt', summary:'Bakım modu, yayın takvimi ve güncelleme notları tek kayıt standardına bağlandı.', detail:'Takvim manuel kayıt mantığında çalışır.', status:'Tamamlandı', locked:true}
+    {id:'v200-clean-start', version:'v2.0.0', title:'Temiz Başlangıç Paketi', summary:'Sürüm v2.0.0 seviyesine çekildi; çalışan stabil site, admin panel, takvim, notlar ve boş ekran koruması korundu.', detail:'Bundan sonra hatalar tek tek v2.0.1, v2.0.2 şeklinde ayrılacak.', status:'Tamamlandı', locked:true},
+    {id:'v200-stability', version:'v2.0.0 Stabil', title:'Stabil Koruma Katmanı', summary:'Vercel asset, dist senkronizasyonu, schema ve local fallback kontrolleri aktif bırakıldı.', detail:'Ana sayfa boş kalırsa güvenli arayüz devreye girer.', status:'Tamamlandı', locked:true},
+    {id:'v200-error-plan', version:'v2.0.0 Kontrol', title:'Adım Adım Hata Takibi', summary:'Yeni hatalar bu sürümden sonra ayrı dosya ve ayrı küçük sürüm olarak takip edilecek.', detail:'Planlananlar klasörü v2.0.1 üzerinden yeniden başlatıldı.', status:'Tamamlandı', locked:true}
   ];
   const plannedNotes = [
-    ['v2.5.5','Güncelleme Notları V2 ve Sürüm Zaman Çizelgesi'],
-    ['v2.5.6','Yayın Takvimi V2 ve Canlı Yayın Planlama'],
-    ['v2.6.0','Kullanıcı Profil ve İzleme Merkezi'],
-    ['v2.7.0','Video İzleme Deneyimi ve Bölüm Merkezi'],
-    ['v2.8.0','Arşiv Veri Güvenliği ve Otomatik Yedekleme'],
-    ['v2.9.0','Yayın Öncesi Kontrol ve Performans Paketi'],
-    ['v3.0.0','Ana Açılış ve İlk Yayın Sürümü']
+    ['v2.0.1','Ana Sayfa ve Menü Kontrolü'],
+    ['v2.0.2','Admin Panel Hata Temizliği'],
+    ['v2.0.3','Oyun Ekle / Düzenle Akışı'],
+    ['v2.0.4','Yayın Takvimi Kalıcı Kayıt'],
+    ['v2.0.5','Güncelleme Notları Merkezi'],
+    ['v2.0.6','Bakım Modu ve Site Ayarları'],
+    ['v2.1.0','Public Yayına Hazırlık']
   ].map(([version,title],i)=>({id:`plan-${i}`, version, title, summary:'Planlandı.', detail:'Planlandı.', status:'Planlandı'}));
 
   function noteKey(n){ return `${clean(n.version)}|${clean(n.title)}`.toLocaleLowerCase('tr-TR'); }
@@ -19200,7 +19200,7 @@ try{
     const notes = allNotes();
     const card = n => `<article class="ho254f7NoteCard"><div><b>${esc(n.version)}</b><small>${esc(n.status||'Tamamlandı')}</small></div><h3>${esc(n.title)}</h3><p>${esc(n.summary)}</p><small>${esc(n.detail||'')}</small><footer><button type="button" class="miniBtn" data-ho254f7-action="edit-note" data-id="${esc(n.id)}">Düzenle</button><button type="button" class="miniBtn danger" data-ho254f7-action="delete-note" data-id="${esc(n.id)}">Sil</button></footer></article>`;
     const plan = n => `<article class="ho254f7NoteCard planned"><div><b>${esc(n.version)}</b><small>Planlandı</small></div><h3>${esc(n.title)}</h3><p>${esc(n.summary)}</p></article>`;
-    return `<section class="ho254f7NotesPage"><div class="ho254f7Hero"><div><span>${VERSION}</span><h2>Güncelleme Notları</h2><p>Not ekle, yaz, düzenle, sil. Alanlara yazı girilebilir ve kayıt kalıcı tutulur.</p></div><span class="pill green">${notes.length} not</span></div><div class="ho254f7NoteGrid"><form class="card" id="ho254f7NoteForm"><h3>Yeni Not / Düzenle</h3><input type="hidden" id="ho254f7NoteId"><label class="field">Sürüm<input id="ho254f7NoteVersion" value="${VERSION}" placeholder="v2.5.4 FIX7"></label><label class="field">Başlık<input id="ho254f7NoteTitle" placeholder="Kısa başlık"></label><label class="field">Kullanıcı özeti<textarea id="ho254f7NoteSummary" rows="3" placeholder="Kullanıcıya görünecek kısa özet"></textarea></label><label class="field">Detaylı not<textarea id="ho254f7NoteDetail" rows="5" placeholder="Admin detay notu"></textarea></label><label class="field">Durum<select id="ho254f7NoteStatus" class="ho254f7Select"><option>Tamamlandı</option><option>Planlandı</option><option>Aktif</option></select></label><div class="rowActions"><button class="btn primary" type="submit">Notu Kaydet</button><button class="btn" type="button" data-ho254f7-action="clear-note">Temizle</button><button class="btn" type="button" data-ho254f7-action="notes-maint">Son 5 Notu Bakım Moduna İşle</button></div></form><section class="card"><div class="sectionHead"><div><h3>Tamamlanan / Aktif Notlar</h3><p class="muted">Buradan düzenle veya sil.</p></div></div><div class="ho254f7NoteList">${notes.map(card).join('') || '<p class="muted">Not yok.</p>'}</div></section></div><section class="card wide"><div class="sectionHead"><div><h3>Planlanan Güncellemeler</h3><p class="muted">v3.0.0 ana açılışa kadar plan.</p></div></div><div class="ho254f7PlanList">${plannedNotes.map(plan).join('')}</div></section></section>`;
+    return `<section class="ho254f7NotesPage"><div class="ho254f7Hero"><div><span>${VERSION}</span><h2>Güncelleme Notları</h2><p>Not ekle, yaz, düzenle, sil. Alanlara yazı girilebilir ve kayıt kalıcı tutulur.</p></div><span class="pill green">${notes.length} not</span></div><div class="ho254f7NoteGrid"><form class="card" id="ho254f7NoteForm"><h3>Yeni Not / Düzenle</h3><input type="hidden" id="ho254f7NoteId"><label class="field">Sürüm<input id="ho254f7NoteVersion" value="${VERSION}" placeholder="v2.0.0 Temiz Başlangıç"></label><label class="field">Başlık<input id="ho254f7NoteTitle" placeholder="Kısa başlık"></label><label class="field">Kullanıcı özeti<textarea id="ho254f7NoteSummary" rows="3" placeholder="Kullanıcıya görünecek kısa özet"></textarea></label><label class="field">Detaylı not<textarea id="ho254f7NoteDetail" rows="5" placeholder="Admin detay notu"></textarea></label><label class="field">Durum<select id="ho254f7NoteStatus" class="ho254f7Select"><option>Tamamlandı</option><option>Planlandı</option><option>Aktif</option></select></label><div class="rowActions"><button class="btn primary" type="submit">Notu Kaydet</button><button class="btn" type="button" data-ho254f7-action="clear-note">Temizle</button><button class="btn" type="button" data-ho254f7-action="notes-maint">Son 5 Notu Bakım Moduna İşle</button></div></form><section class="card"><div class="sectionHead"><div><h3>Tamamlanan / Aktif Notlar</h3><p class="muted">Buradan düzenle veya sil.</p></div></div><div class="ho254f7NoteList">${notes.map(card).join('') || '<p class="muted">Not yok.</p>'}</div></section></div><section class="card wide"><div class="sectionHead"><div><h3>Planlanan Güncellemeler</h3><p class="muted">v2.1.0 ara hedefe kadar plan.</p></div></div><div class="ho254f7PlanList">${plannedNotes.map(plan).join('')}</div></section></section>`;
   }
 
   function fallbackGameFormHtml(){
@@ -19289,18 +19289,18 @@ try{
 
     if(p === 'Yayın Takvimi' && (force || !qs('.ho254f7CalendarPage', r) || r.textContent.includes('Kapak Galerisi Araçları') || r.textContent.includes('boşsa temiz boş durum'))){
       if(window.state){ state.page='Yönetim Paneli'; state.adminPage='Yayın Takvimi'; }
-      r.innerHTML = `<div class="adminBreadcrumb">Yönetim Paneli › Yayın Takvimi</div><h1>Yayın Takvimi</h1><p class="muted">v2.5.4 FIX7 temiz takvim yönetimi.</p>` + calendarPageHtml();
+      r.innerHTML = `<div class="adminBreadcrumb">Yönetim Paneli › Yayın Takvimi</div><h1>Yayın Takvimi</h1><p class="muted">v2.0.0 Temiz Başlangıç temiz takvim yönetimi.</p>` + calendarPageHtml();
       refreshCalendarPreview();
       return;
     }
     if(p === 'Güncelleme Notları' && (force || !qs('.ho254f7NotesPage', r))){
       if(window.state){ state.page='Yönetim Paneli'; state.adminPage='Güncelleme Notları'; }
-      r.innerHTML = `<div class="adminBreadcrumb">Yönetim Paneli › Güncelleme Notları</div><h1>Güncelleme Notları</h1><p class="muted">v2.5.4 FIX7 not yönetimi.</p>` + notesPageHtml();
+      r.innerHTML = `<div class="adminBreadcrumb">Yönetim Paneli › Güncelleme Notları</div><h1>Güncelleme Notları</h1><p class="muted">v2.0.0 Temiz Başlangıç not yönetimi.</p>` + notesPageHtml();
       return;
     }
     if(p === 'Oyun Ekle' && (force || !qs('.ho254f7GameAddPage,#gameAddForm', r) || clean(r.textContent).length < 180)){
       if(window.state){ state.page='Yönetim Paneli'; state.adminPage='Oyun Ekle'; state.showGameForm=true; }
-      r.innerHTML = `<div class="adminBreadcrumb">Yönetim Paneli › Oyun Ekle</div><h1>Oyun Ekle</h1><p class="muted">v2.5.4 FIX7 boş sayfa koruması.</p>` + gameAddPageHtml();
+      r.innerHTML = `<div class="adminBreadcrumb">Yönetim Paneli › Oyun Ekle</div><h1>Oyun Ekle</h1><p class="muted">v2.0.0 Temiz Başlangıç boş sayfa koruması.</p>` + gameAddPageHtml();
       return;
     }
   }
@@ -19462,9 +19462,9 @@ try{
 })();
 
 
-/* v2.5.4 FIX9 - Tam stabil admin, schema ve deploy uyumluluk katmanı */
+/* v2.0.0 - Tam stabil admin, schema ve deploy uyumluluk katmanı */
 ;(() => {
-  const HO254F8_VERSION = 'v2.5.4 FIX9';
+  const HO254F8_VERSION = 'v2.0.0';
   const HO254F8_TITLE = 'Tam Stabil Site Fix';
   const ADMIN_PAGES_FIX9 = ['Genel Bakış','Oyun Ekle','Mevcut Oyunlar','Yayın Takvimi','Güncelleme Notları','Bakım Modu','Kullanıcı Yetkileri','Profil','API/ENV Durumu','Ayarlar'];
   const ls = {
@@ -19504,9 +19504,9 @@ try{
   const publicVersionNote = {
     version: HO254F8_VERSION,
     title: HO254F8_TITLE,
-    summary: 'ZIP içindeki eksik schema, eski versiyon göstergeleri, boş admin sayfaları, takvim/not/oyun ekleme akışı ve Vercel dist senkronizasyonu düzeltildi.',
+    summary: 'Sürüm v2.0.0 seviyesine çekildi; çalışan stabil site, schema, admin, takvim/not/oyun ekleme akışı ve Vercel dist senkronizasyonu korundu.',
     image: 'previews/hayatimiz-oyun-v254-fix8-tam-stabil-site.png',
-    written: 'FIX9 paketi siteyi tek stabil admin katmanına toplar. Oyun Ekle, Mevcut Oyunlar, Yayın Takvimi, Güncelleme Notları ve Bakım Modu local fallback + Supabase API ile çalışacak şekilde güvene alındı.'
+    written: 'v2.0.0 paketi siteyi tek stabil admin katmanına toplar. Oyun Ekle, Mevcut Oyunlar, Yayın Takvimi, Güncelleme Notları ve Bakım Modu local fallback + Supabase API ile çalışacak şekilde güvene alındı.'
   };
 
   try {

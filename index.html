@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hayatımız Oyun - v2.5.4 FIX9</title>
+  <title>Hayatımız Oyun - v2.0.0</title>
   <script>
     (function(){
       var formActions = ['ho240f42-refetch-release','ho240f41-refetch-release','ho240f42-find-covers','ho240f41-find-covers','ho240f11-find-covers','ho240f10-find-covers','ho240f42-refetch-genres','ho240f41-refetch-genres','fix12-refetch-genres','fix10-refetch-genres','ho240f42-refetch-description','fix12-refetch-story','fix10-refetch-story','fetch-game-story','fetch-game-story-edit','ho240f42-fetch-all','auto-game-meta','auto-game-meta-edit','estimate-playlist-episodes','estimate-playlist-episodes-edit','ho240f58-steam-check','ho240f58-apply-steam'];
@@ -78,28 +78,28 @@
   }
   function notesHtml(){
     var done=[
-      ['v2.5.4 FIX2','Boş Sayfa Kesin Fix','Güncelleme Notları ve Yayın Takvimi siyah/boş ekrana düşmeyecek şekilde düzeltildi.'],
-      ['v2.5.4','Bakım Modu V2 ve Yayın Takvimi Kalıcı Kayıt','Takvim manuel kayıt standardına bağlandı; oyunlardan sadece öneri gelir.'],
-      ['v2.5.3 FIX6','Admin Notlar ve Takvim Görünürlük Fix','Yönetim paneli görünürlük düzeltmeleri korundu.']
+      ['v2.0.0','Temiz Başlangıç','Site v2.0.0 temiz başlangıca çekildi; boş ekran koruması, admin, takvim ve notlar korunuyor.'],
+      ['v2.0.0 Stabil','Çalışan Stabil Paket','Supabase tabloları, bakım modu ve local fallback katmanı güvene alındı.'],
+      ['v2.0.0 Kontrol','Adım Adım Hata Takibi','Bundan sonra her hata v2.0.1, v2.0.2 şeklinde ayrı sürümle çözülecek.']
     ];
     var plan=[
-      ['v2.5.5','Güncelleme Notları V2 ve Sürüm Zaman Çizelgesi'],
-      ['v2.5.6','Yayın Takvimi V2 ve Canlı Yayın Planlama'],
-      ['v2.6.0','Kullanıcı Profil ve İzleme Merkezi'],
-      ['v2.7.0','Video İzleme Deneyimi ve Bölüm Merkezi'],
-      ['v2.8.0','Arşiv Veri Güvenliği ve Otomatik Yedekleme'],
-      ['v2.9.0','Yayın Öncesi Kontrol ve Performans Paketi'],
-      ['v3.0.0','Ana Açılış ve İlk Yayın Sürümü']
+      ['v2.0.1','Ana Sayfa ve Menü Kontrolü'],
+      ['v2.0.2','Admin Panel Hata Temizliği'],
+      ['v2.0.3','Oyun Ekle / Düzenle Akışı'],
+      ['v2.0.4','Yayın Takvimi Kalıcı Kayıt'],
+      ['v2.0.5','Güncelleme Notları Merkezi'],
+      ['v2.0.6','Bakım Modu ve Site Ayarları'],
+      ['v2.1.0','Public Yayına Hazırlık']
     ];
     function card(n,cls){return '<article class="ho254FallbackCard '+(cls||'')+'"><b>'+esc(n[0])+'</b><h3>'+esc(n[1])+'</h3><p>'+esc(n[2]||'Planlandı.')+'</p></article>'}
-    return '<div class="ho254FallbackHero"><span>v2.5.4 FIX2</span><h1>Güncelleme Notları</h1><p>Profesyonel sürüm arşivi. Ana uygulama geç yüklenirse bu güvenli panel devreye girer.</p></div><div class="ho254FallbackCols"><section><h2>Tamamlanan Güncellemeler</h2>'+done.map(function(n){return card(n)}).join('')+'</section><section><h2>Planlanan Güncellemeler</h2>'+plan.map(function(n){return card(n,'planned')}).join('')+'</section></div>';
+    return '<div class="ho254FallbackHero"><span>v2.0.0</span><h1>Güncelleme Notları</h1><p>Profesyonel sürüm arşivi. Ana uygulama geç yüklenirse bu güvenli panel devreye girer.</p></div><div class="ho254FallbackCols"><section><h2>Tamamlanan Güncellemeler</h2>'+done.map(function(n){return card(n)}).join('')+'</section><section><h2>Planlanan Güncellemeler</h2>'+plan.map(function(n){return card(n,'planned')}).join('')+'</section></div>';
   }
   function getEvents(){try{return JSON.parse(localStorage.getItem('hayatimiz_v254_fix2_calendar_events')||localStorage.getItem('hayatimiz_calendar_events_stable_v253f4')||'[]')||[]}catch(e){return []}}
   function setEvents(rows){localStorage.setItem('hayatimiz_v254_fix2_calendar_events',JSON.stringify(rows||[]));localStorage.setItem('hayatimiz_calendar_events_stable_v253f4',JSON.stringify(rows||[]));}
   function takvimHtml(){
     var rows=getEvents();
     var list=rows.length?rows.map(function(e,i){return '<article class="ho254FallbackEvent"><b>'+esc(e.title||'Yayın')+'</b><small>'+esc(e.date||'')+' • '+esc(e.time||'20:00')+'</small><p>'+esc(e.note||e.type||'')+'</p><button data-fb-del="'+i+'">Sil</button></article>'}).join(''):'<p class="muted">Henüz manuel yayın yok. Formdan tarih ve saat girip ekle.</p>';
-    return '<div class="ho254FallbackHero"><span>v2.5.4 FIX2</span><h1>Yayın Takvimi</h1><p>Otomatik sahte kayıt oluşturmaz. Manuel ekle, kayıtlar local olarak korunur.</p></div><div class="ho254FallbackCols"><form class="ho254FallbackForm" id="ho254FallbackCalForm"><h2>Manuel Yayın Ekle</h2><label>Başlık<input name="title" required placeholder="Örn: Alan Wake 2 yayını"></label><label>Tarih<input name="date" type="date" required></label><label>Saat<input name="time" value="20:00"></label><label>Tür<input name="type" value="Ana Yayın"></label><label>Kapak URL<input name="cover" placeholder="https://..."></label><label>Video URL<input name="videoUrl" placeholder="https://youtube.com/..."></label><label>Not<textarea name="note"></textarea></label><button type="submit">Etkinliği Kaydet</button></form><section><h2>Manuel Takvim Kayıtları</h2><div id="ho254FallbackEvents">'+list+'</div></section></div>';
+    return '<div class="ho254FallbackHero"><span>v2.0.0</span><h1>Yayın Takvimi</h1><p>Otomatik sahte kayıt oluşturmaz. Manuel ekle, kayıtlar local olarak korunur.</p></div><div class="ho254FallbackCols"><form class="ho254FallbackForm" id="ho254FallbackCalForm"><h2>Manuel Yayın Ekle</h2><label>Başlık<input name="title" required placeholder="Örn: Alan Wake 2 yayını"></label><label>Tarih<input name="date" type="date" required></label><label>Saat<input name="time" value="20:00"></label><label>Tür<input name="type" value="Ana Yayın"></label><label>Kapak URL<input name="cover" placeholder="https://..."></label><label>Video URL<input name="videoUrl" placeholder="https://youtube.com/..."></label><label>Not<textarea name="note"></textarea></label><button type="submit">Etkinliği Kaydet</button></form><section><h2>Manuel Takvim Kayıtları</h2><div id="ho254FallbackEvents">'+list+'</div></section></div>';
   }
   function inject(){
     var page=pathPage();
@@ -133,7 +133,7 @@
 
 </head>
 <body>
-  <div id="root"><section class="ho254StaticBoot"><div class="ho254StaticBootCard"><b>v2.5.4 FIX9</b><h1>Hayatımız Oyun yükleniyor</h1><p>Boş ekran koruması aktif. Ana paket gecikirse güvenli arayüz otomatik açılacak.</p><div class="ho254StaticBootSpin"></div></div></section></div>
+  <div id="root"><section class="ho254StaticBoot"><div class="ho254StaticBootCard"><b>v2.0.0</b><h1>Hayatımız Oyun yükleniyor</h1><p>Boş ekran koruması aktif. Ana paket gecikirse güvenli arayüz otomatik açılacak.</p><div class="ho254StaticBootSpin"></div></div></section></div>
   <script type="module" src="/src/main.js"></script>
 
 <script>
@@ -155,9 +155,9 @@
     var local=parse('hayatimiz_update_notes_local_v254f8',[]);
     if(Array.isArray(local)&&local.length) return local.slice(0,6);
     return [
-      {version:'v2.5.4 FIX9',title:'Ana Sayfa Boş Ekran Fix',summary:'Vercel üzerinde /ana-sayfa siyah ekranda kalırsa HTML güvenli açılış devreye girer.'},
-      {version:'v2.5.4 FIX8',title:'Tam Stabil Site Fix',summary:'Admin, takvim, notlar, bakım modu ve schema güvenli hale getirildi.'},
-      {version:'v2.5.4 FIX7',title:'Temiz Takvim ve Oyun Ekle',summary:'Önceki temiz paket korunarak üzerine blank-screen koruması eklendi.'}
+      {version:'v2.0.0',title:'Ana Sayfa Boş Ekran Fix',summary:'Vercel üzerinde /ana-sayfa siyah ekranda kalırsa HTML güvenli açılış devreye girer.'},
+      {version:'v2.0.0 Stabil Koruma',title:'Tam Stabil Site Fix',summary:'Admin, takvim, notlar, bakım modu ve schema güvenli hale getirildi.'},
+      {version:'v2.0.0 Temiz Başlangıç',title:'Temiz Takvim ve Oyun Ekle',summary:'Önceki temiz paket korunarak üzerine blank-screen koruması eklendi.'}
     ];
   }
   function pageType(){
@@ -179,18 +179,18 @@
   }
   function home(){
     var rows=games();
-    return '<section class="ho254Fix9Hero"><span>v2.5.4 FIX9</span><h1>Hayatımız Oyun Arşivi</h1><p>Ana sayfa artık boş/siyah ekranda kalmaz. Ana uygulama yüklenemezse bu güvenli arayüz otomatik açılır.</p><div><button onclick="location.href=\'/ana-sayfa\'">Ana Sayfa</button><button onclick="location.href=\'/yonetim\'">Yönetim Paneli</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button></div></section><section class="ho254Fix9Grid">'+rows.slice(0,12).map(card).join('')+'</section>';
+    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Hayatımız Oyun Arşivi</h1><p>Ana sayfa artık boş/siyah ekranda kalmaz. Ana uygulama yüklenemezse bu güvenli arayüz otomatik açılır.</p><div><button onclick="location.href=\'/ana-sayfa\'">Ana Sayfa</button><button onclick="location.href=\'/yonetim\'">Yönetim Paneli</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button></div></section><section class="ho254Fix9Grid">'+rows.slice(0,12).map(card).join('')+'</section>';
   }
   function notlar(){
-    return '<section class="ho254Fix9Hero"><span>v2.5.4 FIX9</span><h1>Güncelleme Notları</h1><p>Local ve Supabase uyumlu not merkezi. Ana paket geç açılırsa bu panel çalışır.</p></section><section class="ho254Fix9List">'+notes().map(function(n){return '<article><b>'+esc(n.version||'Sürüm')+'</b><h3>'+esc(n.title||'Güncelleme')+'</h3><p>'+esc(n.summary||n.written||'Not hazır.')+'</p></article>';}).join('')+'</section>';
+    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Güncelleme Notları</h1><p>Local ve Supabase uyumlu not merkezi. Ana paket geç açılırsa bu panel çalışır.</p></section><section class="ho254Fix9List">'+notes().map(function(n){return '<article><b>'+esc(n.version||'Sürüm')+'</b><h3>'+esc(n.title||'Güncelleme')+'</h3><p>'+esc(n.summary||n.written||'Not hazır.')+'</p></article>';}).join('')+'</section>';
   }
   function takvim(){
     var rows=parse('hayatimiz_v254_fix2_calendar_events',[])||parse('hayatimiz_calendar_events_stable_v253f4',[]); if(!Array.isArray(rows)) rows=[];
     var list=rows.length?rows.map(function(e){return '<article><b>'+esc(e.title||'Yayın')+'</b><h3>'+esc((e.date||'Tarih yok')+' • '+(e.time||'20:00'))+'</h3><p>'+esc(e.note||e.type||'Yayın planı')+'</p></article>';}).join(''):'<article><b>Takvim</b><h3>Henüz manuel yayın yok</h3><p>Yönetim panelinden yayın ekleyince burada görünür.</p></article>';
-    return '<section class="ho254Fix9Hero"><span>v2.5.4 FIX9</span><h1>Yayın Takvimi</h1><p>Takvim sayfası boş ekranda kalmaz; kayıtlar local yedekten okunur.</p></section><section class="ho254Fix9List">'+list+'</section>';
+    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Yayın Takvimi</h1><p>Takvim sayfası boş ekranda kalmaz; kayıtlar local yedekten okunur.</p></section><section class="ho254Fix9List">'+list+'</section>';
   }
   function admin(){
-    return '<section class="ho254Fix9Hero"><span>v2.5.4 FIX9</span><h1>Yönetim Paneli</h1><p>Admin sayfası boş kalırsa hızlı menü açılır. Ana JS düzeldiğinde tam panel otomatik gelir.</p><div><button onclick="location.href=\'/yonetim/oyunlar\'">Oyunlar</button><button onclick="location.href=\'/yonetim/yayin-takvimi\'">Yayın Takvimi</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button><button onclick="location.href=\'/ana-sayfa\'">Siteye Dön</button></div></section><section class="ho254Fix9List"><article><b>Durum</b><h3>Boş ekran koruması aktif</h3><p>Vercel asset veya tarayıcı cache problemi olsa bile kullanıcı siyah ekran görmez.</p></article></section>';
+    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Yönetim Paneli</h1><p>Admin sayfası boş kalırsa hızlı menü açılır. Ana JS düzeldiğinde tam panel otomatik gelir.</p><div><button onclick="location.href=\'/yonetim/oyunlar\'">Oyunlar</button><button onclick="location.href=\'/yonetim/yayin-takvimi\'">Yayın Takvimi</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button><button onclick="location.href=\'/ana-sayfa\'">Siteye Dön</button></div></section><section class="ho254Fix9List"><article><b>Durum</b><h3>Boş ekran koruması aktif</h3><p>Vercel asset veya tarayıcı cache problemi olsa bile kullanıcı siyah ekran görmez.</p></article></section>';
   }
   function install(reason){
     if(!isBlank()) return;
