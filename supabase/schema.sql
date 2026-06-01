@@ -1,11 +1,11 @@
--- Hayatımız Oyun v2.0.4 - Sıfırdan Supabase Şeması
--- ÖNEMLİ: Bu dosya tabloları sıfırdan kurar. Mevcut tablo verileri silinir.
--- Kullanım: Supabase SQL Editor içine tamamını yapıştırıp Run çalıştır.
+-- Hayatımız Oyun v2.0.4 FIX - Sıfırdan Boş Supabase Şeması
+-- Bu dosya tabloları yeniden kurar ama demo oyun eklemez.
+-- Amaç: status/tür/etiket/seri/auth/bakım tablolarını temiz ve tutarlı başlatmak.
+-- DİKKAT: Run yapılırsa mevcut tablo verileri silinir.
 
 create extension if not exists pgcrypto;
 create extension if not exists pg_trgm;
 
--- Sıfırdan kurulum için eski tabloları kaldır.
 drop table if exists public.site_activity_logs cascade;
 drop table if exists public.site_health_checks cascade;
 drop table if exists public.site_status_logs cascade;
@@ -26,7 +26,6 @@ drop table if exists public.game_series cascade;
 drop table if exists public.site_admin_profiles cascade;
 drop table if exists public.site_users cascade;
 
--- Ortak updated_at tetikleyicisi.
 create or replace function public.set_updated_at()
 returns trigger as $$
 begin
@@ -218,73 +217,28 @@ create table public.site_features (
   title text,
   group_name text,
   target text,
-  description text,
-  next_text text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 create trigger trg_site_features_updated_at before update on public.site_features for each row execute function public.set_updated_at();
 
-create table public.site_admin_planner (
-  id uuid primary key default gen_random_uuid(),
-  group_name text,
-  title text not null,
-  status text not null default 'plan',
-  feature_key text,
-  target text,
-  description text,
-  next_text text,
-  sort_order integer not null default 0,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-create trigger trg_site_admin_planner_updated_at before update on public.site_admin_planner for each row execute function public.set_updated_at();
-
-create table public.site_admin_notes (
-  id uuid primary key default gen_random_uuid(),
-  note text not null,
-  actor_email text,
-  created_at timestamptz not null default now()
-);
-
-create table public.site_recovery_snapshots (
-  id uuid primary key default gen_random_uuid(),
-  source text,
-  note text,
-  snapshot jsonb,
-  created_at timestamptz not null default now()
-);
-
-create table public.site_game_requests (
-  id uuid primary key default gen_random_uuid(),
-  game_title text not null,
-  series_name text,
-  requester_email text,
-  note text,
-  status text not null default 'new',
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-create trigger trg_site_game_requests_updated_at before update on public.site_game_requests for each row execute function public.set_updated_at();
-
 create table public.site_status_logs (
   id uuid primary key default gen_random_uuid(),
-  status_type text not null,
-  status_value text not null,
+  status text not null default 'ok',
+  scope text not null default 'site',
   message text,
-  source text default 'system',
+  details jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
 );
-create index site_status_logs_type_idx on public.site_status_logs(status_type, created_at desc);
+create index site_status_logs_scope_idx on public.site_status_logs(scope, created_at desc);
 
 create table public.site_health_checks (
   id uuid primary key default gen_random_uuid(),
   check_key text not null,
-  check_label text not null,
   status text not null default 'ok',
   message text,
-  payload jsonb default '{}'::jsonb,
-  checked_at timestamptz not null default now()
+  checked_at timestamptz not null default now(),
+  details jsonb not null default '{}'::jsonb
 );
 create index site_health_checks_key_idx on public.site_health_checks(check_key, checked_at desc);
 
@@ -294,96 +248,49 @@ create table public.site_activity_logs (
   action text not null,
   target_type text,
   target_id text,
-  detail jsonb default '{}'::jsonb,
+  message text,
+  details jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
 );
-create index site_activity_logs_action_idx on public.site_activity_logs(action, created_at desc);
+create index site_activity_logs_created_idx on public.site_activity_logs(created_at desc);
 
--- Varsayılan durum, tür, etiket ve sürüm verileri.
 insert into public.site_admin_profiles(email, display_name, role)
-values ('mertdundaroyunda@gmail.com','Hayatımız Oyun','owner')
-on conflict(email) do nothing;
+values ('mertdundaroyunda@gmail.com', 'Hayatımız Oyun Owner', 'owner')
+on conflict (email) do update set role = excluded.role, display_name = excluded.display_name, updated_at = now();
 
 insert into public.game_statuses(slug,label,color,sort_order) values
-('devam-eden','Devam Eden','blue',10),
-('tamamlanan','Tamamlanan','green',20),
+('devam-eden','Devam Eden','green',10),
+('tamamlanan','Tamamlanan','blue',20),
 ('yakinda','Yakında','amber',30),
 ('planlandi','Planlandı','purple',40),
 ('ara-verildi','Ara Verildi','red',50)
-on conflict(slug) do update set label=excluded.label,color=excluded.color,sort_order=excluded.sort_order,updated_at=now();
+on conflict (slug) do update set label=excluded.label,color=excluded.color,sort_order=excluded.sort_order,updated_at=now();
 
 insert into public.game_genres(slug,label,icon,sort_order) values
+('genel','Genel','🎮',0),
 ('aksiyon','Aksiyon','⚔️',10),
 ('macera','Macera','🧭',20),
-('korku','Korku','🌑',30),
+('korku','Korku','👻',30),
 ('rpg','RPG','🛡️',40),
-('bilim-kurgu','Bilim Kurgu','🚀',50),
-('youtube-arsivi','YouTube Arşivi','▶️',60),
-('genel','Genel','🎮',90)
-on conflict(slug) do update set label=excluded.label,icon=excluded.icon,sort_order=excluded.sort_order,updated_at=now();
+('youtube-arsivi','YouTube Arşivi','▶️',50)
+on conflict (slug) do update set label=excluded.label,icon=excluded.icon,sort_order=excluded.sort_order,updated_at=now();
 
 insert into public.game_tags(slug,label,group_name,sort_order) values
 ('turkce-altyazili','Türkçe Altyazılı','dil',10),
-('turkce','Türkçe','dil',20),
-('hikaye','Hikaye','tur',30),
-('seri','Seri','tur',40),
-('canli-yayin','Canlı Yayın','kaynak',50),
-('arsiv','Arşiv','kaynak',60),
-('plan','Plan','durum',70)
-on conflict(slug) do update set label=excluded.label,group_name=excluded.group_name,sort_order=excluded.sort_order,updated_at=now();
-
-insert into public.game_series(slug,title,description,status_slug,sort_order) values
-('alan-wake','Alan Wake','Korku ve hikaye odaklı Remedy serisi.','devam-eden',10),
-('assassins-creed','Assassin’s Creed','Tarihi aksiyon serisi arşivi.','tamamlanan',20),
-('genel-arsiv','Genel Arşiv','Hayatımız Oyun genel YouTube arşivi.','yakinda',90)
-on conflict(slug) do update set title=excluded.title,description=excluded.description,status_slug=excluded.status_slug,sort_order=excluded.sort_order,updated_at=now();
-
-insert into public.games(slug,title,description,status_slug,genre_slug,series_slug,series_order,tags,cover_url,release_date,episode_count,watched_episode_count,is_featured,score)
-values
-('alan-wake-remastered','Alan Wake Remastered','Korku ve hikaye odaklı yayın arşivi.','devam-eden','korku','alan-wake',1,array['Türkçe Altyazılı','Hikaye','Korku'],'/assets/alan-wake-night-springs.png','2010',8,3,true,8.5),
-('assassins-creed-directors-cut','Assassin’s Creed Director’s Cut','Tamamlanan seri arşivi ve bölüm takibi.','tamamlanan','aksiyon','assassins-creed',1,array['Türkçe','Seri','Tarihi'],'/assets/assassins-creed-directors-cut.png','2008',14,14,false,8.0),
-('hayatimiz-oyun-arsiv','Hayatımız Oyun Arşivi','YouTube playlist, bölüm ve oyun koleksiyonu merkezi.','yakinda','youtube-arsivi','genel-arsiv',1,array['Arşiv','Plan','YouTube'],'/assets/hayatimiz-kapak.png','2026',0,0,false,0)
-on conflict(slug) do update set title=excluded.title,description=excluded.description,status_slug=excluded.status_slug,genre_slug=excluded.genre_slug,series_slug=excluded.series_slug,series_order=excluded.series_order,tags=excluded.tags,cover_url=excluded.cover_url,release_date=excluded.release_date,episode_count=excluded.episode_count,watched_episode_count=excluded.watched_episode_count,is_featured=excluded.is_featured,score=excluded.score,updated_at=now();
+('hikaye','Hikaye','icerik',20),
+('seri','Seri','arsiv',30),
+('canli-yayin','Canlı Yayın','youtube',40),
+('playlist','Playlist','youtube',50)
+on conflict (slug) do update set label=excluded.label,group_name=excluded.group_name,sort_order=excluded.sort_order,updated_at=now();
 
 insert into public.site_runtime_config(key,value) values
-('schema_version', jsonb_build_object('version','v2.0.4','note','Sıfırdan status/oyun/arşiv şeması','updated_at',now())),
-('maintenance_mode', jsonb_build_object('enabled',false,'percent',0,'message','Hayatımız Oyun yayında.','eta','')),
-('site_status', jsonb_build_object('status','ok','version','v2.0.4','public_ready',false))
-on conflict(key) do update set value=excluded.value,updated_at=now();
+('site_version', jsonb_build_object('version','v2.0.4','fix','kalici-silme-auth-bakim')),
+('maintenance_mode', jsonb_build_object('enabled',false,'message','Hayatımız Oyun yayında.','percent',0,'adminBypass',true))
+on conflict (key) do update set value = excluded.value, updated_at = now();
 
 insert into public.site_update_notes(version,title,summary,status,pinned,planned,sort_order) values
-('v2.0.4','Oyun Arşivi, Kartlar ve Filtreler','Profesyonel kartlar, arama, durum, tür, etiket, seri filtreleri, koleksiyon ve sonuç sayıları geri eklendi.','published',true,false,10),
-('v2.0.5','Admin Panel Geri Dönüş','Yönetim paneli eski güçlü görünümüne kontrollü şekilde yaklaştırılacak.','planned',false,true,20)
-;
+('v2.0.4 FIX','Kalıcı Silme, Kayıt/Giriş ve Bakım Modu Fix','Demo oyunların son oyun silindikten sonra geri gelmesi düzeltildi. Kayıt ol/giriş yap geri eklendi. Bakım modu admin alanına alındı.','published',true,false,1)
+on conflict do nothing;
 
-insert into public.site_admin_planner(group_name,title,status,target,description,next_text,sort_order) values
-('Geri Dönüş Planı','v2.0.5 Admin Panel Geri Dönüş','plan','v2.0.5','Admin dashboard, metrikler ve hızlı işlemler kontrollü şekilde geri eklenecek.','Önce site açılışı korunacak, sonra panel güçlendirilecek.',10),
-('Geri Dönüş Planı','v2.0.6 Oyun Ekle/Düzenle Formu','plan','v2.0.6','Form alanları, etiket/tür ayrımı ve profesyonel kayıt akışı geri gelecek.','RAWG/YouTube sonraki adımlara bırakılacak.',20)
-;
-
-insert into public.site_health_checks(check_key,check_label,status,message,payload) values
-('schema','Schema','ok','v2.0.4 sıfırdan schema kuruldu.',jsonb_build_object('version','v2.0.4')),
-('public_app','Public Uygulama','ok','Boş ekran koruması ve arşiv filtreleri aktif.',jsonb_build_object('route','/ana-sayfa')),
-('archive_filters','Oyun Arşivi Filtreleri','ok','Durum, tür, seri, etiket ve arama filtreleri hazır.',jsonb_build_object('version','v2.0.4'))
-;
-
--- Public okuma politikaları için şimdilik RLS kapalı bırakıldı.
-alter table public.site_users disable row level security;
-alter table public.site_admin_profiles disable row level security;
-alter table public.game_statuses disable row level security;
-alter table public.game_genres disable row level security;
-alter table public.game_series disable row level security;
-alter table public.game_tags disable row level security;
-alter table public.games disable row level security;
-alter table public.game_episodes disable row level security;
-alter table public.site_runtime_config disable row level security;
-alter table public.site_update_notes disable row level security;
-alter table public.site_calendar_events disable row level security;
-alter table public.site_features disable row level security;
-alter table public.site_admin_planner disable row level security;
-alter table public.site_admin_notes disable row level security;
-alter table public.site_recovery_snapshots disable row level security;
-alter table public.site_game_requests disable row level security;
-alter table public.site_status_logs disable row level security;
-alter table public.site_health_checks disable row level security;
-alter table public.site_activity_logs disable row level security;
+insert into public.site_status_logs(status,scope,message,details) values
+('ok','schema','v2.0.4 FIX boş şema başarıyla kuruldu. Demo oyun eklenmedi.', jsonb_build_object('version','v2.0.4','fix','kalici-silme-auth-bakim'));

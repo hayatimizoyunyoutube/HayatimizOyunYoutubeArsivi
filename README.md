@@ -18,3 +18,7 @@ Bu paket v2.0.4 Oyun Arşivi, Kartlar ve Filtreler geri dönüş paketidir.
 
 ## Supabase
 `supabase/schema.sql` sıfırdan tablo kurar. Mevcut Supabase tablo verilerini siler.
+
+
+## v2.0.4 FIX
+Kalıcı oyun silme, kayıt/giriş ve bakım modu görünürlük sorunları düzeltildi. Bu paket sürüm yükseltmez.

@@ -1,1 +1,1 @@
-v2.0.4 için supabase/schema.sql sıfırdan kurulum dosyasıdır. SQL Editor içinde tamamını çalıştır. DİKKAT: Eski tablo verilerini siler ve status/oyun/health tablolarını yeniden oluşturur.
+v2.0.4 FIX schema.sql sıfırdan boş kurulumdur. Mevcut verileri siler. Demo oyun eklemez. Sadece status/tür/etiket/admin/bakım tablolarını temiz kurar.

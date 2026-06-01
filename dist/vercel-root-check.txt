@@ -1,1 +1,1 @@
-v2.0.4 oyun arşivi filtreler build ok
+v2.0.4 fix kalici silme auth bakim build ok

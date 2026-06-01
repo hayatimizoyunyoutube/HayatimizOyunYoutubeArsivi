@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "echo \"v2.0.3 profesyonel ana sayfa geri donus\"",
+  "installCommand": "echo \"v2.0.4 FIX kalici silme auth bakim\"",
   "buildCommand": "node scripts/vercel-static-build-check.mjs",
   "outputDirectory": "dist",
   "cleanUrls": false,
@@ -29,7 +29,7 @@
         },
         {
           "key": "X-Hayatimiz-Oyun-Fix",
-          "value": "v2.0.3-PROFESYONEL-ANA-SAYFA-GERI-DONUS"
+          "value": "v2.0.4-FIX-KALICI-SILME-AUTH-BAKIM"
         }
       ]
     },
