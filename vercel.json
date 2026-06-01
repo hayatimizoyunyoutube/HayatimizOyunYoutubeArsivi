@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "echo \"v2.0.1 ana sayfa boş ekran kesin çözüm: npm install atlandi, src dist ile senkronize ediliyor\"",
+  "installCommand": "echo \"v2.0.2 stabil site: npm install gerekmeden statik build\"",
   "buildCommand": "node scripts/vercel-static-build-check.mjs",
   "outputDirectory": "dist",
   "cleanUrls": false,
@@ -29,7 +29,7 @@
         },
         {
           "key": "X-Hayatimiz-Oyun-Fix",
-          "value": "v2.0.1-ANA-SAYFA-BOS-EKRAN-KESIN-COZUM"
+          "value": "v2.0.2-STABIL-CALISAN-SITE"
         }
       ]
     },

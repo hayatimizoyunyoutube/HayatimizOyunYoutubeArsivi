@@ -3,322 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hayatımız Oyun - v2.0.1</title>
-  <script>
-    (function(){
-      var formActions = ['ho240f42-refetch-release','ho240f41-refetch-release','ho240f42-find-covers','ho240f41-find-covers','ho240f11-find-covers','ho240f10-find-covers','ho240f42-refetch-genres','ho240f41-refetch-genres','fix12-refetch-genres','fix10-refetch-genres','ho240f42-refetch-description','fix12-refetch-story','fix10-refetch-story','fetch-game-story','fetch-game-story-edit','ho240f42-fetch-all','auto-game-meta','auto-game-meta-edit','estimate-playlist-episodes','estimate-playlist-episodes-edit','ho240f58-steam-check','ho240f58-apply-steam'];
-      function isFormAction(action){ return formActions.indexOf(String(action || '')) >= 0; }
-      function inGameForm(el){ return !!(el && el.closest && el.closest('#gameAddForm,#gameEditForm,.ho240f47ModalBackdrop,.ho240f49ModalBackdrop,.ho240f46GameForm,.fix6GameForm')); }
-      window.__HO240F50_FORM_ACTIONS__ = formActions;
-      window.__HAYATIMIZ_BOOT_TIMER__ = null;
-      window.addEventListener('error', function(e){ console.error('Hayatımız Oyun açılış hatası:', e.message || e.error); });
-      window.addEventListener('unhandledrejection', function(e){ console.error('Hayatımız Oyun promise hatası:', e.reason); });
-      document.addEventListener('click', function(e){
-        var el = e.target && e.target.closest && e.target.closest('[data-action]');
-        if(!el) return;
-        var action = el.dataset.action || '';
-        if(!isFormAction(action) || !inGameForm(el)) return;
-        e.preventDefault();
-        e.stopPropagation();
-        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-        if(window.HO240F50_HANDLE_FORM_ACTION) window.HO240F50_HANDLE_FORM_ACTION(action, el);
-      }, true);
-      document.addEventListener('submit', function(e){
-        var form = e.target;
-        if(!form || !form.matches || !form.matches('#gameAddForm,#gameEditForm,.gameForm')) return;
-        var submitter = e.submitter;
-        if(submitter && submitter.dataset && isFormAction(submitter.dataset.action)){
-          e.preventDefault();
-          e.stopPropagation();
-          if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-          if(window.HO240F50_HANDLE_FORM_ACTION) window.HO240F50_HANDLE_FORM_ACTION(submitter.dataset.action, submitter);
-        }
-      }, true);
-    })();
-  </script>
-  <link rel="stylesheet" href="/src/styles.css" />
-
-<style>
-.ho254FallbackShell{min-height:100vh;display:grid;grid-template-columns:240px 1fr;background:#05080d;color:#fff;font-family:Inter,system-ui,Arial,sans-serif}
-.ho254FallbackShell aside{padding:24px;border-right:1px solid #1f2937;background:#080b11;display:flex;flex-direction:column;gap:12px}
-.ho254FallbackShell aside b{font-size:20px;margin-bottom:16px}.ho254FallbackShell aside em{color:#ff2348;font-style:normal}
-.ho254FallbackShell aside button{border:1px solid #263244;background:#111827;color:#fff;border-radius:12px;padding:12px;text-align:left;font-weight:800;cursor:pointer}
-.ho254FallbackMain{padding:28px}
-.ho254FallbackHero{border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:22px;margin-bottom:18px;background:linear-gradient(135deg,rgba(136,19,55,.22),rgba(15,23,42,.95))}
-.ho254FallbackHero span{display:inline-flex;padding:7px 12px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.3);color:#bbf7d0;font-weight:900}
-.ho254FallbackHero h1{font-size:44px;margin:12px 0 8px}.ho254FallbackHero p{color:#cbd5e1}
-.ho254FallbackCols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.ho254FallbackCols section,.ho254FallbackForm{border:1px solid rgba(255,255,255,.10);border-radius:20px;padding:18px;background:#0b1220}
-.ho254FallbackCard,.ho254FallbackEvent{border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:14px;margin:10px 0;background:rgba(255,255,255,.04)}
-.ho254FallbackCard b{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(96,165,250,.15);color:#bfdbfe}.ho254FallbackCard.planned b{background:rgba(244,63,94,.16);color:#fecdd3}
-.ho254FallbackCard h3{margin:10px 0 6px}.ho254FallbackCard p,.ho254FallbackEvent p{color:#cbd5e1}
-.ho254FallbackForm label{display:grid;gap:6px;margin:10px 0;font-weight:800}.ho254FallbackForm input,.ho254FallbackForm textarea{background:#111827;color:#fff;border:1px solid #334155;border-radius:12px;padding:12px}
-.ho254FallbackForm button,.ho254FallbackEvent button{border:0;border-radius:999px;background:linear-gradient(135deg,#ff224b,#ef4444);color:#fff;padding:11px 16px;font-weight:900;cursor:pointer}
-.ho254FallbackEvent small{display:block;color:#93c5fd;margin:4px 0}
-@media(max-width:900px){.ho254FallbackShell,.ho254FallbackCols{grid-template-columns:1fr}.ho254FallbackShell aside{position:relative}.ho254FallbackHero h1{font-size:32px}}
-</style>
-
-
-<script>
-(function(){
-  if(window.__HO254_FIX2_HTML_FALLBACK__) return;
-  window.__HO254_FIX2_HTML_FALLBACK__ = true;
-  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});}
-  function pathPage(){
-    var raw=(location.pathname+' '+location.hash+' '+location.search).toLocaleLowerCase('tr-TR');
-    if(raw.indexOf('yayin-takvimi')>=0 || raw.indexOf('yayın-takvimi')>=0) return 'takvim';
-    if(raw.indexOf('guncelleme-notlari')>=0 || raw.indexOf('güncelleme-notları')>=0 || raw.indexOf('guncellemeler')>=0) return 'notlar';
-    return '';
-  }
-  function rootBlank(){
-    var root=document.getElementById('root');
-    if(!root) return false;
-    var txt=(root.textContent||'').trim();
-    return txt.length < 40 && !root.querySelector('.fix5AdminShell,.ho254f2CalendarAdmin,.ho254f2NotesPage,.ho254FallbackShell');
-  }
-  function notesHtml(){
-    var done=[
-      ['v2.0.0','Dolu Eski Taban Geri Dönüş','Oyun arşivi, admin panel, takvim, notlar, bakım modu ve boş ekran koruması korunarak sürüm v2.0.0 yapıldı.'],
-      ['v2.0.0','Oyun Arşivi ve Admin Panel','Eski dolu altyapı silinmeden yeniden başlangıç noktası olarak işaretlendi.'],
-      ['v2.0.0','Stabil Koruma Katmanı','Boş ekran, Vercel asset ve admin panel güvenlik katmanı korunur.']
-    ];
-    var plan=[
-      ['v2.0.1','Ana Sayfa ve Menü Hataları'],
-      ['v2.0.2','Admin Panel Stabil Kontrol'],
-      ['v2.0.3','Oyun Ekle ve Düzenle Fix'],
-      ['v2.0.4','RAWG / Kapak / Meta Fix'],
-      ['v2.0.5','YouTube Playlist ve Bölüm Fix'],
-      ['v2.0.6','Koleksiyon / Filtre Fix'],
-      ['v2.0.7','Bakım Modu ve Güncelleme Notları Fix']
-    ];
-    function card(n,cls){return '<article class="ho254FallbackCard '+(cls||'')+'"><b>'+esc(n[0])+'</b><h3>'+esc(n[1])+'</h3><p>'+esc(n[2]||'Planlandı.')+'</p></article>'}
-    return '<div class="ho254FallbackHero"><span>v2.0.0</span><h1>Güncelleme Notları</h1><p>Profesyonel sürüm arşivi. Ana uygulama geç yüklenirse bu güvenli panel devreye girer.</p></div><div class="ho254FallbackCols"><section><h2>Tamamlanan Güncellemeler</h2>'+done.map(function(n){return card(n)}).join('')+'</section><section><h2>Planlanan Güncellemeler</h2>'+plan.map(function(n){return card(n,'planned')}).join('')+'</section></div>';
-  }
-  function getEvents(){try{return JSON.parse(localStorage.getItem('hayatimiz_v254_fix2_calendar_events')||localStorage.getItem('hayatimiz_calendar_events_stable_v253f4')||'[]')||[]}catch(e){return []}}
-  function setEvents(rows){localStorage.setItem('hayatimiz_v254_fix2_calendar_events',JSON.stringify(rows||[]));localStorage.setItem('hayatimiz_calendar_events_stable_v253f4',JSON.stringify(rows||[]));}
-  function takvimHtml(){
-    var rows=getEvents();
-    var list=rows.length?rows.map(function(e,i){return '<article class="ho254FallbackEvent"><b>'+esc(e.title||'Yayın')+'</b><small>'+esc(e.date||'')+' • '+esc(e.time||'20:00')+'</small><p>'+esc(e.note||e.type||'')+'</p><button data-fb-del="'+i+'">Sil</button></article>'}).join(''):'<p class="muted">Henüz manuel yayın yok. Formdan tarih ve saat girip ekle.</p>';
-    return '<div class="ho254FallbackHero"><span>v2.0.0</span><h1>Yayın Takvimi</h1><p>Otomatik sahte kayıt oluşturmaz. Manuel ekle, kayıtlar local olarak korunur.</p></div><div class="ho254FallbackCols"><form class="ho254FallbackForm" id="ho254FallbackCalForm"><h2>Manuel Yayın Ekle</h2><label>Başlık<input name="title" required placeholder="Örn: Alan Wake 2 yayını"></label><label>Tarih<input name="date" type="date" required></label><label>Saat<input name="time" value="20:00"></label><label>Tür<input name="type" value="Ana Yayın"></label><label>Kapak URL<input name="cover" placeholder="https://..."></label><label>Video URL<input name="videoUrl" placeholder="https://youtube.com/..."></label><label>Not<textarea name="note"></textarea></label><button type="submit">Etkinliği Kaydet</button></form><section><h2>Manuel Takvim Kayıtları</h2><div id="ho254FallbackEvents">'+list+'</div></section></div>';
-  }
-  function inject(){
-    var page=pathPage();
-    if(!page || !rootBlank()) return;
-    var root=document.getElementById('root');
-    root.innerHTML='<main class="ho254FallbackShell"><aside><b>HAYATIMIZ <em>OYUN</em></b><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button><button onclick="location.href=\'/yonetim/yayin-takvimi\'">Yayın Takvimi</button><button onclick="location.href=\'/\'">Ana Sayfa</button></aside><section class="ho254FallbackMain">'+(page==='takvim'?takvimHtml():notesHtml())+'</section></main>';
-  }
-  document.addEventListener('submit',function(e){
-    if(e.target && e.target.id==='ho254FallbackCalForm'){
-      e.preventDefault();
-      var fd=new FormData(e.target), rows=getEvents();
-      rows.unshift({id:'local-'+Date.now(),title:fd.get('title'),date:fd.get('date'),time:fd.get('time')||'20:00',type:fd.get('type')||'Ana Yayın',cover:fd.get('cover')||'',videoUrl:fd.get('videoUrl')||'',note:fd.get('note')||''});
-      setEvents(rows); inject(); location.reload();
-    }
-  },true);
-  document.addEventListener('click',function(e){
-    var b=e.target && e.target.closest && e.target.closest('[data-fb-del]');
-    if(!b) return;
-    var rows=getEvents(); rows.splice(Number(b.dataset.fbDel),1); setEvents(rows); location.reload();
-  },true);
-  setTimeout(inject,900);
-  setTimeout(inject,2200);
-  setTimeout(inject,4500);
-})();
-</script>
-
-
-<style>
-.ho254StaticBoot{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 20% 10%,rgba(239,68,68,.18),transparent 28%),#05080d;color:#fff;font-family:Inter,system-ui,Arial,sans-serif;padding:24px;text-align:center}.ho254StaticBootCard{max-width:620px;border:1px solid rgba(255,255,255,.12);border-radius:28px;background:rgba(15,23,42,.82);box-shadow:0 24px 90px rgba(0,0,0,.45);padding:30px}.ho254StaticBootCard b{display:inline-flex;margin-bottom:12px;padding:7px 12px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.32);color:#bbf7d0}.ho254StaticBootCard h1{margin:0 0 10px;font-size:clamp(30px,5vw,54px);letter-spacing:-.05em}.ho254StaticBootCard p{margin:0;color:#cbd5e1;line-height:1.6}.ho254StaticBootSpin{width:42px;height:42px;border-radius:50%;border:4px solid rgba(255,255,255,.14);border-top-color:#ef4444;margin:18px auto 0;animation:ho254Spin 1s linear infinite}@keyframes ho254Spin{to{transform:rotate(360deg)}}
-</style>
-
-
-<style id="ho201-safe-style">
-html,body{min-height:100%;background:#05070d!important;margin:0;color:#fff}
-.ho201SafeShell{min-height:100vh;background:radial-gradient(circle at 16% 0%,rgba(239,68,68,.24),transparent 34%),radial-gradient(circle at 86% 10%,rgba(59,130,246,.18),transparent 35%),linear-gradient(180deg,#070a12,#0b101c 55%,#05070d);color:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;display:grid;grid-template-columns:260px minmax(0,1fr)}
-.ho201SafeSide{border-right:1px solid rgba(255,255,255,.10);background:rgba(5,8,13,.86);padding:24px;display:flex;flex-direction:column;gap:12px;position:sticky;top:0;height:100vh;box-sizing:border-box}.ho201SafeBrand{display:flex;align-items:center;gap:12px;margin-bottom:14px}.ho201SafeLogo{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#ef4444,#7c3aed);box-shadow:0 14px 34px rgba(239,68,68,.25)}.ho201SafeBrand b{display:block;font-size:19px}.ho201SafeBrand em{color:#ef4444;font-style:normal}.ho201SafeBrand small{display:block;color:#94a3b8;margin-top:3px}.ho201SafeSide a,.ho201SafeSide button{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;border-radius:15px;padding:12px 14px;font-weight:900;text-align:left;cursor:pointer}.ho201SafeSide a:hover,.ho201SafeSide button:hover{border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.14)}.ho201SafeReason{margin-top:auto;color:#94a3b8;font-size:12px;line-height:1.45;border-top:1px solid rgba(255,255,255,.08);padding-top:14px}.ho201SafeMain{padding:28px;min-width:0}.ho201Hero{border:1px solid rgba(255,255,255,.12);border-radius:32px;padding:30px;background:linear-gradient(135deg,rgba(127,29,29,.40),rgba(30,41,59,.76)),url('/assets/hayatimiz-kapak.png');background-size:cover;background-position:center;box-shadow:0 32px 110px rgba(0,0,0,.40);overflow:hidden;position:relative}.ho201Hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,7,12,.95),rgba(4,7,12,.72),rgba(4,7,12,.30));pointer-events:none}.ho201Hero>*{position:relative}.ho201Badge{display:inline-flex;border-radius:999px;padding:8px 12px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.36);color:#bbf7d0;font-weight:1000}.ho201Hero h1{font-size:clamp(36px,6vw,72px);line-height:.92;letter-spacing:-.07em;margin:18px 0 12px;max-width:820px}.ho201Hero p{max-width:820px;color:#dbeafe;line-height:1.7;font-size:17px}.ho201Actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.ho201Actions a,.ho201Actions button{border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(135deg,#ef4444,#be123c);color:#fff;text-decoration:none;font-weight:1000;cursor:pointer}.ho201Actions a.secondary,.ho201Actions button.secondary{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14)}.ho201Stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.ho201Stat,.ho201Card,.ho201Panel{border:1px solid rgba(255,255,255,.10);border-radius:22px;background:rgba(15,23,42,.72);box-shadow:0 18px 70px rgba(0,0,0,.22)}.ho201Stat{padding:18px}.ho201Stat b{display:block;font-size:32px}.ho201Stat span{color:#aeb8c8;font-weight:800}.ho201SectionHead{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:28px 0 14px}.ho201SectionHead h2{margin:0;font-size:26px}.ho201SectionHead p{margin:4px 0 0;color:#94a3b8}.ho201Grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.ho201Card{overflow:hidden}.ho201Card img{width:100%;height:176px;object-fit:cover;background:#0f172a;display:block}.ho201Card div{padding:16px}.ho201Card b,.ho201Note b{display:inline-flex;border-radius:999px;padding:6px 10px;background:rgba(96,165,250,.16);border:1px solid rgba(96,165,250,.28);color:#bfdbfe}.ho201Card h3,.ho201Note h3{margin:11px 0 7px}.ho201Card p,.ho201Note p{color:#cbd5e1;line-height:1.55;margin:0}.ho201Panels{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:16px}.ho201Panel{padding:18px}.ho201MiniList{display:grid;gap:10px}.ho201Note{padding:13px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.045)}.ho201Ok{color:#86efac}.ho201Warn{color:#fecaca}.ho201Footer{margin-top:24px;padding:18px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#aeb8c8;line-height:1.65}
-@media(max-width:1000px){.ho201SafeShell{grid-template-columns:1fr}.ho201SafeSide{position:relative;height:auto}.ho201Stats{grid-template-columns:repeat(2,1fr)}.ho201Grid,.ho201Panels{grid-template-columns:1fr}.ho201Hero{padding:24px}.ho201Main{padding:18px}}
-@media(max-width:560px){.ho201Stats{grid-template-columns:1fr}.ho201Hero h1{font-size:38px}.ho201SafeMain{padding:14px}.ho201Side{padding:16px}.ho201Card img{height:150px}}
-</style>
-
+  <meta name="theme-color" content="#05070d" />
+  <title>Hayatımız Oyun - v2.0.2 Stabil</title>
+  <link rel="stylesheet" crossorigin href="/assets/hayatimiz-style-v202-stabil.css?v=v202-stabil">
+  <script type="module" crossorigin src="/assets/hayatimiz-app-v202-stabil.js?v=v202-stabil"></script>
+  <style>
+    html,body{min-height:100%;margin:0;background:#05070d;color:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    .boot{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 20% 0%,rgba(239,68,68,.18),transparent 32%),#05070d;color:#fff}.bootCard{max-width:720px;border:1px solid rgba(255,255,255,.12);border-radius:30px;background:rgba(15,23,42,.78);box-shadow:0 30px 100px rgba(0,0,0,.45);padding:30px}.bootBadge{display:inline-flex;padding:8px 12px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.34);color:#bbf7d0;font-weight:900}.boot h1{font-size:clamp(36px,6vw,68px);line-height:.95;letter-spacing:-.06em;margin:16px 0 10px}.boot p{color:#cbd5e1;line-height:1.7}.bootLinks{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.bootLinks a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);border-radius:999px;padding:11px 15px;font-weight:900}.bootLinks a:first-child{background:linear-gradient(135deg,#ef4444,#be123c);border:0}
+  </style>
 </head>
 <body>
   <div id="root">
-<main class="ho201SafeShell" data-ho201-safe="1">
-  <aside class="ho201SafeSide">
-    <div class="ho201SafeBrand"><span class="ho201SafeLogo">🎮</span><span><b>Hayatımız <em>Oyun</em></b><small>v2.0.1 • boş ekran fix</small></span></div>
-    <a href="/ana-sayfa">Ana Sayfa</a>
-    <a href="/oyun-arsivi">Oyun Arşivi</a>
-    <a href="/seriler">Seriler</a>
-    <a href="/yonetim">Yönetim Paneli</a>
-    <a href="/yonetim/oyun-ekle">Oyun Ekle</a>
-    <a href="/yonetim/yayin-takvimi">Yayın Takvimi</a>
-    <a href="/yonetim/guncelleme-notlari">Güncelleme Notları</a>
-    <button type="button" onclick="location.reload()">Sayfayı Yenile</button>
-    <div class="ho201SafeReason">HTML içi güvenli ana sayfa hazır<br>Bu ekran bilinçli olarak HTML içine gömüldü; ana JS hata verse bile site siyah/boş kalmaz.</div>
-  </aside>
-  <section class="ho201SafeMain">
-    <section class="ho201Hero">
-      <span class="ho201Badge">v2.0.1 • Kesin açılış koruması</span>
-      <h1>Hayatımız Oyun Arşivi</h1>
-      <p>Dolu eski v2.0.0 tabanı korunarak ana sayfa, yönetim paneli, oyun ekleme, takvim, güncelleme notları ve bakım modu için boş ekran koruması güçlendirildi.</p>
-      <div class="ho201Actions">
-        <a href="/yonetim">Yönetim Paneline Git</a>
-        <a class="secondary" href="/yonetim/oyun-ekle">Oyun Ekle</a>
-        <a class="secondary" href="/yonetim/yayin-takvimi">Takvimi Aç</a>
-      </div>
-    </section>
-    <section class="ho201Stats">
-      <article class="ho201Stat"><b>v2.0.1</b><span>Sürüm</span></article>
-      <article class="ho201Stat"><b>7</b><span>Korunan ana modül</span></article>
-      <article class="ho201Stat"><b>0</b><span>Boş ekran toleransı</span></article>
-      <article class="ho201Stat"><b>Aktif</b><span>Vercel/cache fix</span></article>
-    </section>
-    <div class="ho201SectionHead"><div><h2>Öne Çıkan Arşiv Alanları</h2><p>JS geç yüklense bile kullanıcıya çalışır ana arayüz gösterilir.</p></div></div>
-    <section class="ho201Grid">
-      <article class="ho201Card"><img src="/assets/alan-wake-night-springs.png" alt="Alan Wake"><div><b>Devam Eden</b><h3>Alan Wake Arşivi</h3><p>Seri, bölüm ve yayın takvimi akışı korunur.</p></div></article>
-      <article class="ho201Card"><img src="/assets/assassins-creed-directors-cut.png" alt="Assassin's Creed"><div><b>Tamamlanan</b><h3>Assassin’s Creed Arşivi</h3><p>Koleksiyon, tür, etiket ve kapak alanları korunur.</p></div></article>
-      <article class="ho201Card"><img src="/assets/hayatimiz-kapak.png" alt="Hayatımız Oyun"><div><b>Yönetim</b><h3>Admin Panel</h3><p>Oyun ekle, mevcut oyunlar, RAWG/meta, takvim ve notlar aktif kalır.</p></div></article>
-    </section>
-    <section class="ho201Panels">
-      <div class="ho201Panel"><h2>Fixlenen Alanlar</h2><div class="ho201MiniList">
-        <article class="ho201Note"><b class="ho201Ok">Açılış</b><h3>Ana sayfa boş ekran koruması</h3><p>Root boşalırsa veya app siyah ekranda kalırsa güvenli arayüz otomatik geri gelir.</p></article>
-        <article class="ho201Note"><b class="ho201Ok">Asset</b><h3>Yeni JS/CSS dosya adı</h3><p>Vercel eski cache dosyasını çağırmasın diye v2.0.1 asset yolu kullanılır.</p></article>
-        <article class="ho201Note"><b class="ho201Ok">Admin</b><h3>Yönetim sayfaları korunur</h3><p>Oyun ekle, mevcut oyunlar, yayın takvimi, notlar ve bakım modu linkleri hazırdır.</p></article>
-      </div></div>
-      <div class="ho201Panel"><h2>Sonraki Adımlar</h2><div class="ho201MiniList">
-        <article class="ho201Note"><b>v2.0.2</b><h3>Admin panel stabil kontrol</h3><p>Formlar, butonlar ve API hataları tek tek temizlenecek.</p></article>
-        <article class="ho201Note"><b>v2.0.3</b><h3>Oyun ekle / düzenle akışı</h3><p>RAWG, kapak, YouTube playlist ve bölüm akışı ayrıntılı test edilecek.</p></article>
-      </div></div>
-    </section>
-    <div class="ho201Footer">Not: Bu paket eski dolu tabanı silmez. Sadece siyah/boş ekranı engellemek için HTML tabanlı güvenli ana arayüz, watchdog ve yeni asset yolu ekler.</div>
-  </section>
-</main>
-</div>
-  <script type="module" src="/src/main.js"></script>
-
-<script>
-(function(){
-  if(window.__HO254_FIX9_NO_BLANK__) return;
-  window.__HO254_FIX9_NO_BLANK__ = true;
-  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});}
-  function parse(key, fallback){try{var v=localStorage.getItem(key); return v?JSON.parse(v):fallback;}catch(e){return fallback;}}
-  function games(){
-    var keys=['hayatimiz_games_cache_stable_v31','hayatimiz_games_cache_stable_v30','hayatimiz_games_cache_stable_v24','hayatimiz_games_cache_stable'];
-    for(var i=0;i<keys.length;i++){var rows=parse(keys[i],[]); if(Array.isArray(rows)&&rows.length) return rows;}
-    return [
-      {title:'Alan Wake Remastered',status:'Devam Eden',genre:'Korku',cover:'/assets/alan-wake-night-springs.png',description:'Arşiv hazır olduğunda oyunlar burada görünecek.'},
-      {title:'Assassin’s Creed',status:'Tamamlanan',genre:'Aksiyon',cover:'/assets/assassins-creed-directors-cut.png',description:'Supabase bağlantısı geldiğinde gerçek kayıtlar listelenir.'},
-      {title:'Hayatımız Oyun Arşivi',status:'Yakında',genre:'YouTube Arşivi',cover:'/assets/hayatimiz-kapak.png',description:'Boş ekran koruması aktif; site siyah ekranda kalmaz.'}
-    ];
-  }
-  function notes(){
-    var local=parse('hayatimiz_update_notes_local_v254f8',[]);
-    if(Array.isArray(local)&&local.length) return local.slice(0,6);
-    return [
-      {version:'v2.0.0',title:'Dolu Eski Taban Geri Dönüş',summary:'Eski dolu site özellikleri korunarak sürüm v2.0.0 noktasına geri alındı.'},
-      {version:'v2.0.0',title:'Stabil Koruma Katmanı',summary:'Admin, takvim, notlar, bakım modu ve schema korundu.'},
-      {version:'v2.0.0',title:'Oyun Arşivi ve Yönetim Paneli',summary:'Eski dolu özellikler silinmeden v2.0.0 akışına geri dönüldü.'}
-    ];
-  }
-  function pageType(){
-    var raw=(location.pathname+' '+location.hash+' '+location.search).toLocaleLowerCase('tr-TR');
-    if(raw.indexOf('yayin-takvimi')>-1||raw.indexOf('yayın-takvimi')>-1||raw.indexOf('takvim')>-1) return 'takvim';
-    if(raw.indexOf('guncelleme')>-1||raw.indexOf('güncelleme')>-1||raw.indexOf('notlari')>-1||raw.indexOf('notları')>-1) return 'notlar';
-    if(raw.indexOf('yonetim')>-1||raw.indexOf('yönetim')>-1||raw.indexOf('admin')>-1||raw.indexOf('panel')>-1) return 'admin';
-    return 'home';
-  }
-  function isBlank(){
-    var root=document.getElementById('root'); if(!root) return false;
-    if(root.querySelector && root.querySelector('.app,.ho254Fix9Shell,.ho254FallbackShell')) return false;
-    var txt=(root.textContent||'').trim();
-    return txt.length < 80 || (root.querySelector && root.querySelector('.ho254StaticBoot'));
-  }
-  function card(g){
-    var img=g.cover||g.cover_url||g.image||'/assets/hayatimiz-kapak.png';
-    return '<article class="ho254Fix9Game"><img src="'+esc(img)+'" onerror="this.src=\'/assets/hayatimiz-kapak.png\'" alt=""><div><b>'+esc(g.status||'Arşiv')+'</b><h3>'+esc(g.title||g.name||'Oyun')+'</h3><p>'+esc(g.description||g.genre||g.tags||'YouTube arşiv kaydı')+'</p></div></article>';
-  }
-  function home(){
-    var rows=games();
-    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Hayatımız Oyun Arşivi</h1><p>Dolu eski v2.0.0 tabanı yüklendi. Ana uygulama gecikirse güvenli arayüz otomatik açılır.</p><div><button onclick="location.href=\'/ana-sayfa\'">Ana Sayfa</button><button onclick="location.href=\'/yonetim\'">Yönetim Paneli</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button></div></section><section class="ho254Fix9Grid">'+rows.slice(0,12).map(card).join('')+'</section>';
-  }
-  function notlar(){
-    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Güncelleme Notları</h1><p>Local ve Supabase uyumlu not merkezi. Ana paket geç açılırsa bu panel çalışır.</p></section><section class="ho254Fix9List">'+notes().map(function(n){return '<article><b>'+esc(n.version||'Sürüm')+'</b><h3>'+esc(n.title||'Güncelleme')+'</h3><p>'+esc(n.summary||n.written||'Not hazır.')+'</p></article>';}).join('')+'</section>';
-  }
-  function takvim(){
-    var rows=parse('hayatimiz_v254_fix2_calendar_events',[])||parse('hayatimiz_calendar_events_stable_v253f4',[]); if(!Array.isArray(rows)) rows=[];
-    var list=rows.length?rows.map(function(e){return '<article><b>'+esc(e.title||'Yayın')+'</b><h3>'+esc((e.date||'Tarih yok')+' • '+(e.time||'20:00'))+'</h3><p>'+esc(e.note||e.type||'Yayın planı')+'</p></article>';}).join(''):'<article><b>Takvim</b><h3>Henüz manuel yayın yok</h3><p>Yönetim panelinden yayın ekleyince burada görünür.</p></article>';
-    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Yayın Takvimi</h1><p>Takvim sayfası boş ekranda kalmaz; kayıtlar local yedekten okunur.</p></section><section class="ho254Fix9List">'+list+'</section>';
-  }
-  function admin(){
-    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Yönetim Paneli</h1><p>Admin sayfası boş kalırsa hızlı menü açılır. Dolu eski taban özellikleri korunur.</p><div><button onclick="location.href=\'/yonetim/oyunlar\'">Oyunlar</button><button onclick="location.href=\'/yonetim/yayin-takvimi\'">Yayın Takvimi</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button><button onclick="location.href=\'/ana-sayfa\'">Siteye Dön</button></div></section><section class="ho254Fix9List"><article><b>Durum</b><h3>Boş ekran koruması aktif</h3><p>Vercel asset veya tarayıcı cache problemi olsa bile kullanıcı siyah ekran görmez.</p></article></section>';
-  }
-  function install(reason){
-    if(!isBlank()) return;
-    var root=document.getElementById('root'); if(!root) return;
-    var type=pageType();
-    root.innerHTML='<main class="ho254Fix9Shell"><nav><b>🎮 Hayatımız <em>Oyun</em></b><a href="/ana-sayfa">Ana Sayfa</a><a href="/yonetim">Yönetim</a><a href="/yonetim/yayin-takvimi">Yayın Takvimi</a><a href="/yonetim/guncelleme-notlari">Güncelleme Notları</a><small>'+esc(reason||'Güvenli açılış')+'</small></nav><section class="ho254Fix9Main">'+(type==='notlar'?notlar():type==='takvim'?takvim():type==='admin'?admin():home())+'</section></main>';
-  }
-  var css='.ho254Fix9Shell{min-height:100vh;display:grid;grid-template-columns:250px 1fr;background:#05080d;color:#fff;font-family:Inter,system-ui,Arial,sans-serif}.ho254Fix9Shell nav{padding:24px;border-right:1px solid rgba(255,255,255,.1);background:#080b11;display:flex;flex-direction:column;gap:12px}.ho254Fix9Shell nav b{font-size:20px;margin-bottom:14px}.ho254Fix9Shell nav em{color:#ef4444;font-style:normal}.ho254Fix9Shell nav a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;background:#111827;font-weight:800}.ho254Fix9Shell nav small{margin-top:auto;color:#94a3b8}.ho254Fix9Main{padding:28px}.ho254Fix9Hero{border:1px solid rgba(255,255,255,.12);border-radius:28px;padding:26px;background:radial-gradient(circle at 20% 20%,rgba(239,68,68,.24),transparent 34%),linear-gradient(135deg,#111827,#05080d);margin-bottom:18px}.ho254Fix9Hero span{display:inline-flex;padding:7px 12px;border-radius:999px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.3);color:#bbf7d0;font-weight:900}.ho254Fix9Hero h1{font-size:clamp(34px,5vw,64px);margin:12px 0 10px;letter-spacing:-.06em}.ho254Fix9Hero p{color:#cbd5e1;max-width:760px;line-height:1.65}.ho254Fix9Hero button{border:0;border-radius:999px;background:linear-gradient(135deg,#ef4444,#be123c);color:#fff;padding:12px 16px;font-weight:900;margin:6px 8px 0 0;cursor:pointer}.ho254Fix9Grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.ho254Fix9Game,.ho254Fix9List article{border:1px solid rgba(255,255,255,.1);border-radius:22px;background:#0b1220;overflow:hidden}.ho254Fix9Game img{width:100%;height:170px;object-fit:cover;background:#111827}.ho254Fix9Game div,.ho254Fix9List article{padding:16px}.ho254Fix9Game b,.ho254Fix9List b{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(96,165,250,.15);color:#bfdbfe}.ho254Fix9Game h3,.ho254Fix9List h3{margin:10px 0 6px}.ho254Fix9Game p,.ho254Fix9List p{color:#cbd5e1}.ho254Fix9List{display:grid;gap:14px}@media(max-width:900px){.ho254Fix9Shell{grid-template-columns:1fr}.ho254Fix9Shell nav{position:relative}.ho254Fix9Main{padding:16px}}';
-  try{var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);}catch(e){}
-  window.addEventListener('error',function(e){setTimeout(function(){install('JS hata koruması: '+((e&&e.message)||'hata'));},600);},true);
-  window.addEventListener('unhandledrejection',function(e){setTimeout(function(){install('Promise hata koruması');},600);},true);
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){install('DOMContentLoaded sonrası güvenli açılış');},1500);});
-  setTimeout(function(){install('1.5 sn boş ekran koruması');},1500);
-  setTimeout(function(){install('3.5 sn boş ekran koruması');},3500);
-  setTimeout(function(){install('7 sn kesin boş ekran koruması');},7000);
-})();
-</script>
-
-
-<script id="ho201-safe-watchdog">
-(function(){
-  if(window.__HO201_NO_BLANK_WATCHDOG__) return;
-  window.__HO201_NO_BLANK_WATCHDOG__ = true;
-  var SAFE_HTML = "\n<main class=\"ho201SafeShell\" data-ho201-safe=\"1\">\n  <aside class=\"ho201SafeSide\">\n    <div class=\"ho201SafeBrand\"><span class=\"ho201SafeLogo\">🎮</span><span><b>Hayatımız <em>Oyun</em></b><small>v2.0.1 • boş ekran fix</small></span></div>\n    <a href=\"/ana-sayfa\">Ana Sayfa</a>\n    <a href=\"/oyun-arsivi\">Oyun Arşivi</a>\n    <a href=\"/seriler\">Seriler</a>\n    <a href=\"/yonetim\">Yönetim Paneli</a>\n    <a href=\"/yonetim/oyun-ekle\">Oyun Ekle</a>\n    <a href=\"/yonetim/yayin-takvimi\">Yayın Takvimi</a>\n    <a href=\"/yonetim/guncelleme-notlari\">Güncelleme Notları</a>\n    <button type=\"button\" onclick=\"location.reload()\">Sayfayı Yenile</button>\n    <div class=\"ho201SafeReason\">%REASON%<br>Bu ekran bilinçli olarak HTML içine gömüldü; ana JS hata verse bile site siyah/boş kalmaz.</div>\n  </aside>\n  <section class=\"ho201SafeMain\">\n    <section class=\"ho201Hero\">\n      <span class=\"ho201Badge\">v2.0.1 • Kesin açılış koruması</span>\n      <h1>Hayatımız Oyun Arşivi</h1>\n      <p>Dolu eski v2.0.0 tabanı korunarak ana sayfa, yönetim paneli, oyun ekleme, takvim, güncelleme notları ve bakım modu için boş ekran koruması güçlendirildi.</p>\n      <div class=\"ho201Actions\">\n        <a href=\"/yonetim\">Yönetim Paneline Git</a>\n        <a class=\"secondary\" href=\"/yonetim/oyun-ekle\">Oyun Ekle</a>\n        <a class=\"secondary\" href=\"/yonetim/yayin-takvimi\">Takvimi Aç</a>\n      </div>\n    </section>\n    <section class=\"ho201Stats\">\n      <article class=\"ho201Stat\"><b>v2.0.1</b><span>Sürüm</span></article>\n      <article class=\"ho201Stat\"><b>7</b><span>Korunan ana modül</span></article>\n      <article class=\"ho201Stat\"><b>0</b><span>Boş ekran toleransı</span></article>\n      <article class=\"ho201Stat\"><b>Aktif</b><span>Vercel/cache fix</span></article>\n    </section>\n    <div class=\"ho201SectionHead\"><div><h2>Öne Çıkan Arşiv Alanları</h2><p>JS geç yüklense bile kullanıcıya çalışır ana arayüz gösterilir.</p></div></div>\n    <section class=\"ho201Grid\">\n      <article class=\"ho201Card\"><img src=\"/assets/alan-wake-night-springs.png\" alt=\"Alan Wake\"><div><b>Devam Eden</b><h3>Alan Wake Arşivi</h3><p>Seri, bölüm ve yayın takvimi akışı korunur.</p></div></article>\n      <article class=\"ho201Card\"><img src=\"/assets/assassins-creed-directors-cut.png\" alt=\"Assassin's Creed\"><div><b>Tamamlanan</b><h3>Assassin’s Creed Arşivi</h3><p>Koleksiyon, tür, etiket ve kapak alanları korunur.</p></div></article>\n      <article class=\"ho201Card\"><img src=\"/assets/hayatimiz-kapak.png\" alt=\"Hayatımız Oyun\"><div><b>Yönetim</b><h3>Admin Panel</h3><p>Oyun ekle, mevcut oyunlar, RAWG/meta, takvim ve notlar aktif kalır.</p></div></article>\n    </section>\n    <section class=\"ho201Panels\">\n      <div class=\"ho201Panel\"><h2>Fixlenen Alanlar</h2><div class=\"ho201MiniList\">\n        <article class=\"ho201Note\"><b class=\"ho201Ok\">Açılış</b><h3>Ana sayfa boş ekran koruması</h3><p>Root boşalırsa veya app siyah ekranda kalırsa güvenli arayüz otomatik geri gelir.</p></article>\n        <article class=\"ho201Note\"><b class=\"ho201Ok\">Asset</b><h3>Yeni JS/CSS dosya adı</h3><p>Vercel eski cache dosyasını çağırmasın diye v2.0.1 asset yolu kullanılır.</p></article>\n        <article class=\"ho201Note\"><b class=\"ho201Ok\">Admin</b><h3>Yönetim sayfaları korunur</h3><p>Oyun ekle, mevcut oyunlar, yayın takvimi, notlar ve bakım modu linkleri hazırdır.</p></article>\n      </div></div>\n      <div class=\"ho201Panel\"><h2>Sonraki Adımlar</h2><div class=\"ho201MiniList\">\n        <article class=\"ho201Note\"><b>v2.0.2</b><h3>Admin panel stabil kontrol</h3><p>Formlar, butonlar ve API hataları tek tek temizlenecek.</p></article>\n        <article class=\"ho201Note\"><b>v2.0.3</b><h3>Oyun ekle / düzenle akışı</h3><p>RAWG, kapak, YouTube playlist ve bölüm akışı ayrıntılı test edilecek.</p></article>\n      </div></div>\n    </section>\n    <div class=\"ho201Footer\">Not: Bu paket eski dolu tabanı silmez. Sadece siyah/boş ekranı engellemek için HTML tabanlı güvenli ana arayüz, watchdog ve yeni asset yolu ekler.</div>\n  </section>\n</main>\n";
-  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});}
-  function ensureStyle(){
-    if(document.getElementById('ho201-safe-style')) return;
-    var wrap=document.createElement('div'); wrap.innerHTML="\n<style id=\"ho201-safe-style\">\nhtml,body{min-height:100%;background:#05070d!important;margin:0;color:#fff}\n.ho201SafeShell{min-height:100vh;background:radial-gradient(circle at 16% 0%,rgba(239,68,68,.24),transparent 34%),radial-gradient(circle at 86% 10%,rgba(59,130,246,.18),transparent 35%),linear-gradient(180deg,#070a12,#0b101c 55%,#05070d);color:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Arial,sans-serif;display:grid;grid-template-columns:260px minmax(0,1fr)}\n.ho201SafeSide{border-right:1px solid rgba(255,255,255,.10);background:rgba(5,8,13,.86);padding:24px;display:flex;flex-direction:column;gap:12px;position:sticky;top:0;height:100vh;box-sizing:border-box}.ho201SafeBrand{display:flex;align-items:center;gap:12px;margin-bottom:14px}.ho201SafeLogo{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#ef4444,#7c3aed);box-shadow:0 14px 34px rgba(239,68,68,.25)}.ho201SafeBrand b{display:block;font-size:19px}.ho201SafeBrand em{color:#ef4444;font-style:normal}.ho201SafeBrand small{display:block;color:#94a3b8;margin-top:3px}.ho201SafeSide a,.ho201SafeSide button{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;border-radius:15px;padding:12px 14px;font-weight:900;text-align:left;cursor:pointer}.ho201SafeSide a:hover,.ho201SafeSide button:hover{border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.14)}.ho201SafeReason{margin-top:auto;color:#94a3b8;font-size:12px;line-height:1.45;border-top:1px solid rgba(255,255,255,.08);padding-top:14px}.ho201SafeMain{padding:28px;min-width:0}.ho201Hero{border:1px solid rgba(255,255,255,.12);border-radius:32px;padding:30px;background:linear-gradient(135deg,rgba(127,29,29,.40),rgba(30,41,59,.76)),url('/assets/hayatimiz-kapak.png');background-size:cover;background-position:center;box-shadow:0 32px 110px rgba(0,0,0,.40);overflow:hidden;position:relative}.ho201Hero:before{content:\"\";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,7,12,.95),rgba(4,7,12,.72),rgba(4,7,12,.30));pointer-events:none}.ho201Hero>*{position:relative}.ho201Badge{display:inline-flex;border-radius:999px;padding:8px 12px;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.36);color:#bbf7d0;font-weight:1000}.ho201Hero h1{font-size:clamp(36px,6vw,72px);line-height:.92;letter-spacing:-.07em;margin:18px 0 12px;max-width:820px}.ho201Hero p{max-width:820px;color:#dbeafe;line-height:1.7;font-size:17px}.ho201Actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.ho201Actions a,.ho201Actions button{border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(135deg,#ef4444,#be123c);color:#fff;text-decoration:none;font-weight:1000;cursor:pointer}.ho201Actions a.secondary,.ho201Actions button.secondary{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14)}.ho201Stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.ho201Stat,.ho201Card,.ho201Panel{border:1px solid rgba(255,255,255,.10);border-radius:22px;background:rgba(15,23,42,.72);box-shadow:0 18px 70px rgba(0,0,0,.22)}.ho201Stat{padding:18px}.ho201Stat b{display:block;font-size:32px}.ho201Stat span{color:#aeb8c8;font-weight:800}.ho201SectionHead{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:28px 0 14px}.ho201SectionHead h2{margin:0;font-size:26px}.ho201SectionHead p{margin:4px 0 0;color:#94a3b8}.ho201Grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.ho201Card{overflow:hidden}.ho201Card img{width:100%;height:176px;object-fit:cover;background:#0f172a;display:block}.ho201Card div{padding:16px}.ho201Card b,.ho201Note b{display:inline-flex;border-radius:999px;padding:6px 10px;background:rgba(96,165,250,.16);border:1px solid rgba(96,165,250,.28);color:#bfdbfe}.ho201Card h3,.ho201Note h3{margin:11px 0 7px}.ho201Card p,.ho201Note p{color:#cbd5e1;line-height:1.55;margin:0}.ho201Panels{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:16px}.ho201Panel{padding:18px}.ho201MiniList{display:grid;gap:10px}.ho201Note{padding:13px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.045)}.ho201Ok{color:#86efac}.ho201Warn{color:#fecaca}.ho201Footer{margin-top:24px;padding:18px;border-radius:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#aeb8c8;line-height:1.65}\n@media(max-width:1000px){.ho201SafeShell{grid-template-columns:1fr}.ho201SafeSide{position:relative;height:auto}.ho201Stats{grid-template-columns:repeat(2,1fr)}.ho201Grid,.ho201Panels{grid-template-columns:1fr}.ho201Hero{padding:24px}.ho201Main{padding:18px}}\n@media(max-width:560px){.ho201Stats{grid-template-columns:1fr}.ho201Hero h1{font-size:38px}.ho201SafeMain{padding:14px}.ho201Side{padding:16px}.ho201Card img{height:150px}}\n</style>\n";
-    var st=wrap.firstElementChild; if(st) document.head.appendChild(st);
-  }
-  function hasUsefulUi(root){
-    if(!root) return false;
-    if(root.querySelector && root.querySelector('.ho201SafeShell')) return true;
-    var text=(root.textContent||'').replace(/\s+/g,' ').trim();
-    var interactive=root.querySelector && root.querySelector('button,a,input,select,textarea,article,.card,.game,.fix5AdminShell,.ho240f60Home,.ho244Home,.ho254f8Hero');
-    var rect={height:0}; try{ rect=root.getBoundingClientRect(); }catch(e){}
-    var cs={display:'',visibility:'',opacity:'1'}; try{ cs=getComputedStyle(root); }catch(e){}
-    if(cs.display==='none' || cs.visibility==='hidden' || Number(cs.opacity)===0) return false;
-    if(root.querySelector && root.querySelector('.ho254StaticBoot')) return false;
-    if(text.length < 80) return false;
-    if(!interactive) return false;
-    if(rect.height && rect.height < 170) return false;
-    return true;
-  }
-  function install(reason){
-    var root=document.getElementById('root'); if(!root) return;
-    if(root.querySelector && root.querySelector('.ho201SafeShell')) return;
-    ensureStyle();
-    root.innerHTML = SAFE_HTML.replace('%REASON%', esc(reason || 'v2.0.1 güvenli açılış devrede'));
-    try{ document.title='Hayatımız Oyun - v2.0.1'; }catch(e){}
-  }
-  function check(reason){
-    var root=document.getElementById('root'); if(!root) return;
-    if(!hasUsefulUi(root)) install(reason);
-  }
-  window.HO201ForceSafeHome = install;
-  window.addEventListener('error', function(e){ setTimeout(function(){ check('JS hata yakalandı: '+((e&&e.message)||'bilinmeyen hata')); }, 80); }, true);
-  window.addEventListener('unhandledrejection', function(){ setTimeout(function(){ check('Promise/API hatası sonrası güvenli arayüz açıldı'); }, 80); }, true);
-  document.addEventListener('DOMContentLoaded', function(){ check('HTML yüklendi, güvenli arayüz hazır'); setTimeout(function(){check('1 sn açılış kontrolü');},1000); setTimeout(function(){check('3 sn kesin boş ekran kontrolü');},3000); });
-  setTimeout(function(){ check('Anında boş ekran kontrolü'); }, 50);
-  setTimeout(function(){ check('1.5 sn boş ekran kontrolü'); }, 1500);
-  setTimeout(function(){ check('5 sn kalıcı boş ekran kontrolü'); }, 5000);
-  try{
-    var obs = new MutationObserver(function(){ clearTimeout(window.__HO201_OBS_TIMER__); window.__HO201_OBS_TIMER__=setTimeout(function(){ check('DOM değişti ve boş ekran yakalandı'); }, 250); });
-    document.addEventListener('DOMContentLoaded', function(){ var root=document.getElementById('root'); if(root) obs.observe(root,{childList:true,subtree:true,characterData:true,attributes:true}); });
-  }catch(e){}
-})();
-</script>
-
+    <main class="boot" data-static-boot="1">
+      <section class="bootCard">
+        <span class="bootBadge">v2.0.2 • stabil açılış</span>
+        <h1>Hayatımız Oyun Arşivi</h1>
+        <p>Site boş/siyah ekranda kalmasın diye kırık eski JS akışı kaldırıldı. Stabil ana sayfa, oyun arşivi, yönetim paneli, oyun ekle, takvim, güncelleme notları ve bakım modu doğrudan çalışır.</p>
+        <div class="bootLinks">
+          <a href="/ana-sayfa">Ana Sayfa</a>
+          <a href="/yonetim">Yönetim Paneli</a>
+          <a href="/yonetim/oyun-ekle">Oyun Ekle</a>
+          <a href="/yonetim/yayin-takvimi">Yayın Takvimi</a>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    window.__HAYATIMIZ_V202_BOOT_OK__ = true;
+    setTimeout(function(){
+      var root=document.getElementById('root');
+      if(!root || (root.textContent||'').trim().length < 40){
+        root.innerHTML='<main class="boot"><section class="bootCard"><span class="bootBadge">v2.0.2</span><h1>Hayatımız Oyun Arşivi</h1><p>Güvenli HTML açılışı devrede. Ana uygulama dosyası yüklenemese bile site boş kalmaz.</p><div class="bootLinks"><a href="/ana-sayfa">Ana Sayfa</a><a href="/yonetim">Yönetim</a></div></section></main>';
+      }
+    },1200);
+  </script>
 </body>
 </html>

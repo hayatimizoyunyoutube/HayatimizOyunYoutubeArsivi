@@ -1,1 +1,1 @@
-v2.0.1 dolu eski taban build ok
+v2.0.2 stabil calisan site build ok

@@ -1,13 +1,13 @@
 {
-  "name": "hayatimiz-oyun-v201-bos-ekran-kesin-cozum",
+  "name": "hayatimiz-oyun-v202-stabil-calisan-site",
   "private": true,
   "type": "module",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "scripts": {
     "build": "node scripts/vercel-static-build-check.mjs",
-    "dev": "vite --host 127.0.0.1 --port 5173 --open /",
-    "local": "vite --host 127.0.0.1 --port 5173 --open /",
-    "preview": "vite preview --host 127.0.0.1 --port 4173 --open /"
+    "dev": "vite --host 127.0.0.1 --port 5173 --open /ana-sayfa",
+    "local": "vite --host 127.0.0.1 --port 5173 --open /ana-sayfa",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --open /ana-sayfa"
   },
   "devDependencies": {
     "vite": "^5.4.19"
