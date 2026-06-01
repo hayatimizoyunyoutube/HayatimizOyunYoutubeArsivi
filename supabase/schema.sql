@@ -1,5 +1,5 @@
--- v2.0.2 STABIL CALISAN SITE - mevcut kayıtları silmez
--- Hayatımız Oyun v2.0.2 - Dolu eski taban schema
+-- v2.0.3 STABIL CALISAN SITE - mevcut kayıtları silmez
+-- Hayatımız Oyun v2.0.3 - Dolu eski taban schema
 -- Güvenli migration: mevcut oyun, kullanıcı, bakım, takvim ve not kayıtlarını SİLMEZ.
 set statement_timeout = '25s';
 set lock_timeout = '3s';
@@ -400,37 +400,37 @@ insert into public.site_runtime_config (key, value, updated_at)
 values
 (
   'schema_version',
-  jsonb_build_object('version','v2.0.2', 'status','Tam stabil site fix schema hazır.', 'updated_at', now()),
+  jsonb_build_object('version','v2.0.3', 'status','Tam stabil site fix schema hazır.', 'updated_at', now()),
   now()
 ),
 (
   'update_notes_center',
-  jsonb_build_object('enabled', true, 'version','v2.0.2', 'editable', true, 'stable_layer', true, 'updated_at', now()),
+  jsonb_build_object('enabled', true, 'version','v2.0.3', 'editable', true, 'stable_layer', true, 'updated_at', now()),
   now()
 ),
 (
   'calendar_events_standard',
-  jsonb_build_object('enabled', true, 'version','v2.0.2', 'mode','manual', 'auto_create', false, 'updated_at', now()),
+  jsonb_build_object('enabled', true, 'version','v2.0.3', 'mode','manual', 'auto_create', false, 'updated_at', now()),
   now()
 )
 on conflict (key) do update set value = excluded.value, updated_at = now();
 
 insert into public.site_update_notes (version, title, summary, note, description, status, pinned, planned, created_at, updated_at)
 select
-  'v2.0.2',
+  'v2.0.3',
   'Tam Stabil Site Fix',
   'Eksik Supabase tabloları, admin boş sayfaları, oyun ekleme, yayın takvimi, güncelleme notları, bakım modu ve Vercel dist senkronizasyonu düzeltildi.',
-  'v2.0.2 ana sayfa boş ekran kesin çözüm geri dönüşü yapıldı; site boş/siyah ekrana düşmeyecek şekilde güvenli katman korundu.',
+  'v2.0.3 ana sayfa boş ekran kesin çözüm geri dönüşü yapıldı; site boş/siyah ekrana düşmeyecek şekilde güvenli katman korundu.',
   'Oyun Ekle, Mevcut Oyunlar, Yayın Takvimi, Güncelleme Notları ve Bakım Modu local fallback + Supabase API ile çalışır.',
   'published',
   true,
   false,
   now(),
   now()
-where not exists (select 1 from public.site_update_notes where version = 'v2.0.2');
+where not exists (select 1 from public.site_update_notes where version = 'v2.0.3');
 
 insert into public.site_schema_versions (version, note, created_at, updated_at)
-select 'v2.0.2', 'Dolu eski taban schema: eksik tablolar, takvim video URL, not alias, bakım koruması.', now(), now()
-where not exists (select 1 from public.site_schema_versions where version = 'v2.0.2');
+select 'v2.0.3', 'Dolu eski taban schema: eksik tablolar, takvim video URL, not alias, bakım koruması.', now(), now()
+where not exists (select 1 from public.site_schema_versions where version = 'v2.0.3');
 
-select 'Hayatımız Oyun v2.0.2 ana sayfa boş ekran kesin çözüm schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.' as status;
+select 'Hayatımız Oyun v2.0.3 ana sayfa boş ekran kesin çözüm schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.' as status;

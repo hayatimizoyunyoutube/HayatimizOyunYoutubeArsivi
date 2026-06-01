@@ -1,17 +1,25 @@
-# Hayatımız Oyun - v2.0.2 Stabil Çalışan Site
+# Hayatımız Oyun - v2.0.3 Profesyonel Ana Sayfa Geri Dönüş
 
-Bu paket, siyah/boş ekran sorununu kökten çözmek için hazırlanmıştır. Eski dolu taban dosyaları korunur; fakat açılışta kırılan büyük eski JS yerine stabil çalışan yeni uygulama kabuğu kullanılır.
+Bu paket v2.0.2 stabil çalışan tabanı bozmadan hazırlanmıştır.
 
-## Çalışan Alanlar
-- Ana Sayfa
-- Oyun Arşivi
-- Seriler
-- Yönetim Paneli
-- Oyun Ekle
-- Mevcut Oyunlar
-- Yayın Takvimi
-- Güncelleme Notları
-- Bakım Modu
+## Bu pakette yapılanlar
 
-## Deploy
-GitHub'a yükledikten sonra Vercel'de redeploy yapın. Gerekirse Clear Build Cache kullanın.
+1. Profesyonel ana sayfa geri eklendi.
+2. Sinematik hero/vitrin alanı eklendi.
+3. Arşiv istatistikleri geri geldi.
+4. Son eklenen oyunlar alanı geri geldi.
+5. Hızlı menü kartları geri geldi.
+6. Arşiv durumu paneli eklendi.
+7. Boş/siyah ekran koruması kaldırılmadı.
+8. Eski kırık ana JS yapısı aynen geri basılmadı.
+9. `GUNCELLEMELER/PLANLANANLAR` ve `GUNCELLEMELER/TAMAMLANANLAR` düzeni güncellendi.
+10. Ana klasörde sadece iki BAT dosyası bırakıldı.
+
+## Kalan BAT dosyaları
+
+- `01-siteyi-temizle-git-ve-bat-haric.bat`
+- `02-githuba-otomatik-gonder.bat`
+
+## Sonraki adım
+
+v2.0.4: Oyun Arşivi, Kartlar ve Filtreler.

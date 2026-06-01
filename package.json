@@ -1,8 +1,8 @@
 {
-  "name": "hayatimiz-oyun-v202-stabil-calisan-site",
+  "name": "hayatimiz-oyun-v203-profesyonel-ana-sayfa",
   "private": true,
   "type": "module",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "scripts": {
     "build": "node scripts/vercel-static-build-check.mjs",
     "dev": "vite --host 127.0.0.1 --port 5173 --open /ana-sayfa",

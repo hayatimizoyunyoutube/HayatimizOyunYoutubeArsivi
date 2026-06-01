@@ -356,7 +356,7 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v2.0.2' });
+    if(action === 'health') return json(res, 200, { ok:true, version:'v2.0.3' });
 
     if(action === 'register'){
       const email = String(body.email || '').trim().toLowerCase();
@@ -475,7 +475,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.0.2', note:'Dolu eski taban geri dönüş', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.0.3', note:'Dolu eski taban geri dönüş', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, rows });
@@ -491,7 +491,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.0.2', note:'Dolu eski taban geri dönüş', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.0.3', note:'Dolu eski taban geri dönüş', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, rows });
@@ -635,7 +635,7 @@ export default async function handler(req, res){
       const games = await supabase('games?select=*&order=series_order.asc', { method:'GET' }).catch(()=>[]);
       const runtime = await supabase('site_runtime_config?select=key,value,updated_at', { method:'GET' }).catch(()=>[]);
       const snapshot = {
-        version:'v2.0.2',
+        version:'v2.0.3',
         source,
         created_at:now,
         counts:{
@@ -1169,9 +1169,9 @@ export default async function handler(req, res){
         storeScores.forEach(s=>sources.push(s));
       }catch{}
       const clean = sources.filter(s=>Number.isFinite(Number(s.score)) && Number(s.score)>0);
-      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v2.0.2' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
+      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v2.0.3' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
       const avg = clean.reduce((a,b)=>a+Number(b.score),0)/clean.length;
-      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v2.0.2' });
+      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v2.0.3' });
     }
 
 
@@ -1181,7 +1181,7 @@ export default async function handler(req, res){
       const source = String(body.source || 'epic').trim().toLowerCase();
       if(!title) throw new Error('Kaynak kontrolü için oyun adı gerekli.');
       const result = ho244ApiStoreSearch(title, source);
-      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v2.0.2' });
+      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v2.0.3' });
     }
 
     return json(res, 404, { ok:false, error:'Bilinmeyen API action.' });
