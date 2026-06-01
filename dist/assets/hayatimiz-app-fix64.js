@@ -24,7 +24,7 @@ var ho240f15DeployCenter;
 var ho240f15AiCenter;
 var ho240f15PanelForAdmin;
 var ho240Applied;
-const VERSION = 'v2.0.0';
+const VERSION = 'v2.0.1';
 const STAFF_ROLES = ['kurucu', 'yonetici', 'moderator', 'editor'];
 const OWNER_ROLES = ['kurucu', 'yonetici'];
 const ROLE_LABELS = { kurucu:'Kurucu', yonetici:'Yönetici', moderator:'Moderatör', editor:'Editör', user:'Kullanıcı', banned:'Banlı' };
@@ -19464,7 +19464,7 @@ try{
 
 /* v2.0.0 - Dolu eski taban geri dönüş, stabil admin, schema ve deploy uyumluluk katmanı */
 ;(() => {
-  const HO254F8_VERSION = 'v2.0.0';
+  const HO254F8_VERSION = 'v2.0.1';
   const HO254F8_TITLE = 'Dolu Eski Taban Geri Dönüş';
   const ADMIN_PAGES_FIX9 = ['Genel Bakış','Oyun Ekle','Mevcut Oyunlar','Yayın Takvimi','Güncelleme Notları','Bakım Modu','Kullanıcı Yetkileri','Profil','API/ENV Durumu','Ayarlar'];
   const ls = {
@@ -19920,5 +19920,23 @@ try{
     const cached = localGet(ls.games, []);
     if(!getGames().length && Array.isArray(cached) && cached.length) state.games = cached.map(safeGame);
   } catch {}
-  try { render(); } catch (error) { console.error('v2.0.0 render hatası:', error); }
+  try { render(); } catch (error) { console.error('v2.0.1 render hatası:', error); }
 })();
+
+
+/* v2.0.1 - Ana sayfa boş ekran kesin JS içi koruma */
+try{
+  window.__HO201_MAIN_JS_LOADED__ = true;
+  setTimeout(function(){
+    try{
+      var root=document.getElementById('root');
+      if(!root) return;
+      var txt=(root.textContent||'').replace(/\s+/g,' ').trim();
+      var rect=root.getBoundingClientRect();
+      var has=root.querySelector && root.querySelector('button,a,article,.card,.game,.fix5AdminShell,.ho201SafeShell');
+      if((!txt || txt.length<60 || !has || (rect.height && rect.height<160)) && typeof window.HO201ForceSafeHome==='function'){
+        window.HO201ForceSafeHome('Ana JS içi v2.0.1 boş ekran koruması');
+      }
+    }catch(e){}
+  }, 1800);
+}catch(e){}

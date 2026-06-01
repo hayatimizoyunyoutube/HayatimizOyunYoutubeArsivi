@@ -1,4 +1,4 @@
-# Gelecek Güncellemeler - v2.0.0 Dolu Eski Taban Sonrası
+# Gelecek Güncellemeler - v2.0.1 Dolu Eski Taban Sonrası
 
 ## v2.0.1 - Ana Sayfa ve Menü Hata Kontrolü
 - Ana sayfa boş/siyah ekran kontrolü.

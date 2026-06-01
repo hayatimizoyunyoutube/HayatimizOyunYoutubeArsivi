@@ -1507,8 +1507,8 @@ Bu paket yeni büyük güncelleme değildir; v2.2.0 hattında stabil fix paketid
 - v2.5.4 FIX7: Temiz admin takvim, güncelleme notları ve oyun ekleme kesin fix uygulandı.
 
 
-# v2.0.0 - Dolu Eski Taban Geri Dönüş
+# v2.0.1 - Dolu Eski Taban Geri Dönüş
 
-- Site görünen sürümü tekrar v2.0.0 yapıldı.
+- Site görünen sürümü tekrar v2.0.1 yapıldı.
 - Boş/temiz başlangıç yapılmadı; eski dolu oyun arşivi ve admin özellikleri korundu.
 - v2.0.1 sonrası hatalar adım adım ayrılacak.

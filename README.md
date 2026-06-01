@@ -1,6 +1,6 @@
-# Hayatımız Oyun - v2.0.0 Dolu Eski Taban
+# Hayatımız Oyun - v2.0.1 Dolu Eski Taban
 
-Bu paket boş/temiz başlangıç değildir. Önceki dolu site altyapısı korunarak görünen sürüm tekrar **v2.0.0** noktasına alınmıştır. Oyun arşivi, admin panel, oyun ekleme/düzenleme, RAWG/kapak/meta mantığı, YouTube playlist/bölüm alanları, koleksiyon/filtre yapısı, yayın takvimi, güncelleme notları ve bakım modu korunur.
+Bu paket boş/temiz başlangıç değildir. Önceki dolu site altyapısı korunarak görünen sürüm tekrar **v2.0.1** noktasına alınmıştır. Oyun arşivi, admin panel, oyun ekleme/düzenleme, RAWG/kapak/meta mantığı, YouTube playlist/bölüm alanları, koleksiyon/filtre yapısı, yayın takvimi, güncelleme notları ve bakım modu korunur.
 
 Bundan sonra hatalar `v2.0.1`, `v2.0.2`, `v2.0.3` şeklinde adım adım ayrılacaktır.
 
