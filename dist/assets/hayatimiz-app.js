@@ -1,16 +1,19 @@
-const VERSION = 'v2.0.3';
+const VERSION = 'v2.0.4';
 const GAME_KEYS = ['hayatimiz_games_cache_stable_v31','hayatimiz_games_cache_stable_v30','hayatimiz_games_cache_stable_v24','hayatimiz_games_cache_stable','hayatimiz_games_v2'];
 const EVENTS_KEYS = ['hayatimiz_v202_calendar_events','hayatimiz_v254_fix2_calendar_events','hayatimiz_calendar_events_stable_v253f4'];
-const NOTES_KEY = 'hayatimiz_update_notes_local_v203';
-const LEGACY_NOTES_KEYS = ['hayatimiz_update_notes_local_v202','hayatimiz_update_notes_local_v254f8','hayatimiz_update_notes_local_v251','hayatimiz_update_notes_local'];
+const NOTES_KEY = 'hayatimiz_update_notes_local_v204';
+const LEGACY_NOTES_KEYS = ['hayatimiz_update_notes_local_v203','hayatimiz_update_notes_local_v202','hayatimiz_update_notes_local_v254f8','hayatimiz_update_notes_local_v251','hayatimiz_update_notes_local'];
 const MAINTENANCE_KEY = 'hayatimiz_maintenance_cache_stable';
 
 const DEFAULT_GAMES = [
-  {id:'alan-wake-remastered',title:'Alan Wake Remastered',status:'Devam Eden',genre:'Korku',seriesName:'Alan Wake',cover:'/assets/alan-wake-night-springs.png',releaseDate:'2010',description:'Korku ve hikaye odaklı yayın arşivi.',episodeCount:8,tags:'Türkçe Altyazılı, Hikaye'},
-  {id:'assassins-creed-directors-cut',title:'Assassin’s Creed Director’s Cut',status:'Tamamlanan',genre:'Aksiyon',seriesName:'Assassin’s Creed',cover:'/assets/assassins-creed-directors-cut.png',releaseDate:'2008',description:'Tamamlanan seri arşivi ve bölüm takibi.',episodeCount:14,tags:'Türkçe, Seri'},
-  {id:'hayatimiz-oyun-arsiv',title:'Hayatımız Oyun Arşivi',status:'Yakında',genre:'YouTube Arşivi',seriesName:'Genel Arşiv',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2026',description:'YouTube playlist, bölüm ve oyun koleksiyonu merkezi.',episodeCount:0,tags:'Arşiv, Plan'}
+  {id:'alan-wake-remastered',title:'Alan Wake Remastered',status:'Devam Eden',genre:'Korku',seriesName:'Alan Wake',cover:'/assets/alan-wake-night-springs.png',releaseDate:'2010',description:'Korku ve hikaye odaklı yayın arşivi. Bölüm bölüm takip için hazır kart yapısı.',episodeCount:8,tags:'Türkçe Altyazılı, Hikaye, Korku'},
+  {id:'assassins-creed-directors-cut',title:'Assassin’s Creed Director’s Cut',status:'Tamamlanan',genre:'Aksiyon',seriesName:'Assassin’s Creed',cover:'/assets/assassins-creed-directors-cut.png',releaseDate:'2008',description:'Tamamlanan seri arşivi, bölüm sayısı ve koleksiyon görünümü için örnek kayıt.',episodeCount:14,tags:'Türkçe, Seri, Tarihi'},
+  {id:'hayatimiz-oyun-arsiv',title:'Hayatımız Oyun Arşivi',status:'Yakında',genre:'YouTube Arşivi',seriesName:'Genel Arşiv',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2026',description:'YouTube playlist, bölüm ve oyun koleksiyonu merkezi.',episodeCount:0,tags:'Arşiv, Plan, YouTube'},
+  {id:'a-plague-tale-innocence',title:'A Plague Tale: Innocence',status:'Planlandı',genre:'Macera',seriesName:'A Plague Tale',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2019',description:'Hikaye odaklı seri için gelecek yayın planı ve kart/filtre örneği.',episodeCount:0,tags:'Türkçe Altyazılı, Hikaye, Macera'},
+  {id:'control-ultimate-edition',title:'Control Ultimate Edition',status:'Ara Verildi',genre:'Aksiyon',seriesName:'Remedy Evreni',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2019',description:'Ara verilen seriler için durum rozeti ve koleksiyon sayacı örneği.',episodeCount:5,tags:'Aksiyon, Bilim Kurgu, Seri'}
 ];
 const DEFAULT_NOTES = [
+  {id:'v204',version:'v2.0.4',title:'Oyun Arşivi, Kartlar ve Filtreler',summary:'Profesyonel oyun kartları, arama, durum, tür, etiket, seri filtreleri, koleksiyon ve sonuç sayıları geri eklendi. Mobil/masaüstü taşma koruması güçlendirildi.',status:'Tamamlandı'},
   {id:'v203',version:'v2.0.3',title:'Profesyonel Ana Sayfa Geri Dönüş',summary:'v2.0.2 stabil taban bozulmadan sinematik hero, arşiv istatistikleri, son eklenenler ve hızlı menü geri eklendi.',status:'Tamamlandı'},
   {id:'v202-fix',version:'v2.0.2',title:'Planlar, Güncellemeler ve BAT Temizliği',summary:'GUNCELLEMELER/TAMAMLANANLAR ve GUNCELLEMELER/PLANLANANLAR düzeni kuruldu; ana klasörde sadece iki BAT bırakıldı.',status:'Tamamlandı'},
   {id:'v202',version:'v2.0.2',title:'Boş Ekran Kesin Düzeltme',summary:'Kırık eski ana JS açılışı kaldırıldı; stabil çalışan yeni uygulama kabuğu eklendi.',status:'Tamamlandı'},
@@ -55,9 +58,29 @@ function toast(msg){ const old=$('.toast'); if(old) old.remove(); const t=docume
 function active(path){ const p=route(); return p===path || (path!=='/' && p.startsWith(path)); }
 function countBy(rows, key){ return rows.reduce((acc,item)=>{ const k=item[key] || 'Diğer'; acc[k]=(acc[k]||0)+1; return acc; },{}); }
 function statusClass(status){ const s=String(status||'').toLowerCase(); return s.includes('tamam')?'green':s.includes('yak')||s.includes('plan')?'amber':s.includes('ara')?'red':''; }
+function tagList(g){ return String(g.tags||'').split(',').map(x=>x.trim()).filter(Boolean); }
+function uniqueValues(rows, getter){ return Array.from(new Set(rows.map(getter).flat().map(x=>String(x||'').trim()).filter(Boolean))).sort((a,b)=>a.localeCompare(b,'tr')); }
+function queryParams(){ return new URLSearchParams(location.search || ''); }
+function selectedOption(current, value){ return String(current||'')===String(value||'') ? 'selected' : ''; }
+function clearTextMatch(g, q){ if(!q) return true; return [g.title,g.genre,g.seriesName,g.description,g.tags,g.status].join(' ').toLocaleLowerCase('tr').includes(String(q).toLocaleLowerCase('tr')); }
+function filterGames(rows, filters){
+  return rows.filter(g => clearTextMatch(g, filters.q)
+    && (!filters.status || filters.status==='Tümü' || g.status===filters.status)
+    && (!filters.genre || filters.genre==='Tümü' || g.genre===filters.genre)
+    && (!filters.series || filters.series==='Tümü' || (g.seriesName||'Serisiz')===filters.series)
+    && (!filters.tag || filters.tag==='Tümü' || tagList(g).includes(filters.tag))
+  );
+}
+function progressPercent(g){
+  const total=Number(g.episodeCount||0);
+  const watched=Number(g.watchedEpisodeCount || g.watched_episode_count || 0);
+  if(!total) return g.status==='Tamamlanan' ? 100 : 0;
+  return Math.max(0, Math.min(100, Math.round((watched/total)*100)));
+}
+
 function nav(){
   const items=[['/ana-sayfa','Ana Sayfa'],['/oyun-arsivi','Oyun Arşivi'],['/seriler','Seriler'],['/yonetim','Yönetim Paneli'],['/yonetim/oyun-ekle','Oyun Ekle'],['/yonetim/mevcut-oyunlar','Mevcut Oyunlar'],['/yonetim/yayin-takvimi','Yayın Takvimi'],['/yonetim/guncelleme-notlari','Güncelleme Notları'],['/yonetim/bakim-modu','Bakım Modu']];
-  return `<aside class="side"><div class="brand"><span class="logo">🎮</span><span><b>Hayatımız <em>Oyun</em></b><small>${VERSION} • profesyonel ana sayfa</small></span></div><nav class="nav">${items.map(([href,label])=>`<a class="${active(href)?'active':''}" href="${href}">${label}</a>`).join('')}</nav><button data-action="hard-refresh">Sayfayı Yenile</button><div class="sideFooter"><b class="okText">Boş ekran fix aktif</b><br>v2.0.3 ana sayfa parça parça geri eklendi. Eski kırık JS geri basılmadı.</div></aside>`;
+  return `<aside class="side"><div class="brand"><span class="logo">🎮</span><span><b>Hayatımız <em>Oyun</em></b><small>${VERSION} • oyun arşivi filtreleri</small></span></div><nav class="nav">${items.map(([href,label])=>`<a class="${active(href)?'active':''}" href="${href}">${label}</a>`).join('')}</nav><button data-action="hard-refresh">Sayfayı Yenile</button><div class="sideFooter"><b class="okText">Boş ekran fix aktif</b><br>v2.0.4 arşiv/kart/filtre fix aktif. Boş ekran koruması korunuyor.</div></aside>`;
 }
 function layout(content){ return `<main class="app">${nav()}<section class="main">${content}</section></main>`; }
 function hero(title, text, badge='v2.0.3 • profesyonel ana sayfa'){
@@ -65,8 +88,20 @@ function hero(title, text, badge='v2.0.3 • profesyonel ana sayfa'){
 }
 function gameCard(g){
   const cls = statusClass(g.status);
-  const tags = String(g.tags||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,3);
-  return `<article class="gameCard"><img src="${esc(g.cover)}" alt="${esc(g.title)}" onerror="this.src='/assets/hayatimiz-kapak.png'"><div class="body"><div class="cardTop"><span class="pill ${cls}">${esc(g.status)}</span>${g.episodeCount?`<span class="pill">${esc(g.episodeCount)} bölüm</span>`:''}</div><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p>${tags.length?`<div class="tags">${tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:''}<p class="muted" style="margin-top:10px">${esc(g.genre)} ${g.seriesName?'• '+esc(g.seriesName):''} ${g.releaseDate?'• '+esc(g.releaseDate):''}</p></div></article>`;
+  const tags = tagList(g).slice(0,4);
+  const pct = progressPercent(g);
+  const episodeText = Number(g.episodeCount||0) ? `${Number(g.episodeCount||0)} bölüm` : 'Bölüm bekliyor';
+  return `<article class="gameCard proGameCard">
+    <div class="posterWrap"><img src="${esc(g.cover)}" alt="${esc(g.title)}" onerror="this.src='/assets/hayatimiz-kapak.png'"><span class="cornerPill ${cls}">${esc(g.status)}</span></div>
+    <div class="body">
+      <div class="cardTop"><span class="pill">${esc(g.genre||'Kategori yok')}</span><span class="pill">${esc(episodeText)}</span></div>
+      <h3>${esc(g.title)}</h3>
+      <p>${esc(g.description)}</p>
+      <div class="progressMini"><i><span style="width:${pct}%"></span></i><small>${pct}% izleme/seri ilerlemesi</small></div>
+      ${tags.length?`<div class="tags">${tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:''}
+      <div class="metaLine"><span>${g.seriesName?`🎬 ${esc(g.seriesName)}`:'🎬 Serisiz'}</span><span>${g.releaseDate?`📅 ${esc(g.releaseDate)}`:'📅 Tarih yok'}</span></div>
+    </div>
+  </article>`;
 }
 function quickCard(href, icon, title, text){ return `<a class="quickCard" href="${href}"><span class="quickIcon">${icon}</span><b>${esc(title)}</b><small>${esc(text)}</small></a>`; }
 function statusBar(label,count,total,cls=''){
@@ -87,7 +122,7 @@ function home(){
     <div class="heroContent">
       <span class="badge">${VERSION} • Profesyonel Ana Sayfa Geri Döndü</span>
       <h1>Hayatımız Oyun Arşivi</h1>
-      <p>v2.0.2 stabil taban korunarak sinematik vitrin, arşiv istatistikleri, son eklenenler ve hızlı menü geri eklendi. Boş/siyah ekran koruması hâlâ aktif.</p>
+      <p>v2.0.2 stabil taban korunarak profesyonel ana sayfa ve v2.0.4 oyun arşivi filtreleri geri eklendi. Boş/siyah ekran koruması hâlâ aktif.</p>
       <div class="actions"><a class="btn primary" href="/oyun-arsivi">Arşivi Aç</a><a class="btn secondary" href="/yonetim/oyun-ekle">Oyun Ekle</a><a class="btn secondary" href="/yonetim">Yönetim Paneli</a></div>
       <div class="heroMiniStats"><span><b>${games.length}</b> Oyun</span><span><b>${series.size}</b> Seri</span><span><b>${episodeTotal}</b> Bölüm</span><span><b>${genres.size}</b> Kategori</span></div>
     </div>
@@ -108,10 +143,47 @@ function home(){
   <section class="panels"><div class="panel"><h2>Yaklaşan Yayınlar</h2><div class="miniList">${events.length?events.slice(0,4).map(e=>`<article class="event"><span class="pill">${esc(e.date||'Tarih yok')}</span><h3>${esc(e.title||'Yayın')}</h3><p>${esc(e.time||'20:00')} • ${esc(e.note||e.type||'')}</p></article>`).join(''):'<div class="empty">Henüz takvim kaydı yok.</div>'}</div></div><div class="panel"><h2>Geri Ekleme Sırası</h2><div class="roadList"><span class="done">1. Profesyonel ana sayfa tamamlandı</span><span>2. Oyun arşivi kartları ve filtreler</span><span>3. Admin panel dönüşü</span><span>4. RAWG / YouTube / Supabase adımları</span></div></div></section>`);
 }
 function archive(){
-  const games=loadGames(); const q=new URLSearchParams(location.search).get('q')||''; const f=new URLSearchParams(location.search).get('status')||'Tümü';
-  const statuses=['Tümü',...Array.from(new Set(games.map(g=>g.status).filter(Boolean)))];
-  const filtered=games.filter(g=>(!q || [g.title,g.genre,g.seriesName,g.description,g.tags].join(' ').toLowerCase().includes(q.toLowerCase())) && (f==='Tümü'||g.status===f));
-  return layout(`<div class="sectionHead"><div><h2>Oyun Arşivi</h2><p>Arama, durum filtresi ve kart görünümü stabil çalışır. Gelişmiş filtreler v2.0.4 planında geri gelecek.</p></div><a class="btn primary" href="/yonetim/oyun-ekle">Yeni Oyun Ekle</a></div><form class="toolbar" data-search-form><input class="input" name="q" style="max-width:360px" placeholder="Oyun, tür, seri ara" value="${esc(q)}"><select name="status" style="max-width:220px">${statuses.map(s=>`<option ${s===f?'selected':''}>${esc(s)}</option>`).join('')}</select><button class="btn primary" type="submit">Filtrele</button></form>${filtered.length?`<section class="grid">${filtered.map(gameCard).join('')}</section>`:'<div class="empty">Bu filtreyle oyun bulunamadı.</div>'}`);
+  const games=loadGames();
+  const params=queryParams();
+  const filters={
+    q:params.get('q')||'',
+    status:params.get('status')||'Tümü',
+    genre:params.get('genre')||'Tümü',
+    series:params.get('series')||'Tümü',
+    tag:params.get('tag')||'Tümü'
+  };
+  const statuses=['Tümü',...uniqueValues(games,g=>g.status)];
+  const genres=['Tümü',...uniqueValues(games,g=>g.genre)];
+  const series=['Tümü',...uniqueValues(games,g=>g.seriesName||'Serisiz')];
+  const tags=['Tümü',...uniqueValues(games,g=>tagList(g))];
+  const filtered=filterGames(games, filters);
+  const byStatus=countBy(games,'status');
+  const episodeTotal=filtered.reduce((sum,g)=>sum+Number(g.episodeCount||0),0);
+  const activeFilterCount=Object.entries(filters).filter(([k,v])=>k==='q'?String(v).trim():v && v!=='Tümü').length;
+  return layout(`
+  <section class="archiveHero">
+    <div><span class="badge">v2.0.4 • Oyun Arşivi, Kartlar ve Filtreler</span><h1>Oyun Arşivi</h1><p>Profesyonel oyun kartları, arama, durum, tür, etiket ve seri filtreleri geri eklendi. Stabil v2.0.2 kabuğu ve boş ekran koruması korunuyor.</p></div>
+    <a class="btn primary" href="/yonetim/oyun-ekle">Yeni Oyun Ekle</a>
+  </section>
+  <section class="archiveStats">
+    <article><b>${games.length}</b><span>Koleksiyon</span></article>
+    <article><b>${filtered.length}</b><span>Sonuç</span></article>
+    <article><b>${episodeTotal}</b><span>Filtrelenen Bölüm</span></article>
+    <article><b>${activeFilterCount}</b><span>Aktif Filtre</span></article>
+  </section>
+  <form class="filterPanel" data-search-form>
+    <label>Arama<input class="input" name="q" placeholder="Oyun, tür, seri, etiket ara" value="${esc(filters.q)}"></label>
+    <label>Durum<select name="status">${statuses.map(s=>`<option ${selectedOption(filters.status,s)}>${esc(s)}</option>`).join('')}</select></label>
+    <label>Tür<select name="genre">${genres.map(s=>`<option ${selectedOption(filters.genre,s)}>${esc(s)}</option>`).join('')}</select></label>
+    <label>Seri<select name="series">${series.map(s=>`<option ${selectedOption(filters.series,s)}>${esc(s)}</option>`).join('')}</select></label>
+    <label>Etiket<select name="tag">${tags.map(s=>`<option ${selectedOption(filters.tag,s)}>${esc(s)}</option>`).join('')}</select></label>
+    <div class="filterActions"><button class="btn primary" type="submit">Filtrele</button><a class="btn secondary" href="/oyun-arsivi">Temizle</a></div>
+  </form>
+  <section class="statusChips">
+    ${Object.entries(byStatus).map(([label,count])=>`<a class="statusChip" href="/oyun-arsivi?status=${encodeURIComponent(label)}"><span class="pill ${statusClass(label)}">${esc(label)}</span><b>${count}</b></a>`).join('')}
+  </section>
+  <div class="sectionHead"><div><h2>Arşiv Kartları</h2><p>${filtered.length} sonuç / ${games.length} toplam oyun. Kartlar mobil ve masaüstünde taşma yapmayacak şekilde güncellendi.</p></div></div>
+  ${filtered.length?`<section class="grid archiveGrid">${filtered.map(gameCard).join('')}</section>`:'<div class="empty">Bu filtreyle oyun bulunamadı. Filtreleri temizleyip tekrar dene.</div>'}`);
 }
 function seriesPage(){
   const games=loadGames(); const map=new Map(); games.forEach(g=>{ const key=g.seriesName||'Serisiz Oyunlar'; if(!map.has(key)) map.set(key,[]); map.get(key).push(g); });
@@ -134,7 +206,7 @@ function calendar(){
 }
 function updateNotes(){
   const rows=loadNotes();
-  return layout(`<div class="sectionHead"><div><h2>Güncelleme Notları</h2><p>Tamamlanan ve planlanan sürümler buradan eklenebilir.</p></div></div><section class="panels"><form class="panel formGrid" data-note-form><label class="field">Sürüm<input class="input" name="version" value="v2.0.3"></label><label class="field">Durum<select name="status"><option>Tamamlandı</option><option>Planlandı</option></select></label><label class="field full">Başlık<input class="input" name="title" required placeholder="Güncelleme başlığı"></label><label class="field full">Özet<textarea name="summary" required></textarea></label><div class="full"><button class="btn primary" type="submit">Notu Kaydet</button></div></form><div class="panel"><h2>Kayıtlı Notlar</h2><div class="miniList">${rows.map((n,i)=>`<article class="note"><span class="pill ${String(n.status).includes('Plan')?'amber':'green'}">${esc(n.version||VERSION)} • ${esc(n.status||'Tamamlandı')}</span><h3>${esc(n.title)}</h3><p>${esc(n.summary||n.description||'')}</p><button class="btn danger" data-delete-note="${i}">Sil</button></article>`).join('')}</div></div></section>`);
+  return layout(`<div class="sectionHead"><div><h2>Güncelleme Notları</h2><p>Tamamlanan ve planlanan sürümler buradan eklenebilir.</p></div></div><section class="panels"><form class="panel formGrid" data-note-form><label class="field">Sürüm<input class="input" name="version" value="v2.0.4"></label><label class="field">Durum<select name="status"><option>Tamamlandı</option><option>Planlandı</option></select></label><label class="field full">Başlık<input class="input" name="title" required placeholder="Güncelleme başlığı"></label><label class="field full">Özet<textarea name="summary" required></textarea></label><div class="full"><button class="btn primary" type="submit">Notu Kaydet</button></div></form><div class="panel"><h2>Kayıtlı Notlar</h2><div class="miniList">${rows.map((n,i)=>`<article class="note"><span class="pill ${String(n.status).includes('Plan')?'amber':'green'}">${esc(n.version||VERSION)} • ${esc(n.status||'Tamamlandı')}</span><h3>${esc(n.title)}</h3><p>${esc(n.summary||n.description||'')}</p><button class="btn danger" data-delete-note="${i}">Sil</button></article>`).join('')}</div></div></section>`);
 }
 function maintenance(){
   const m=loadMaintenance();
@@ -151,7 +223,7 @@ function bind(){
     if(e.target.closest('[data-action="hard-refresh"]')) location.reload();
   });
   document.body.addEventListener('submit', e=>{
-    const search=e.target.closest('[data-search-form]'); if(search){ e.preventDefault(); const fd=new FormData(search); setRoute('/oyun-arsivi?q='+encodeURIComponent(fd.get('q')||'')+'&status='+encodeURIComponent(fd.get('status')||'Tümü')); return; }
+    const search=e.target.closest('[data-search-form]'); if(search){ e.preventDefault(); const fd=new FormData(search); const qs=new URLSearchParams(); for(const key of ['q','status','genre','series','tag']){ const val=String(fd.get(key)||'').trim(); if(val && val!=='Tümü') qs.set(key,val); } setRoute('/oyun-arsivi'+(qs.toString()?('?'+qs.toString()):'')); return; }
     const gf=e.target.closest('[data-game-form]'); if(gf){ e.preventDefault(); const fd=new FormData(gf); const rows=loadGames(); const title=fd.get('title'); rows.unshift(normalizeGame({id:slugify(title),title,status:fd.get('status'),genre:fd.get('genre'),seriesName:fd.get('seriesName'),cover:fd.get('cover')||'/assets/hayatimiz-kapak.png',releaseDate:fd.get('releaseDate'),description:fd.get('description'),youtubePlaylistUrl:fd.get('youtubePlaylistUrl'),tags:fd.get('tags')},0)); saveGames(rows); toast('Oyun kaydedildi.'); setRoute('/oyun-arsivi'); return; }
     const ef=e.target.closest('[data-event-form]'); if(ef){ e.preventDefault(); const fd=new FormData(ef); const rows=loadEvents(); rows.unshift({id:'event-'+Date.now(),title:fd.get('title'),date:fd.get('date'),time:fd.get('time'),videoUrl:fd.get('videoUrl'),note:fd.get('note')}); saveEvents(rows); toast('Yayın kaydedildi.'); render(); return; }
     const nf=e.target.closest('[data-note-form]'); if(nf){ e.preventDefault(); const fd=new FormData(nf); const rows=loadNotes(); rows.unshift({id:'note-'+Date.now(),version:fd.get('version'),status:fd.get('status'),title:fd.get('title'),summary:fd.get('summary')}); saveNotes(rows); toast('Güncelleme notu kaydedildi.'); render(); return; }
@@ -160,5 +232,7 @@ function bind(){
 }
 function render(){ const root=document.getElementById('root'); if(!root) return; root.innerHTML=pageHtml(); document.title='Hayatımız Oyun - '+VERSION; }
 window.addEventListener('popstate', render);
-window.addEventListener('error', ev=>{ console.error('v2.0.3 hata:', ev.message); const root=document.getElementById('root'); if(root && (root.textContent||'').trim().length<40) root.innerHTML=home(); });
+window.addEventListener('error', ev=>{ console.error('v2.0.4 hata:', ev.message); const root=document.getElementById('root'); if(root && (root.textContent||'').trim().length<40) root.innerHTML=home(); });
 document.addEventListener('DOMContentLoaded', ()=>{ bind(); render(); setTimeout(()=>{ const r=document.getElementById('root'); if(!r || (r.textContent||'').trim().length<40) render(); }, 300); });
+
+window.HAYATIMIZ_OYUN_VERSION = VERSION;

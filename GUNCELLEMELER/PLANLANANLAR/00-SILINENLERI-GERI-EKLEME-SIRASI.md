@@ -1,22 +1,16 @@
-# Silinen / Pasife Alınan Sistemleri Geri Ekleme Sırası
+# Silinen/Pasife Alınan Özellikleri Geri Ekleme Sırası
 
-v2.0.2 stabil çalışan tabanda site açılıyor ancak eski dolu sistemlerin bir kısmı pasif/basit hale getirildi. Bu dosya, onları hangi sırayla geri ekleyeceğimizi gösterir.
+## Tamamlanan
+- v2.0.3: Profesyonel ana sayfa geri dönüş.
+- v2.0.4: Oyun arşivi, profesyonel kartlar, arama/durum/tür/etiket/seri filtreleri, koleksiyon ve sonuç sayaçları.
+- v2.0.4: Supabase schema.sql sıfırdan kurulum yapısına çevrildi; status/genre/tag/series/games/episodes/health tabloları eklendi.
 
-## Geri eklenecek sıra
-
-1. Profesyonel ana sayfa ve dashboard/vitrin görünümü - TAMAMLANDI v2.0.3
-2. Oyun arşivi kartları ve gelişmiş filtreler
-3. Admin panelin eski güçlü düzeni
-4. Oyun ekle/düzenle profesyonel formu
-5. RAWG / Steam / kapak / meta otomasyonu
-6. YouTube playlist ve bölüm takibi
-7. Koleksiyon, seri, durum ve sayaç sistemi
-8. Supabase kalıcı veri bağlantıları
-9. Yayın takvimi, güncelleme notları ve bakım modu
-10. Public yayın öncesi stabilite kontrolü
-
-## Geri ekleme kuralı
-
-- Her pakette sadece bir ana konu geri eklenecek.
-- Site açılışı bozulursa yeni özellik eklenmeyecek, önce fix yapılacak.
-- Eski kırık kod aynen geri konmayacak; çalışan v2.0.2 tabana uyarlanacak.
+## Sıradaki adımlar
+1. v2.0.5 Admin Panel Geri Dönüş
+2. v2.0.6 Oyun Ekle / Düzenle Formu
+3. v2.0.7 RAWG / Steam / Kapak / Meta Geri Dönüş
+4. v2.0.8 YouTube Playlist ve Bölüm Takibi
+5. v2.0.9 Koleksiyon, Seri, Durum ve Sayaçlar
+6. v2.1.0 Supabase Kalıcı Veri Geri Dönüş
+7. v2.1.1 Takvim, Güncelleme Notları ve Bakım Modu
+8. v2.1.2 Public Yayın Öncesi Stabilite
