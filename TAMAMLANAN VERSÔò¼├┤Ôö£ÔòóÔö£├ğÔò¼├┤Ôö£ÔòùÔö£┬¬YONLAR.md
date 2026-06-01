@@ -1367,3 +1367,10 @@ Bu paket yeni büyük güncelleme değildir; v2.2.0 hattında stabil fix paketid
 - FIX65: Oyun ekle / düzenle form kutuları okunabilirlik ve kontrast iyileştirmesi.
 
 - FIX66: Profesyonel kartlı oyun formu, Steam/YouTube/seri otomasyon kutuları, canlı önizleme ve kapak seçici eklendi.
+
+
+# v2.0.0 - Dolu Eski Taban Geri Dönüş
+
+- Site görünen sürümü tekrar v2.0.0 yapıldı.
+- Boş/temiz başlangıç yapılmadı; eski dolu oyun arşivi ve admin özellikleri korundu.
+- v2.0.1 sonrası hatalar adım adım ayrılacak.

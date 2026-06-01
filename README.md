@@ -1,3 +1,11 @@
+# Hayatımız Oyun - v2.0.0 Dolu Eski Taban
+
+Bu paket boş/temiz başlangıç değildir. Önceki dolu site altyapısı korunarak görünen sürüm tekrar **v2.0.0** noktasına alınmıştır. Oyun arşivi, admin panel, oyun ekleme/düzenleme, RAWG/kapak/meta mantığı, YouTube playlist/bölüm alanları, koleksiyon/filtre yapısı, yayın takvimi, güncelleme notları ve bakım modu korunur.
+
+Bundan sonra hatalar `v2.0.1`, `v2.0.2`, `v2.0.3` şeklinde adım adım ayrılacaktır.
+
+---
+
 # v2.4.0 FIX 41
 
 - Oyun Ekle / Mevcut Oyunu Düzenle formuna Kapakları Getir, Çıkış Tarihini Tekrar Çek ve Türleri Tekrar Çek butonları eklendi.
@@ -325,5 +333,5 @@ Seri Sıralama paneline sürükle bırak oyun sıralama sistemi eklendi.
 Devam eden serilerde playlistten çekilen videolara göre **Kaldığımız Bölüm** göstergesi eklendi. İzleyici ana sayfadan veya seri kartından doğrudan kaldığımız bölümü açabilir.
 
 
-## v2.0.0 Notu
-Bu paket v2.0.0 temiz başlangıç paketidir. Çalışan stabil katman korunur, eski FIX karmaşası public sürüm göstergesinden temizlenir. `npm run build` src dosyalarını dist içine senkronize eder. Supabase için gerekirse `supabase/schema.sql` çalıştırılabilir; mevcut kayıtlar ve bakım modu korunur.
+## v2.5.4 FIX9 Notu
+Bu paket tam stabil site fix paketidir. `npm run build` src dosyalarını dist içine senkronize eder. Supabase için `supabase/schema.sql` çalıştırılmalıdır; mevcut kayıtlar ve bakım modu korunur.

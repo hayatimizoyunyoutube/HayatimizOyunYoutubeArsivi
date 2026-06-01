@@ -475,7 +475,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.0.0', note:'Tam stabil site fix', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.0.0', note:'Dolu eski taban geri dönüş', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, rows });
@@ -491,7 +491,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.0.0', note:'Tam stabil site fix', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.0.0', note:'Dolu eski taban geri dönüş', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, rows });

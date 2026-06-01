@@ -63,5 +63,5 @@ FIX34 NOTU:
 - Kontroller: node --check src/main.js, node --check api/index.js, npm run build başarılı.
 
 
-## v2.0.0 Stabil Koruma Notu
+## v2.5.4 FIX8 Notu
 Bu paket tam stabil site fix paketidir. `npm run build` src dosyalarını dist içine senkronize eder. Supabase için `supabase/schema.sql` çalıştırılmalıdır; mevcut kayıtlar ve bakım modu korunur.

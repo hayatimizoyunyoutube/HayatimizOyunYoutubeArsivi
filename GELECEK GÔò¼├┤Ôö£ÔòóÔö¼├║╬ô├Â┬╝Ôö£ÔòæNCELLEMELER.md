@@ -1,41 +1,32 @@
-# GELECEK GÜNCELLEMELER
+# Gelecek Güncellemeler - v2.0.0 Dolu Eski Taban Sonrası
 
-Bu klasörde Hayatımız Oyun için planlanan 15 gelecek sürüm dosyası bulunur.
+## v2.0.1 - Ana Sayfa ve Menü Hata Kontrolü
+- Ana sayfa boş/siyah ekran kontrolü.
+- Menü, yönlendirme ve mobil görünüm düzeltmeleri.
 
-## Planlanan 15 Sürüm
+## v2.0.2 - Admin Panel Stabil Kontrol
+- Yönetim paneli sekmeleri.
+- Buton taşmaları ve form hizaları.
 
-- [01-v2.4.2-GELECEK-GUNCELLEME.md](PLANLANANLAR/01-v2.4.2-GELECEK-GUNCELLEME.md) — Kırmızı Kompakt Arayüz İnce Ayarı
-- [02-v2.4.3-GELECEK-GUNCELLEME.md](PLANLANANLAR/02-v2.4.3-GELECEK-GUNCELLEME.md) — Playlist Bölüm Algılama Motoru
-- [03-v2.4.4-GELECEK-GUNCELLEME.md](PLANLANANLAR/03-v2.4.4-GELECEK-GUNCELLEME.md) — Steam Kapak ve Tarih Doğrulama
-- [04-v2.4.5-GELECEK-GUNCELLEME.md](PLANLANANLAR/04-v2.4.5-GELECEK-GUNCELLEME.md) — Profesyonel Oyun Ekleme Formu
-- [05-v2.4.6-GELECEK-GUNCELLEME.md](PLANLANANLAR/05-v2.4.6-GELECEK-GUNCELLEME.md) — Seri İzleme Ekranı Geliştirme
-- [06-v2.4.7-GELECEK-GUNCELLEME.md](PLANLANANLAR/06-v2.4.7-GELECEK-GUNCELLEME.md) — XP / Level Sistemi V2
-- [07-v2.4.8-GELECEK-GUNCELLEME.md](PLANLANANLAR/07-v2.4.8-GELECEK-GUNCELLEME.md) — Profil ve İzleme İstatistikleri
-- [08-v2.4.9-GELECEK-GUNCELLEME.md](PLANLANANLAR/08-v2.4.9-GELECEK-GUNCELLEME.md) — Mobil ve Tablet Uyumluluk
-- [09-v2.5.0-GELECEK-GUNCELLEME.md](PLANLANANLAR/09-v2.5.0-GELECEK-GUNCELLEME.md) — Supabase Veri Senkronizasyonu
-- [10-v2.5.1-GELECEK-GUNCELLEME.md](PLANLANANLAR/10-v2.5.1-GELECEK-GUNCELLEME.md) — Güncelleme Notları Merkezi
-- [11-v2.5.2-GELECEK-GUNCELLEME.md](PLANLANANLAR/11-v2.5.2-GELECEK-GUNCELLEME.md) — Gelişmiş Arama ve Filtreleme
-- [12-v2.5.3-GELECEK-GUNCELLEME.md](PLANLANANLAR/12-v2.5.3-GELECEK-GUNCELLEME.md) — Favoriler ve Özel Listeler
-- [13-v2.5.4-GELECEK-GUNCELLEME.md](PLANLANANLAR/13-v2.5.4-GELECEK-GUNCELLEME.md) — Topluluk ve Yorum Sistemi
-- [14-v2.5.5-GELECEK-GUNCELLEME.md](PLANLANANLAR/14-v2.5.5-GELECEK-GUNCELLEME.md) — Yedekleme ve Geri Yükleme
-- [15-v2.5.6-GELECEK-GUNCELLEME.md](PLANLANANLAR/15-v2.5.6-GELECEK-GUNCELLEME.md) — Rol, Yetki ve Güvenlik Paneli
+## v2.0.3 - Oyun Ekle / Düzenle Akışı
+- Oyun kaydetme, güncelleme ve local fallback.
+- Mevcut oyunların düzenleme formuna doğru gelmesi.
 
+## v2.0.4 - RAWG / Kapak / Meta Fix
+- Kapak çekme, tarih, tür, açıklama ve puan alanları.
+- Yanlış oyun/DLC kapak filtreleri.
 
-## v2.4.3 tamamlandı
+## v2.0.5 - YouTube Playlist / Bölüm Fix
+- Playlist bölüm sayısı ve bölüm listesi.
+- Kaldığımız bölüm ve video bağlantısı kontrolleri.
 
-Site Tanıtım ve İlk Kullanım Rehberi tamamlandı. Sıradaki planlı özellik paketi: v2.4.4 - Gelişmiş Arama ve Filtre Sistemi.
+## v2.0.6 - Koleksiyon / Filtre Fix
+- Koleksiyon sayacı, tür/etiket/durum/seri filtreleri.
+- Boş koleksiyon ve yanlış sayı sorunları.
 
+## v2.0.7 - Bakım Modu ve Güncelleme Notları Fix
+- Bakım modu sıfırlanmama kontrolü.
+- Güncelleme notları ekle/düzenle/sil akışı.
 
-## v2.4.4 tamamlandı
-
-- Mağaza kaynak kontrolü, sosyal medya yönetimi, logo düzeltmesi, YouTube profesyonel tablo senkronizasyonu ve RAWG sonuç azaltma tamamlandı.
-
-
-## v2.4.5 Tamamlandı
-
-Profesyonel oyun formu, bakım merkezi, YouTube tek tablo ve toplu oyun silme tamamlandı. Sıradaki planlanan sürüm v2.4.6.
-
-
-## v2.4.6 tamamlandı
-
-Seri izleme ekranı, profesyonel bakım merkezi, Supabase güncellemesi ve güncelleme notları tamamlandı.
+## v2.1.0 - Dolu Taban Yayın Hazırlığı
+- Public sayfalar, admin stabilitesi ve Supabase veri kontrolü.

@@ -1,4 +1,4 @@
--- Hayatımız Oyun v2.0.0 - Tam stabil site schema
+-- Hayatımız Oyun v2.0.0 - Dolu eski taban schema
 -- Güvenli migration: mevcut oyun, kullanıcı, bakım, takvim ve not kayıtlarını SİLMEZ.
 set statement_timeout = '25s';
 set lock_timeout = '3s';
@@ -419,7 +419,7 @@ select
   'v2.0.0',
   'Tam Stabil Site Fix',
   'Eksik Supabase tabloları, admin boş sayfaları, oyun ekleme, yayın takvimi, güncelleme notları, bakım modu ve Vercel dist senkronizasyonu düzeltildi.',
-  'v2.0.0 ile tek stabil admin katmanı eklendi; site boş/siyah ekrana düşmeyecek şekilde güvenli hale getirildi.',
+  'v2.0.0 dolu eski taban geri dönüşü yapıldı; site boş/siyah ekrana düşmeyecek şekilde güvenli katman korundu.',
   'Oyun Ekle, Mevcut Oyunlar, Yayın Takvimi, Güncelleme Notları ve Bakım Modu local fallback + Supabase API ile çalışır.',
   'published',
   true,
@@ -429,7 +429,7 @@ select
 where not exists (select 1 from public.site_update_notes where version = 'v2.0.0');
 
 insert into public.site_schema_versions (version, note, created_at, updated_at)
-select 'v2.0.0', 'Tam stabil site schema: eksik tablolar, takvim video URL, not alias, bakım koruması.', now(), now()
+select 'v2.0.0', 'Dolu eski taban schema: eksik tablolar, takvim video URL, not alias, bakım koruması.', now(), now()
 where not exists (select 1 from public.site_schema_versions where version = 'v2.0.0');
 
-select 'Hayatımız Oyun v2.0.0 schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.' as status;
+select 'Hayatımız Oyun v2.0.0 dolu eski taban schema hazır. Mevcut bakım/oyun/kullanıcı kayıtları korunur.' as status;

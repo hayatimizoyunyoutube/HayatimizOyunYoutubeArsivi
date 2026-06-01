@@ -78,18 +78,18 @@
   }
   function notesHtml(){
     var done=[
-      ['v2.0.0','Temiz Başlangıç','Site v2.0.0 temiz başlangıca çekildi; boş ekran koruması, admin, takvim ve notlar korunuyor.'],
-      ['v2.0.0 Stabil','Çalışan Stabil Paket','Supabase tabloları, bakım modu ve local fallback katmanı güvene alındı.'],
-      ['v2.0.0 Kontrol','Adım Adım Hata Takibi','Bundan sonra her hata v2.0.1, v2.0.2 şeklinde ayrı sürümle çözülecek.']
+      ['v2.0.0','Dolu Eski Taban Geri Dönüş','Oyun arşivi, admin panel, takvim, notlar, bakım modu ve boş ekran koruması korunarak sürüm v2.0.0 yapıldı.'],
+      ['v2.0.0','Oyun Arşivi ve Admin Panel','Eski dolu altyapı silinmeden yeniden başlangıç noktası olarak işaretlendi.'],
+      ['v2.0.0','Stabil Koruma Katmanı','Boş ekran, Vercel asset ve admin panel güvenlik katmanı korunur.']
     ];
     var plan=[
-      ['v2.0.1','Ana Sayfa ve Menü Kontrolü'],
-      ['v2.0.2','Admin Panel Hata Temizliği'],
-      ['v2.0.3','Oyun Ekle / Düzenle Akışı'],
-      ['v2.0.4','Yayın Takvimi Kalıcı Kayıt'],
-      ['v2.0.5','Güncelleme Notları Merkezi'],
-      ['v2.0.6','Bakım Modu ve Site Ayarları'],
-      ['v2.1.0','Public Yayına Hazırlık']
+      ['v2.0.1','Ana Sayfa ve Menü Hataları'],
+      ['v2.0.2','Admin Panel Stabil Kontrol'],
+      ['v2.0.3','Oyun Ekle ve Düzenle Fix'],
+      ['v2.0.4','RAWG / Kapak / Meta Fix'],
+      ['v2.0.5','YouTube Playlist ve Bölüm Fix'],
+      ['v2.0.6','Koleksiyon / Filtre Fix'],
+      ['v2.0.7','Bakım Modu ve Güncelleme Notları Fix']
     ];
     function card(n,cls){return '<article class="ho254FallbackCard '+(cls||'')+'"><b>'+esc(n[0])+'</b><h3>'+esc(n[1])+'</h3><p>'+esc(n[2]||'Planlandı.')+'</p></article>'}
     return '<div class="ho254FallbackHero"><span>v2.0.0</span><h1>Güncelleme Notları</h1><p>Profesyonel sürüm arşivi. Ana uygulama geç yüklenirse bu güvenli panel devreye girer.</p></div><div class="ho254FallbackCols"><section><h2>Tamamlanan Güncellemeler</h2>'+done.map(function(n){return card(n)}).join('')+'</section><section><h2>Planlanan Güncellemeler</h2>'+plan.map(function(n){return card(n,'planned')}).join('')+'</section></div>';
@@ -155,9 +155,9 @@
     var local=parse('hayatimiz_update_notes_local_v254f8',[]);
     if(Array.isArray(local)&&local.length) return local.slice(0,6);
     return [
-      {version:'v2.0.0',title:'Ana Sayfa Boş Ekran Fix',summary:'Vercel üzerinde /ana-sayfa siyah ekranda kalırsa HTML güvenli açılış devreye girer.'},
-      {version:'v2.0.0 Stabil Koruma',title:'Tam Stabil Site Fix',summary:'Admin, takvim, notlar, bakım modu ve schema güvenli hale getirildi.'},
-      {version:'v2.0.0 Temiz Başlangıç',title:'Temiz Takvim ve Oyun Ekle',summary:'Önceki temiz paket korunarak üzerine blank-screen koruması eklendi.'}
+      {version:'v2.0.0',title:'Dolu Eski Taban Geri Dönüş',summary:'Eski dolu site özellikleri korunarak sürüm v2.0.0 noktasına geri alındı.'},
+      {version:'v2.0.0',title:'Stabil Koruma Katmanı',summary:'Admin, takvim, notlar, bakım modu ve schema korundu.'},
+      {version:'v2.0.0',title:'Oyun Arşivi ve Yönetim Paneli',summary:'Eski dolu özellikler silinmeden v2.0.0 akışına geri dönüldü.'}
     ];
   }
   function pageType(){
@@ -179,7 +179,7 @@
   }
   function home(){
     var rows=games();
-    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Hayatımız Oyun Arşivi</h1><p>Ana sayfa artık boş/siyah ekranda kalmaz. Ana uygulama yüklenemezse bu güvenli arayüz otomatik açılır.</p><div><button onclick="location.href=\'/ana-sayfa\'">Ana Sayfa</button><button onclick="location.href=\'/yonetim\'">Yönetim Paneli</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button></div></section><section class="ho254Fix9Grid">'+rows.slice(0,12).map(card).join('')+'</section>';
+    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Hayatımız Oyun Arşivi</h1><p>Dolu eski v2.0.0 tabanı yüklendi. Ana uygulama gecikirse güvenli arayüz otomatik açılır.</p><div><button onclick="location.href=\'/ana-sayfa\'">Ana Sayfa</button><button onclick="location.href=\'/yonetim\'">Yönetim Paneli</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button></div></section><section class="ho254Fix9Grid">'+rows.slice(0,12).map(card).join('')+'</section>';
   }
   function notlar(){
     return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Güncelleme Notları</h1><p>Local ve Supabase uyumlu not merkezi. Ana paket geç açılırsa bu panel çalışır.</p></section><section class="ho254Fix9List">'+notes().map(function(n){return '<article><b>'+esc(n.version||'Sürüm')+'</b><h3>'+esc(n.title||'Güncelleme')+'</h3><p>'+esc(n.summary||n.written||'Not hazır.')+'</p></article>';}).join('')+'</section>';
@@ -190,7 +190,7 @@
     return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Yayın Takvimi</h1><p>Takvim sayfası boş ekranda kalmaz; kayıtlar local yedekten okunur.</p></section><section class="ho254Fix9List">'+list+'</section>';
   }
   function admin(){
-    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Yönetim Paneli</h1><p>Admin sayfası boş kalırsa hızlı menü açılır. Ana JS düzeldiğinde tam panel otomatik gelir.</p><div><button onclick="location.href=\'/yonetim/oyunlar\'">Oyunlar</button><button onclick="location.href=\'/yonetim/yayin-takvimi\'">Yayın Takvimi</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button><button onclick="location.href=\'/ana-sayfa\'">Siteye Dön</button></div></section><section class="ho254Fix9List"><article><b>Durum</b><h3>Boş ekran koruması aktif</h3><p>Vercel asset veya tarayıcı cache problemi olsa bile kullanıcı siyah ekran görmez.</p></article></section>';
+    return '<section class="ho254Fix9Hero"><span>v2.0.0</span><h1>Yönetim Paneli</h1><p>Admin sayfası boş kalırsa hızlı menü açılır. Dolu eski taban özellikleri korunur.</p><div><button onclick="location.href=\'/yonetim/oyunlar\'">Oyunlar</button><button onclick="location.href=\'/yonetim/yayin-takvimi\'">Yayın Takvimi</button><button onclick="location.href=\'/yonetim/guncelleme-notlari\'">Güncelleme Notları</button><button onclick="location.href=\'/ana-sayfa\'">Siteye Dön</button></div></section><section class="ho254Fix9List"><article><b>Durum</b><h3>Boş ekran koruması aktif</h3><p>Vercel asset veya tarayıcı cache problemi olsa bile kullanıcı siyah ekran görmez.</p></article></section>';
   }
   function install(reason){
     if(!isBlank()) return;

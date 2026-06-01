@@ -2,7 +2,7 @@
   "name": "hayatimiz-oyun-v254-fix7-temiz-takvim-notlar-oyun-ekle-dev",
   "private": true,
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.5.4-fix.7",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173 --open /",
     "build": "vite build",
