@@ -1,1 +1,0 @@
-v2.0.4 FIX schema.sql sıfırdan boş kurulumdur. Mevcut verileri siler. Demo oyun eklemez. Sadece status/tür/etiket/admin/bakım tablolarını temiz kurar.
