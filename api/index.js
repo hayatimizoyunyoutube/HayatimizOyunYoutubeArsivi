@@ -90,7 +90,7 @@ function cleanGame(game){
     cover_url:game.cover_url || game.cover || '',
     banner_url:game.banner_url || game.banner || '',
     tags,
-    release_date:game.release_date || game.releaseDate || '',
+    release_date:pickDateTR(game.release_date, game.releaseDate, game.released),
     platforms,
     rawg_id:game.rawg_id || null,
     rawg_slug:game.rawg_slug || '',
@@ -117,6 +117,21 @@ function cleanGame(game){
   };
 }
 function toSlug(value){ return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ı/g,'i').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || `item-${Date.now()}`; }
+
+function normalizeDateTR(value){
+  const raw=String(value||'').trim();
+  if(!raw) return '';
+  let m=raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m) return `${String(m[3]).padStart(2,'0')}.${String(m[2]).padStart(2,'0')}.${m[1]}`;
+  m=raw.match(/^(\d{1,2})[\.\/\-](\d{1,2})[\.\/\-](\d{4})$/);
+  if(m) return `${String(m[1]).padStart(2,'0')}.${String(m[2]).padStart(2,'0')}.${m[3]}`;
+  m=raw.match(/^(\d{4})$/); if(m) return m[1];
+  const parsed=Date.parse(raw);
+  if(Number.isFinite(parsed)){ const d=new Date(parsed); if(!Number.isNaN(d.getTime())) return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`; }
+  return raw;
+}
+function pickDateTR(...values){ for(const v of values){ const d=normalizeDateTR(v); if(d) return d; } return ''; }
+
 function toArray(value){ return Array.isArray(value) ? value.map(String).filter(Boolean) : String(value||'').split(',').map(x=>x.trim()).filter(Boolean); }
 function parseBool(value){
   if(value === true) return true;
@@ -172,7 +187,7 @@ function gamePayload(game={}, existing={}){
     cover_url:String(game.cover || game.cover_url || existing.cover_url || ''),
     banner_url:String(game.banner || game.banner_url || existing.banner_url || ''),
     tags:toArray(game.tags ?? existing.tags),
-    release_date:String(game.releaseDate || game.release_date || existing.release_date || ''),
+    release_date:pickDateTR(game.releaseDate, game.release_date, game.released, existing.release_date),
     platforms:toArray(game.platforms ?? existing.platforms),
     rawg_id:game.rawgId || game.rawg_id || existing.rawg_id || null,
     rawg_slug:String(game.rawgSlug || game.rawg_slug || existing.rawg_slug || ''),
@@ -601,7 +616,7 @@ export default async function handler(req, res){
       const fallback = localGameMeta(title);
       const rawg = await fetchRawgMeta(fallback.title || title).catch(()=>null);
       const meta = rawg ? { ...fallback, ...rawg } : fallback;
-      const releaseDate = normalizeRawgDate(meta.releaseDate || meta.released || fallback.released || '');
+      const releaseDate = pickDateTR(meta.releaseDate, meta.released, fallback.releaseDate, fallback.released);
       return json(res, 200, { ok:true, meta:{ ...meta, title:meta.title || title, releaseDate, released:releaseDate }, candidates: rawg?.candidates || [{ ...fallback, title:fallback.title || title }], source: rawg ? 'RAWG + yerel güvenli eşleştirme' : 'Yerel güvenli meta' });
     }
 
@@ -613,7 +628,7 @@ export default async function handler(req, res){
         const fallback = localGameMeta(title);
         return json(res, 200, { ok:true, steam:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
-      const steamDate = ho240f58ApiDate(steam.releaseDate || steam.released || '');
+      const steamDate = pickDateTR(steam.releaseDate, steam.released);
       return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v2.2.1' });
     }
 
@@ -969,7 +984,7 @@ export default async function handler(req, res){
       const fallbackFirst = String(fallback?.title || title).toLowerCase().split(/\s+/)[0] || '';
       const rawgLooksRight = rawg && (!fallbackFirst || rawgTitle.includes(fallbackFirst));
       const meta = known || !rawgLooksRight ? fallback : { ...fallback, ...rawg };
-      const releaseDate = normalizeRawgDate(meta.releaseDate || meta.released || fallback.released || rawg?.released || '');
+      const releaseDate = pickDateTR(meta.releaseDate, meta.released, fallback.releaseDate, fallback.released, rawg?.releaseDate, rawg?.released);
       return json(res, 200, { ok:true, meta:{ ...meta, title, releaseDate, released:releaseDate }, candidates: rawg?.candidates || [{ ...fallback, title:fallback.title || title }] });
     }
 
@@ -1459,7 +1474,7 @@ export default async function handler(req, res){
         score:Number(game.score || 8.5),
         cover_url:String(game.cover || game.cover_url || ''),
         tags:String(game.tags || ''),
-        release_date:String(game.releaseDate || game.release_date || ''),
+        release_date:pickDateTR(game.releaseDate, game.release_date, game.released),
         series_name:String(game.seriesName || game.series_name || ''),
         playlist_url:String(game.playlistUrl || game.playlist_url || ''),
         video_url:String(game.videoUrl || game.video_url || ''),
@@ -1556,7 +1571,7 @@ export default async function handler(req, res){
       const steam = await ho240f58SteamBest(title).catch(()=>null);
       if(!steam) return json(res, 200, { ok:false, steam:null, message:'Steam sonucu bulunamadı.' });
       const currentDate = ho240f58ApiDate(body.releaseDate || '');
-      const steamDate = ho240f58ApiDate(steam.releaseDate || steam.released || '');
+      const steamDate = pickDateTR(steam.releaseDate, steam.released);
       return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, checks:{ titleScore:Number(steam.matchScore || 0), dateOk: currentDate && steamDate ? currentDate === steamDate : null, coverOk: body.cover && steam.cover ? String(body.cover).replace(/\?.*$/,'') === String(steam.cover).replace(/\?.*$/,'') : null }, version:HO240F58_API_VERSION });
     }
 

@@ -20,3 +20,8 @@
 ## 🧷 Sabit Kural
 
 Her fix ve sürüm paketinde sürüm etiketleri tek tek kontrol edilecek. Eski sürüm yazısı paket içinde bırakılmayacak.
+
+
+## v2.2.3 FIX - Oyun Meta Tarih Çekme
+- 🗓️ Oyun ekleme formunda tarih çekme ve Supabase tarih kaydı düzeltildi.
+- ✅ Schema gerekli değildir.
