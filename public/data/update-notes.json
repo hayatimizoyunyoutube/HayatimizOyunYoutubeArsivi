@@ -1,16 +1,23 @@
 [
   {
-    "id": "v220-bakim-supabase-ban-guvenligi",
-    "version": "v2.2.0",
+    "id": "v221-premium-bakim-surum-senkronizasyonu",
+    "version": "v2.2.1",
+    "title": "🎬 Premium Bakım Merkezi ve Sürüm Senkronizasyonu",
+    "summary": "Bakım ekranı 007 First Light esintili hareketli sinematik arka plana taşındı. Bakım/ban ekranları güçlendirildi. SiteConfig, Vercel etiketi, schema Results, health/status ve güncelleme notları v2.2.1 ile eşitlendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v221-bakim-supabase-ban-guvenligi",
+    "version": "v2.2.1",
     "title": "🛠️ Bakım, Supabase Kalıcılık ve Ban Güvenliği",
-    "summary": "Bakım modu animasyonlu ziyaretçi ekranına taşındı. Oyun, kullanıcı, yetki, takvim ve bakım kayıtlarında Supabase kalıcılığı güçlendirildi. Banlı kullanıcıların siteye erişimi engellendi. Sürüm/Vercel/Results etiketleri v2.2.0 olarak eşitlendi.",
+    "summary": "Bakım modu animasyonlu ziyaretçi ekranına taşındı. Oyun, kullanıcı, yetki, takvim ve bakım kayıtlarında Supabase kalıcılığı güçlendirildi. Banlı kullanıcıların siteye erişimi engellendi. Sürüm/Vercel/Results etiketleri v2.2.1 olarak eşitlendi.",
     "status": "Tamamlandı"
   },
   {
     "id": "v219-profesyonel-yonetim-merkezi-takvim",
     "version": "v2.1.9",
     "title": "🛡️ Profesyonel Yönetim Merkezi ve Takvim Sistemi",
-    "summary": "Dashboard, yönetim panelleri ve yayın takvimi yeni sürüm olarak toparlandı. Takvim gün kutulu gerçek görünümle çalışır; v2.2.0 planı Supabase veri sağlığı ve yedek sistemidir.",
+    "summary": "Dashboard, yönetim panelleri ve yayın takvimi yeni sürüm olarak toparlandı. Takvim gün kutulu gerçek görünümle çalışır; v2.2.1 planı Supabase veri sağlığı ve yedek sistemidir.",
     "status": "Tamamlandı"
   },
   {
@@ -189,8 +196,8 @@
     "status": "Planlandı"
   },
   {
-    "id": "plan-v220",
-    "version": "v2.2.0",
+    "id": "plan-v221",
+    "version": "v2.2.1",
     "title": "🗄️ Supabase Veri Sağlığı ve Yedek Planı",
     "summary": "Canlı veri kaybı riskini azaltmak ve admin için veri kontrol araçları eklemek. Veri sağlık kontrol paneli eklenecek.",
     "status": "Planlandı"

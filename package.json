@@ -1,8 +1,8 @@
 {
-  "name": "hayatimiz-oyun-v220-bakim-supabase-ban-guvenligi",
+  "name": "hayatimiz-oyun-v221-premium-bakim-surum-senkronizasyonu",
   "private": true,
   "type": "module",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "engines": {
     "node": ">=20"
   }

@@ -2,7 +2,7 @@
 Bu dosya v2.1.8 sonrası 15 dolu planı gösterir. Plan klasörü boş bırakılmayacak.
 ## Sıradaki 15 Plan
 - v2.1.9 - Bakım Modu, Duyuru ve Bildirim Sistemi
-- v2.2.0 - Supabase Veri Sağlığı ve Yedek Planı
+- v2.2.1 - Supabase Veri Sağlığı ve Yedek Planı
 - v2.2.1 - RAWG / Steam / YouTube API Dayanıklılık
 - v2.2.2 - Mobil, PWA ve Performans
 - v2.2.3 - Arama, Filtre ve Alfabetik Sıralama

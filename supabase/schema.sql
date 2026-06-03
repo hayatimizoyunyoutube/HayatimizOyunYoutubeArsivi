@@ -1445,3 +1445,17 @@ select
   'Oyunlar, kullanıcılar, yetkiler, takvim, bakım modu ve güncelleme notları silinmedi/sıfırlanmadı.'::text as "Veri Durumu",
   'Bundan sonraki sürüm/fix paketlerinde siteConfig, schema Results, update-notes, health/status ve commit etiketi aynı sürümü gösterecek.'::text as "Sürüm Kuralı",
   now() as "Çalışma Zamanı";
+
+
+-- v2.2.1 Results / Sürüm senkronizasyonu
+insert into site_runtime_config (key, value, updated_at)
+values
+  ('site_version', jsonb_build_object('version','v2.2.1','label','Premium Bakım Merkezi ve Sürüm Senkronizasyonu','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.1','label','Premium Bakım Merkezi ve Sürüm Senkronizasyonu','updated_at',now()), now())
+on conflict (key) do update set value = excluded.value, updated_at = excluded.updated_at;
+
+select
+  '✅ Başarılı' as "Durum",
+  'v2.2.1' as "Sürüm",
+  'Premium Bakım Merkezi ve Sürüm Senkronizasyonu' as "İşlem",
+  'Bakım/ban/Supabase kayıtları korunur; veriler silinmez.' as "Not";

@@ -586,7 +586,7 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v2.2.0', status:'Bakım ekranı, Supabase kalıcılık ve ban güvenliği aktif' });
+    if(action === 'health') return json(res, 200, { ok:true, version:'v2.2.1', status:'Premium bakım merkezi ve sürüm senkronizasyonu aktif' });
 
     if(action === 'game-meta-lite'){
       const title = String(body.title || '').trim();
@@ -611,7 +611,7 @@ export default async function handler(req, res){
         return json(res, 200, { ok:true, steam:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
       const steamDate = ho240f58ApiDate(steam.releaseDate || steam.released || '');
-      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v2.2.0' });
+      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v2.2.1' });
     }
 
     if(action === 'register'){
@@ -743,11 +743,11 @@ export default async function handler(req, res){
         await supabase('site_authority_assignments?on_conflict=email', {
           method:'POST',
           headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
-          body: JSON.stringify([{ email, display_name:displayName || rows?.[0]?.full_name || email.split('@')[0], role_code:role, is_active:role !== 'banned', note:'Yönetim panelinden yetki verildi', created_by:'v2.2.0-supabase-ban-maintenance', updated_at:now }])
+          body: JSON.stringify([{ email, display_name:displayName || rows?.[0]?.full_name || email.split('@')[0], role_code:role, is_active:role !== 'banned', note:'Yönetim panelinden yetki verildi', created_by:'v2.2.1-premium-maintenance-sync', updated_at:now }])
         }).catch(()=>{});
         await supabase('site_user_role_audit', {
           method:'POST',
-          body: JSON.stringify([{ target_email:email, new_role:role, changed_by:'v2.2.0-supabase-ban-maintenance', source:'yonetim-paneli', note:'Yönetim panelinden rol/yetki kaydedildi.', metadata:{ userId, displayName } }])
+          body: JSON.stringify([{ target_email:email, new_role:role, changed_by:'v2.2.1-premium-maintenance-sync', source:'yonetim-paneli', note:'Yönetim panelinden rol/yetki kaydedildi.', metadata:{ userId, displayName } }])
         }).catch(()=>{});
       }
       return json(res, 200, { ok:true, user:cleanUser(rows?.[0] || { id:userId || `authority-${email}`, email, role, is_active:role !== 'banned', full_name:displayName }) });
@@ -783,7 +783,7 @@ export default async function handler(req, res){
         await supabaseAuthDeleteUserByEmail(targetEmail).catch(()=>{});
         await supabase('site_user_role_audit', {
           method:'POST',
-          body: JSON.stringify([{ target_email:targetEmail, new_role:'deleted', changed_by:'v2.2.0-fix-owner-delete-maintenance-public', source:'yonetim-paneli', note:'Kullanıcı Supabase Auth + site_users + yetki kayıtlarından temizlendi.', metadata:{ userId } }])
+          body: JSON.stringify([{ target_email:targetEmail, new_role:'deleted', changed_by:'v2.2.1-fix-owner-delete-maintenance-public', source:'yonetim-paneli', note:'Kullanıcı Supabase Auth + site_users + yetki kayıtlarından temizlendi.', metadata:{ userId } }])
         }).catch(()=>{});
       }
       return json(res, 200, { ok:true, deleted:{ userId, email:targetEmail } });
@@ -808,7 +808,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.2.0', note:'v2.2.0 bakım ekranı, Supabase kalıcılık ve ban güvenliği', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.2.1', note:'v2.2.1 premium bakım ekranı ve sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -825,7 +825,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.2.0', note:'v2.2.0 bakım ekranı, Supabase kalıcılık ve ban güvenliği', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.2.1', note:'v2.2.1 premium bakım ekranı ve sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -1064,7 +1064,7 @@ export default async function handler(req, res){
         schemaVersion: schemaRow?.value?.version || 'Bilinmiyor',
         checkedAt: new Date().toISOString()
       };
-      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v2.2.0 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
+      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v2.2.1 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
       return json(res, 200, { ok:true, health, message:'Supabase veri sağlığı kontrol edildi.' });
     }
 
@@ -1593,7 +1593,7 @@ export default async function handler(req, res){
   }
 }
 
-/* v2.2.0 FIX 14 - API tarafında çıkış tarihini gün.ay.yıl üret */
+/* v2.2.1 14 - API tarafında çıkış tarihini gün.ay.yıl üret */
 const FIX14_RELEASE_DATE_MAP_API = [
   [/a\s*plague\s*tale.*innocence|innocence/i, '14.05.2019'],
   [/a\s*plague\s*tale.*requiem|requiem/i, '18.10.2022'],

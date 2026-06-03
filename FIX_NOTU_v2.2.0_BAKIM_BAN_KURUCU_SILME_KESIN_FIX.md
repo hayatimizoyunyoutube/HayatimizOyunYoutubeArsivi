@@ -1,4 +1,4 @@
-# v2.2.0 FIX - Bakım/Ban/Kurucu Silme Kesin Fix
+# v2.2.1 - Bakım/Ban/Kurucu Silme Kesin Fix
 
 Yeni sürüm değildir.
 

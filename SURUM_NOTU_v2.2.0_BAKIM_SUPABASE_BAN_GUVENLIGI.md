@@ -1,4 +1,4 @@
-# v2.2.0 - Bakım Ekranı, Supabase Kalıcılık ve Ban Güvenliği
+# v2.2.1 - Sürüm Senkronizasyonu ve Premium Bakım Merkezi
 
 ## Yapılanlar
 

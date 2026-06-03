@@ -1,6 +1,6 @@
-# v2.2.0 FIX - Bakım, Ban ve Kullanıcı Senkronizasyonu
+# v2.2.1 - Bakım, Ban ve Kullanıcı Senkronizasyonu
 
-Yeni sürüm değildir. v2.2.0 üzerinde güvenlik ve Supabase kayıt fixidir.
+Yeni sürüm değildir. v2.2.1 üzerinde güvenlik ve Supabase kayıt fixidir.
 
 ## Yapılanlar
 
@@ -15,4 +15,4 @@ Yeni sürüm değildir. v2.2.0 üzerinde güvenlik ve Supabase kayıt fixidir.
 
 ## Schema Durumu
 
-Schema.sql gerekli değil. Mevcut v2.2.0 schema çalıştıysa yeni tablo/kolon eklenmedi.
+Schema.sql gerekli değil. Mevcut v2.2.1 schema çalıştıysa yeni tablo/kolon eklenmedi.

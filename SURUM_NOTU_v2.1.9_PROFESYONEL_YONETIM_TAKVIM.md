@@ -10,4 +10,4 @@ Bu sürümde yönetim paneli ve yayın takvimi yeni sürüm olarak toparlandı. 
 - Gerçek takvim kutulu yayın planı görünümü
 - Yönetim kartları ve hızlı işlem alanları
 - Supabase veri sağlığı bağlantılarının korunması
-- v2.2.0 planının hazırlanması
+- v2.2.1 planının hazırlanması
