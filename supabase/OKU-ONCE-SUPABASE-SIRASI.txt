@@ -1,4 +1,0 @@
-1) Supabase SQL Editor aç.
-2) supabase/schema.sql içeriğini yapıştırıp Run çalıştır.
-3) Bu FIX sıfırlama yapmaz; mevcut verileri silmez.
-4) Yetki vermek için supabase/YETKI-VERME-SQL-KODLARI.md dosyasındaki örnekleri kullan.
