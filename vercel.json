@@ -1,9 +1,6 @@
 {
   "version": 2,
   "framework": null,
-  "installCommand": "node -e \"console.log('v2.1.8 FIX: npm install atlandi, build hizli calisacak')\"",
-  "buildCommand": "node --no-warnings scripts/vercel-static-build-check.mjs",
-  "outputDirectory": "dist",
   "cleanUrls": false,
   "trailingSlash": false,
   "functions": {
@@ -14,6 +11,10 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/api", "destination": "/api/index.js" },
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/data/(.*)", "destination": "/data/$1" },
+    { "source": "/robots.txt", "destination": "/robots.txt" },
+    { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
@@ -21,7 +22,7 @@
       "source": "/index.html",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "X-Hayatimiz-Oyun-Fix", "value": "v2.1.8-FIX-VERCEL-BUILDING-TAKILMA" }
+        { "key": "X-Hayatimiz-Oyun-Fix", "value": "v2.1.8-FIX-SIFIR-BUILD-DEPLOY" }
       ]
     },
     {

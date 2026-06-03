@@ -1,15 +1,9 @@
 {
-  "name": "hayatimiz-oyun-v218-fix-vercel-building-takilma",
+  "name": "hayatimiz-oyun-v218-fix-vercel-sifir-build",
   "private": true,
   "type": "module",
   "version": "2.1.8",
-  "scripts": {
-    "build": "node --no-warnings scripts/vercel-static-build-check.mjs",
-    "dev": "vite --host 127.0.0.1 --port 5173 --open /ana-sayfa",
-    "local": "vite --host 127.0.0.1 --port 5173 --open /ana-sayfa",
-    "preview": "vite preview --host 127.0.0.1 --port 4173 --open /ana-sayfa"
-  },
-  "devDependencies": {
-    "vite": "^5.4.19"
+  "engines": {
+    "node": ">=20"
   }
 }
