@@ -1,0 +1,9 @@
+{
+  "name": "hayatimiz-oyun-v219-profesyonel-yonetim-takvim",
+  "private": true,
+  "type": "module",
+  "version": "2.1.9",
+  "engines": {
+    "node": ">=20"
+  }
+}
