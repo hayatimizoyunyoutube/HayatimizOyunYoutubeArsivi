@@ -350,6 +350,16 @@ async function requireOwner(token){
   if(!isOwner(user.role)) throw new Error('Bu işlem için kurucu veya yönetici gerekir.');
   return user;
 }
+async function requireOwnerOrConfiguredEmail(body={}){
+  try { return await requireOwner(body.adminToken); } catch(err) {
+    const email = String(body.ownerEmail || body.currentEmail || body.email || '').trim().toLowerCase();
+    if(email && ADMIN_EMAILS.includes(email)){
+      const owner = await bootstrapOwnerByEmail(email).catch(()=>null);
+      if(owner) return owner;
+    }
+    throw err;
+  }
+}
 async function ensurePlannerFeature(feature){
   const existing = await supabase(`site_admin_planner?title=eq.${encodeURIComponent(feature.title)}&limit=1`, { method:'GET' }).catch(()=>[]);
   if(!Array.isArray(existing) || !existing.length){
@@ -658,7 +668,7 @@ export default async function handler(req, res){
     }
 
     if(action === 'users-list'){
-      const owner = await requireOwner(body.adminToken);
+      const owner = await requireOwnerOrConfiguredEmail(body);
       await bootstrapOwnerByEmail(owner.email).catch(()=>{});
       const authRows = await supabaseAuthAdminUsers().catch(()=>[]);
       for(const u of (authRows || [])) await upsertSiteUserFromAuth(u).catch(()=>{});
@@ -685,7 +695,7 @@ export default async function handler(req, res){
     }
 
     if(action === 'user-role-set'){
-      await requireOwner(body.adminToken);
+      await requireOwnerOrConfiguredEmail(body);
       const role = normalizeRole(body.role);
       if(!['kurucu','yonetici','moderator','editor','user','banned'].includes(role)) throw new Error('Geçersiz rol.');
       const now = new Date().toISOString();
