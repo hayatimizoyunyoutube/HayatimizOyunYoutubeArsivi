@@ -212,6 +212,46 @@ async function supabase(path, options = {}){
   return data;
 }
 
+
+async function supabaseAuthAdminUsers(){
+  const { url, key } = env();
+  const out = [];
+  let page = 1;
+  const perPage = 100;
+  for(let guard=0; guard<5; guard++){
+    const response = await fetch(`${url}/auth/v1/admin/users?page=${page}&per_page=${perPage}`, {
+      method:'GET',
+      headers:{ apikey:key, Authorization:`Bearer ${key}`, 'Content-Type':'application/json' }
+    });
+    const text = await response.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = null; }
+    if(!response.ok) throw new Error(data?.message || text || `Supabase Auth HTTP ${response.status}`);
+    const users = Array.isArray(data?.users) ? data.users : (Array.isArray(data) ? data : []);
+    for(const u of users){
+      const meta = u.user_metadata || u.raw_user_meta_data || {};
+      const email = String(u.email || '').trim().toLowerCase();
+      if(!email) continue;
+      out.push({
+        id:`auth-${u.id}`,
+        auth_id:u.id,
+        email,
+        full_name: meta.full_name || meta.displayName || meta.name || email.split('@')[0],
+        avatar_url: meta.avatar_url || '',
+        role: roleForEmail(email, meta.role || 'user'),
+        is_active: !u.banned_until,
+        created_at:u.created_at,
+        updated_at:u.updated_at || u.last_sign_in_at || u.created_at,
+        last_login_at:u.last_sign_in_at,
+        source:'Supabase Auth'
+      });
+    }
+    if(users.length < perPage) break;
+    page++;
+  }
+  return out;
+}
+
 async function supabaseStorageUpload(bucket, objectPath, buffer, contentType){
   const { url, key } = env();
   const response = await fetch(`${url}/storage/v1/object/${bucket}/${objectPath}`, {
@@ -553,15 +593,24 @@ export default async function handler(req, res){
       await requireOwner(body.adminToken);
       const rows = await supabase('site_users?select=id,full_name,avatar_url,email,role,is_active,banned_at,ban_reason,created_at,updated_at,last_login_at&order=created_at.desc', { method:'GET' }).catch(()=>[]);
       const authorityRows = await supabase('site_authority_panel?select=email,display_name,role_code,role_label_tr,is_active,updated_at&order=updated_at.desc', { method:'GET' }).catch(()=>[]);
+      const authRows = await supabaseAuthAdminUsers().catch(()=>[]);
       const map = new Map();
-      (rows || []).map(cleanUser).filter(Boolean).forEach(u => map.set(String(u.email || '').toLowerCase(), { ...u, source:'site_users' }));
+      for(const u of (authRows || [])){
+        const email = String(u.email || '').toLowerCase();
+        if(email) map.set(email, { ...u, source:'Supabase Auth' });
+      }
+      (rows || []).map(cleanUser).filter(Boolean).forEach(u => {
+        const email = String(u.email || '').toLowerCase();
+        const existing = map.get(email) || {};
+        map.set(email, { ...existing, ...u, full_name:u.full_name || existing.full_name || email, role:normalizeRole(u.role || existing.role), is_active:u.is_active !== false, source: existing.source === 'Supabase Auth' ? 'Supabase Auth + site_users' : 'site_users' });
+      });
       for(const a of (authorityRows || [])){
         const email = String(a.email || '').toLowerCase();
         if(!email) continue;
         const existing = map.get(email) || { id:`authority-${email}`, email, created_at:a.updated_at };
-        map.set(email, { ...existing, full_name:a.display_name || existing.full_name || email, role:normalizeRole(a.role_code || existing.role), is_active:a.is_active !== false, updated_at:a.updated_at || existing.updated_at, source:'site_authority_assignments' });
+        map.set(email, { ...existing, full_name:a.display_name || existing.full_name || email, role:normalizeRole(a.role_code || existing.role), is_active:a.is_active !== false, updated_at:a.updated_at || existing.updated_at, source: existing.source ? `${existing.source} + Yetki` : 'site_authority_assignments' });
       }
-      return json(res, 200, { ok:true, users:[...map.values()] });
+      return json(res, 200, { ok:true, users:[...map.values()].sort((a,b)=>String(b.created_at||b.updated_at||'').localeCompare(String(a.created_at||a.updated_at||''))), sources:{ auth:authRows.length, site_users:(rows||[]).length, authority:(authorityRows||[]).length } });
     }
 
     if(action === 'user-role-set'){

@@ -378,3 +378,60 @@
 .adminCalendarLayout{display:grid;grid-template-columns:minmax(280px,380px) minmax(0,1fr);gap:18px;align-items:start;margin-bottom:20px}.adminCalendarForm{border-radius:26px;padding:20px;position:sticky;top:12px}.calendarBoardPanel{border-radius:26px;padding:20px;overflow:hidden}.adminCalendarWeek{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:14px 0 8px}.adminCalendarWeek b{text-align:center;color:#cbd5e1;font-size:13px}.adminCalendarGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.adminCalendarCell{min-height:132px;border:1px solid rgba(255,255,255,.10);border-radius:18px;background:rgba(255,255,255,.045);padding:10px;overflow:hidden}.adminCalendarCell strong{display:inline-flex;width:30px;height:30px;border-radius:10px;align-items:center;justify-content:center;background:rgba(255,255,255,.08);margin-bottom:8px}.adminCalendarCell.hasEvent{background:linear-gradient(180deg,rgba(239,68,68,.16),rgba(59,130,246,.10));border-color:rgba(248,113,113,.28)}.adminCalendarCell.mutedCell{opacity:.35;background:rgba(255,255,255,.02)}.calendarTinyEvent{display:block;border-radius:12px;padding:7px;margin-top:6px;background:rgba(2,6,23,.56);border:1px solid rgba(255,255,255,.08)}.calendarTinyEvent span{font-size:11px;color:#93c5fd;font-weight:900}.calendarTinyEvent b{display:block;font-size:12px;line-height:1.2}.calendarTinyEvent small{display:block;color:#94a3b8;font-size:11px}.adminCalendarCell em{display:block;margin-top:6px;color:#fbbf24;font-size:12px}.calendarListPanel{border-radius:26px;padding:20px;margin-bottom:26px}.calendarEventList{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.calendarEventList .event{border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:14px;background:rgba(255,255,255,.04)}
 @media(max-width:980px){.adminDashboardHero,.adminRepairHero,.adminCalendarLayout{grid-template-columns:1fr}.adminCalendarForm{position:static}.adminCalendarGrid,.adminCalendarWeek{grid-template-columns:repeat(2,1fr)}.adminCalendarCell{min-height:120px}.adminDock.proAdminDock{display:block}.adminDock.proAdminDock nav{justify-content:flex-start;margin-top:12px}}
 @media(max-width:560px){.adminCalendarGrid,.adminCalendarWeek{grid-template-columns:1fr}.adminCalendarWeek{display:none}.adminDashboardHero,.adminRepairHero{padding:18px;border-radius:22px}.adminMetricGrid{grid-template-columns:1fr 1fr}.adminActionGrid{grid-template-columns:1fr}}
+
+/* v2.1.9 FIX - Yönetim menüsü tek sıra görünüm */
+.adminDock.proAdminDock{
+  display:grid!important;
+  grid-template-columns:minmax(190px,260px) minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:14px!important;
+  overflow:hidden!important;
+}
+.adminDock.proAdminDock > div{min-width:0!important;}
+.adminDock.proAdminDock > div b,
+.adminDock.proAdminDock > div small{
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.adminDock.proAdminDock > div small{
+  display:-webkit-box!important;
+  -webkit-line-clamp:2!important;
+  -webkit-box-orient:vertical!important;
+}
+.adminDock.proAdminDock nav{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  justify-content:flex-end!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-width:0!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:2px 2px 5px!important;
+  scrollbar-width:thin!important;
+}
+.adminDock.proAdminDock nav a{
+  flex:0 0 auto!important;
+  white-space:nowrap!important;
+  min-height:38px!important;
+  padding:8px 11px!important;
+  font-size:13px!important;
+  line-height:1!important;
+}
+@media(max-width:1180px){
+  .adminDock.proAdminDock{grid-template-columns:1fr!important;align-items:start!important;}
+  .adminDock.proAdminDock nav{justify-content:flex-start!important;width:100%!important;}
+}
+@media(max-width:620px){
+  .adminDock.proAdminDock nav{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    overflow-x:auto!important;
+  }
+  .adminDock.proAdminDock nav a{font-size:12px!important;padding:8px 10px!important;}
+}
+
+
+/* v2.1.9 FIX - Public takvim gerçek ay görünümü + üst menü sığdırma */
+.publicMonthCalendar{padding:18px;border-radius:28px;overflow:hidden}.publicCalendarWeek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:14px 0 8px}.publicCalendarWeek b{text-align:center;color:#bfdbfe;font-size:12px;text-transform:uppercase;letter-spacing:.08em}.publicMonthGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.publicMonthCell{min-height:132px;border:1px solid rgba(255,255,255,.11);border-radius:18px;background:linear-gradient(180deg,rgba(15,23,42,.86),rgba(30,41,59,.55));padding:10px;display:flex;flex-direction:column;gap:7px;min-width:0}.publicMonthCell strong{width:30px;height:30px;border-radius:999px;display:grid;place-items:center;background:rgba(255,255,255,.08);color:#fff}.publicMonthCell.hasEvent{border-color:rgba(34,197,94,.36);background:linear-gradient(180deg,rgba(34,197,94,.10),rgba(15,23,42,.78))}.publicMonthCell.mutedCell{opacity:.25;background:rgba(255,255,255,.025)}.publicMonthCell em{margin:auto 0;color:#64748b;font-size:12px;font-style:normal;font-weight:800}.publicMonthCell i{font-style:normal;color:#fbbf24;font-size:12px;font-weight:900}.publicTinyEvent{border:1px solid rgba(255,255,255,.10);border-radius:13px;background:rgba(2,6,23,.52);padding:7px;display:grid;gap:3px}.publicTinyEvent span{color:#93c5fd;font-weight:1000;font-size:11px}.publicTinyEvent b{font-size:12px;line-height:1.2;overflow-wrap:anywhere}.publicTinyEvent small{color:#cbd5e1;font-size:11px;line-height:1.2}.publicCalendarList{margin-top:16px}
+.proStickyTop.topOnlyBar{display:grid!important;grid-template-columns:minmax(56px,96px) minmax(0,1fr) minmax(82px,112px) minmax(185px,260px)!important;gap:6px!important;overflow:hidden!important}.proStickyTop.topOnlyBar .topIdentity{min-width:0!important}.proStickyTop.topOnlyBar .topIdentity b{font-size:12px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.proStickyTop.topOnlyBar .topIdentity small{font-size:8.5px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.fullTopNav{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:5px!important;min-width:0!important;width:100%!important;overflow:hidden!important}.fullTopNav a{min-width:0!important;width:100%!important;height:34px!important;padding:0 5px!important;font-size:clamp(9px,.74vw,11.5px)!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.topAdminOpen{min-width:0!important;height:34px!important;padding:0 7px!important;font-size:clamp(9px,.74vw,11.5px)!important;overflow:hidden!important;text-overflow:ellipsis!important}.topUser{display:grid!important;grid-template-columns:minmax(50px,.7fr) minmax(58px,.75fr) minmax(76px,.9fr)!important;gap:5px!important;min-width:0!important;margin-left:0!important}.topUser .roleChip,.topUser .topBtn{min-width:0!important;height:34px!important;padding:0 6px!important;font-size:clamp(9px,.74vw,11px)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}.noSideApp .fullMain{overflow-x:hidden!important}@media(max-width:900px){.proStickyTop.topOnlyBar{grid-template-columns:1fr!important;overflow:visible!important}.fullTopNav{grid-template-columns:repeat(3,minmax(0,1fr))!important}.topAdminOpen{width:100%!important}.topUser{grid-template-columns:repeat(3,minmax(0,1fr))!important}.publicMonthGrid,.publicCalendarWeek{grid-template-columns:repeat(2,minmax(0,1fr))}.publicMonthCell{min-height:118px}}@media(max-width:560px){.fullTopNav{grid-template-columns:repeat(2,minmax(0,1fr))!important}.publicMonthGrid,.publicCalendarWeek{grid-template-columns:1fr}.publicCalendarWeek b:nth-child(n+2){display:none}.archiveStats{grid-template-columns:1fr 1fr}.calendarPublicHero .actions{width:100%;display:grid;grid-template-columns:1fr}.calendarPublicHero .btn{width:100%}}
