@@ -731,6 +731,8 @@ export default async function handler(req, res){
       await requireOwnerOrConfiguredEmail(body);
       const role = normalizeRole(body.role);
       if(!['kurucu','yonetici','moderator','editor','user','banned'].includes(role)) throw new Error('Geçersiz rol.');
+      const targetEmailCheck = String(body.email || body.userEmail || '').trim().toLowerCase();
+      if((role === 'kurucu' || role === 'yonetici') && targetEmailCheck && targetEmailCheck !== ADMIN_EMAILS[0]) throw new Error('Kurucu rolü sadece ana kurucu hesabına verilebilir.');
       const now = new Date().toISOString();
       const userId = String(body.userId || '').trim();
       const email = String(body.email || body.userEmail || '').trim().toLowerCase();
@@ -753,11 +755,11 @@ export default async function handler(req, res){
         await supabase('site_authority_assignments?on_conflict=email', {
           method:'POST',
           headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
-          body: JSON.stringify([{ email, display_name:displayName || rows?.[0]?.full_name || email.split('@')[0], role_code:role, is_active:role !== 'banned', note:'Yönetim panelinden yetki verildi', created_by:'v2.2.1-premium-maintenance-sync', updated_at:now }])
+          body: JSON.stringify([{ email, display_name:displayName || rows?.[0]?.full_name || email.split('@')[0], role_code:role, is_active:role !== 'banned', note:'Yönetim panelinden yetki verildi', created_by:'v2.2.2-user-role-stability', updated_at:now }])
         }).catch(()=>{});
         await supabase('site_user_role_audit', {
           method:'POST',
-          body: JSON.stringify([{ target_email:email, new_role:role, changed_by:'v2.2.1-premium-maintenance-sync', source:'yonetim-paneli', note:'Yönetim panelinden rol/yetki kaydedildi.', metadata:{ userId, displayName } }])
+          body: JSON.stringify([{ target_email:email, new_role:role, changed_by:'v2.2.2-user-role-stability', source:'yonetim-paneli', note:'Yönetim panelinden rol/yetki kaydedildi.', metadata:{ userId, displayName } }])
         }).catch(()=>{});
       }
       return json(res, 200, { ok:true, user:cleanUser(rows?.[0] || { id:userId || `authority-${email}`, email, role, is_active:role !== 'banned', full_name:displayName }) });
@@ -793,7 +795,7 @@ export default async function handler(req, res){
         await supabaseAuthDeleteUserByEmail(targetEmail).catch(()=>{});
         await supabase('site_user_role_audit', {
           method:'POST',
-          body: JSON.stringify([{ target_email:targetEmail, new_role:'deleted', changed_by:'v2.2.1-fix-owner-delete-maintenance-public', source:'yonetim-paneli', note:'Kullanıcı Supabase Auth + site_users + yetki kayıtlarından temizlendi.', metadata:{ userId } }])
+          body: JSON.stringify([{ target_email:targetEmail, new_role:'deleted', changed_by:'v2.2.2-user-role-stability', source:'yonetim-paneli', note:'Kullanıcı Supabase Auth + site_users + yetki kayıtlarından temizlendi.', metadata:{ userId } }])
         }).catch(()=>{});
       }
       return json(res, 200, { ok:true, deleted:{ userId, email:targetEmail } });

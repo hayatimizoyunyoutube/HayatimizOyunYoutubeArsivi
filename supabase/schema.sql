@@ -1459,3 +1459,49 @@ select
   'v2.2.1' as "Sürüm",
   'Premium Bakım Merkezi ve Sürüm Senkronizasyonu' as "İşlem",
   'Bakım/ban/Supabase kayıtları korunur; veriler silinmez.' as "Not";
+
+-- =========================================================
+-- v2.2.2 - Supabase Kullanıcı ve Yetki Stabilite Merkezi
+-- Bu blok veri silmez. Sadece sürüm/status/results kayıtlarını günceller.
+-- =========================================================
+
+insert into public.site_runtime_config (key, value, updated_at)
+values
+  ('site_version', jsonb_build_object('version','v2.2.2','label','Supabase Kullanıcı ve Yetki Stabilite Merkezi','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.2','label','Supabase Kullanıcı ve Yetki Stabilite Merkezi','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.2','label','v2.2.2-supabase-kullanici-yetki-stabilite','updated_at',now()), now())
+on conflict (key) do update
+set value = excluded.value,
+    updated_at = now();
+
+insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
+select
+  'v2.2.2',
+  '👥 Supabase Kullanıcı ve Yetki Stabilite Merkezi',
+  'Supabase Auth kullanıcı çekme, site_users kayıtları, tek kurucu kilidi, banlı kullanıcı kısıtı ve yetki kayıt senkronizasyonu güçlendirildi.',
+  'Tamamlandı',
+  now(),
+  now()
+where not exists (
+  select 1 from public.site_update_notes where version='v2.2.2' and title='👥 Supabase Kullanıcı ve Yetki Stabilite Merkezi'
+);
+
+insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
+select
+  'v2.2.3',
+  '🛠️ Bakım Modu Premium Deneyim Geliştirme',
+  'Bakım ekranı mesajları, güncelleme notları ve ziyaretçi deneyimi daha sade ve profesyonel hale getirilecek.',
+  'Planlandı',
+  now(),
+  now()
+where not exists (
+  select 1 from public.site_update_notes where version='v2.2.3' and title='🛠️ Bakım Modu Premium Deneyim Geliştirme'
+);
+
+select
+  '✅ Başarılı'::text as "Durum",
+  'v2.2.2'::text as "Sürüm",
+  'Supabase Kullanıcı ve Yetki Stabilite Merkezi'::text as "İşlem",
+  'Tek kurucu kilidi ve kullanıcı/yetki senkronizasyonu güçlendirildi.'::text as "Kullanıcı / Yetki",
+  'Vercel/GitHub etiketi v2.2.2-supabase-kullanici-yetki-stabilite olarak güncel.'::text as "Vercel Etiketi",
+  'Veri silinmez, bakım modu ve kullanıcı kayıtları sıfırlanmaz.'::text as "Koruma";

@@ -1,19 +1,19 @@
-# Hayatımız Oyun v2.2.1
+# Hayatımız Oyun v2.2.2
 
-# v2.2.1 - Premium Bakım Merkezi ve Sürüm Senkronizasyonu
+# v2.2.2 - Premium Bakım Merkezi ve Sürüm Senkronizasyonu
 
 - 🎬 Bakım ekranı 007 First Light esintili hareketli sinematik arka plana güncellendi.
-- 🏷️ Sürüm etiketleri v2.2.1 olarak eşitlendi.
+- 🏷️ Sürüm etiketleri v2.2.2 olarak eşitlendi.
 - 🛠️ Bakım/ban/Supabase güvenlik sistemi korunur.
 
-# Hayatımız Oyun v2.2.1
+# Hayatımız Oyun v2.2.2
 
 Bu paket bakım modu, banlı kullanıcı erişimi ve Supabase kullanıcı senkronizasyonu fixidir. Yeni sürüm değildir.
 
-# v2.2.1 - Sürüm / Vercel / Results Eşitleme
+# v2.2.2 - Sürüm / Vercel / Results Eşitleme
 
-- Supabase Results çıktısı v2.2.1 olarak güncellendi.
-- Vercel/GitHub commit etiketi v2.2.1 olarak düzeltildi.
+- Supabase Results çıktısı v2.2.2 olarak güncellendi.
+- Vercel/GitHub commit etiketi v2.2.2 olarak düzeltildi.
 - Eski v2.1.8 temiz sıfırlama schema bloğu kaldırıldı; veriler korunur.
 
 # Hayatımız Oyun v2.1.9 - Profesyonel Yönetim Merkezi ve Takvim Sistemi
@@ -51,14 +51,14 @@ Bu pakette `supabase/schema.sql` sonunda kontrol satırı döndürülür. Supaba
 
 Profesyonel Yönetim Merkezi ve Takvim Sistemi yeni sürüm paketi eklendi.
 
-## v2.2.1
+## v2.2.2
 
 Bakım ekranı, Supabase kalıcılık ve ban güvenliği eklendi. Bu sürümde schema.sql gereklidir ama güvenli yazılmıştır; mevcut verileri silmez.
 
 
 ---
 
-## 🧹 v2.2.1 FIX — Güncellemeler Klasörü Düzeni
+## 🧹 v2.2.2 FIX — Güncellemeler Klasörü Düzeni
 
 - ✅ Tamamlanan işler `GUNCELLEMELER/TAMAMLANANLAR` içine alındı.
 - 📌 Planlananlarda sadece v2.2.2 ve sonrası bırakıldı.

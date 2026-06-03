@@ -2,8 +2,8 @@
 
 ## ✅ Son Tamamlanan
 
-- 🎬 v2.2.1 — Premium Bakım + Sürüm Senkronizasyonu
-- 🧹 FIX v2.2.1 — Güncellemeler klasörü düzeni
+- 🎬 v2.2.2 — Premium Bakım + Sürüm Senkronizasyonu
+- 🧹 FIX v2.2.2 — Güncellemeler klasörü düzeni
 
 ## 📦 Sıradaki Planlar
 

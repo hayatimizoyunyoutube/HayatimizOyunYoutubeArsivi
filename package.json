@@ -2,8 +2,9 @@
   "name": "hayatimiz-oyun-v221-premium-bakim-surum-senkronizasyonu",
   "private": true,
   "type": "module",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "engines": {
     "node": ">=20"
-  }
+  },
+  "description": "Hayatımız Oyun v2.2.2 Supabase Kullanıcı ve Yetki Stabilite Merkezi"
 }
