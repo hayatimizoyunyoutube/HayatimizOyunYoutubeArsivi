@@ -1,27 +1,22 @@
-# Gelecek Güncellemeler
-Bu dosya v2.1.8 sonrası 15 dolu planı gösterir. Plan klasörü boş bırakılmayacak.
-## Sıradaki 15 Plan
-- v2.1.9 - Bakım Modu, Duyuru ve Bildirim Sistemi
-- v2.2.1 - Supabase Veri Sağlığı ve Yedek Planı
-- v2.2.1 - RAWG / Steam / YouTube API Dayanıklılık
-- v2.2.2 - Mobil, PWA ve Performans
-- v2.2.3 - Arama, Filtre ve Alfabetik Sıralama
-- v2.2.4 - Site Rehberi ve Yardım Merkezi
-- v2.2.5 - Admin Dashboard İstatistikleri
-- v2.2.6 - SEO, Sitemap ve Paylaşım Görselleri
-- v2.2.7 - Yayın Öncesi Genel Stabilite
-- v2.2.8 - Genel Fix Paket Kontrolü
-- v2.2.9 - Public Beta Yayın Hazırlığı
-- v2.3.0 - Yayın Öncesi Büyük Kontrol ve Cila
-- v2.3.1 - Seri İzleme Deneyimi Final Cila
-- v2.3.2 - Profil ve İzleme Geçmişi Supabase Final
-- v2.3.3 - Yetki Roller Audit ve Güvenlik Final
+# 📌 Gelecek Güncellemeler
 
+## ✅ Son Tamamlanan
 
-## v2.1.8 FIX Site Hatası
-- Yeni sürüm yapılmadan güvenli açılış ve hata koruması eklendi.
-- Schema gerekli değil.
+- 🎬 v2.2.1 — Premium Bakım + Sürüm Senkronizasyonu
+- 🧹 FIX v2.2.1 — Güncellemeler klasörü düzeni
 
-## v2.1.8 FIX - Schema Results Çıktısı
-- Supabase SQL Editor Results alanında artık işlem sonucu satır olarak görünür.
-- `Success. No rows returned` yerine temizlenen/korunan tablolar ve sonraki adım gösterilir.
+## 📦 Sıradaki Planlar
+
+1. 👥 v2.2.2 — Supabase Kullanıcı ve Yetki Stabilite
+2. 🎬 v2.2.3 — Bakım Modu Premium Deneyim
+3. 📅 v2.2.4 — Yayın Takvimi ve Oyun Kapakları
+4. ▶️ v2.2.5 — Playlist ve Seri Bölüm Stabilite
+5. 📱 v2.2.6 — Mobil Menü ve Responsive Cila
+6. 🏷️ v2.2.7 — Sürüm Senkronizasyon Kontrol Merkezi
+7. 📊 v2.2.8 — Admin Dashboard Kalıcı Veri
+8. 🎮 v2.2.9 — Public Arşiv Deneyimi Cila
+9. 🚀 v2.3.0 — Yayın Öncesi Büyük Stabilite
+
+## 🧷 Sabit Kural
+
+Her fix ve sürüm paketinde sürüm etiketleri tek tek kontrol edilecek. Eski sürüm yazısı paket içinde bırakılmayacak.

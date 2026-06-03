@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 const STAFF_ROLES = ['kurucu','yonetici','moderator','editor'];
 const ADMIN_EMAILS = ['mertdundaroyunda@gmail.com'];
+const BLOCKED_AUTO_EMAILS = ['mertdundar05@outlook.com'];
 const OWNER_ROLES = ['kurucu','yonetici'];
 const FEATURE_CATALOG = [
   { key:'admin_games_add_button', title:'Oyunlar sekmesine Oyun Ekle butonu ekle', group:'Siteye Gelmesi Gerekenler', next:'Oyun düzenleme ve silme butonlarını aktif et', target:'Yönetim Paneli > Oyunlar', description:'Oyun Ekle formunu görünür yapar.' },
@@ -56,6 +57,8 @@ function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')){
 }
 function cleanUser(user){
   if(!user) return null;
+  const userEmail = String(user.email || '').trim().toLowerCase();
+  if(BLOCKED_AUTO_EMAILS.includes(userEmail)) return null;
   const role = roleForEmail(user.email, user.role);
   return {
     id:user.id,
@@ -693,10 +696,17 @@ export default async function handler(req, res){
     if(action === 'users-list'){
       const owner = await requireOwnerOrConfiguredEmail(body);
       for(const adminEmail of ADMIN_EMAILS) await bootstrapOwnerByEmail(adminEmail).catch(()=>{});
-      const authRows = await supabaseAuthAdminUsers().catch(()=>[]);
+      const authRowsRaw = await supabaseAuthAdminUsers().catch(()=>[]);
+      const authRows = (authRowsRaw || []).filter(u => !BLOCKED_AUTO_EMAILS.includes(String(u.email || '').trim().toLowerCase()));
+      for(const blockedEmail of BLOCKED_AUTO_EMAILS){
+        await supabase(`site_users?email=eq.${encodeURIComponent(blockedEmail)}`, { method:'DELETE', headers:{ Prefer:'return=minimal' } }).catch(()=>{});
+        await supabase(`site_authority_panel?email=eq.${encodeURIComponent(blockedEmail)}`, { method:'DELETE', headers:{ Prefer:'return=minimal' } }).catch(()=>{});
+      }
       for(const u of (authRows || [])) await upsertSiteUserFromAuth(u).catch(()=>{});
-      const rows = await supabase('site_users?select=id,display_name,full_name,avatar_url,email,role,is_active,banned_at,ban_reason,created_at,updated_at,last_login_at&order=created_at.desc', { method:'GET' }).catch(()=>[]);
-      const authorityRows = await supabase('site_authority_panel?select=email,display_name,role_code,role_label_tr,is_active,updated_at&order=updated_at.desc', { method:'GET' }).catch(()=>[]);
+      const rowsRaw = await supabase('site_users?select=id,display_name,full_name,avatar_url,email,role,is_active,banned_at,ban_reason,created_at,updated_at,last_login_at&order=created_at.desc', { method:'GET' }).catch(()=>[]);
+      const rows = (rowsRaw || []).filter(u => !BLOCKED_AUTO_EMAILS.includes(String(u.email || '').trim().toLowerCase()));
+      const authorityRowsRaw = await supabase('site_authority_panel?select=email,display_name,role_code,role_label_tr,is_active,updated_at&order=updated_at.desc', { method:'GET' }).catch(()=>[]);
+      const authorityRows = (authorityRowsRaw || []).filter(u => !BLOCKED_AUTO_EMAILS.includes(String(u.email || '').trim().toLowerCase()));
       const map = new Map();
       (rows || []).map(x=>cleanUser({ ...x, source:'Supabase Kayıt' })).filter(Boolean).forEach(u => {
         const email = String(u.email || '').toLowerCase();
@@ -714,7 +724,7 @@ export default async function handler(req, res){
         const existing = map.get(email) || { id:`authority-${email}`, email, created_at:a.updated_at };
         map.set(email, { ...existing, full_name:a.display_name || existing.full_name || email, role:roleForEmail(email, a.role_code || existing.role), is_active:a.is_active !== false, updated_at:a.updated_at || existing.updated_at, source: existing.source ? `${existing.source} + Yetki` : 'Supabase Yetki' });
       }
-      return json(res, 200, { ok:true, users:[...map.values()].sort((a,b)=>String(b.created_at||b.updated_at||'').localeCompare(String(a.created_at||a.updated_at||''))), sources:{ auth:authRows.length, site_users:(rows||[]).length, authority:(authorityRows||[]).length } });
+      return json(res, 200, { ok:true, users:[...map.values()].sort((a,b)=>String(b.created_at||b.updated_at||'').localeCompare(String(a.created_at||a.updated_at||''))), sources:{ auth:authRows.length, site_users:(rows||[]).length, authority:(authorityRows||[]).length, blockedCleaned:BLOCKED_AUTO_EMAILS.length } });
     }
 
     if(action === 'user-role-set'){

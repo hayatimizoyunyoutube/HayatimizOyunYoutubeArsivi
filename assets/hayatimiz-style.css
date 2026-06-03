@@ -554,3 +554,18 @@
 @keyframes bondLightSweep{0%{transform:translateX(0) rotate(-9deg);opacity:0}12%{opacity:1}100%{transform:translateX(170vw) rotate(-9deg);opacity:0}}
 @keyframes bondPulse{0%,100%{transform:scale(1);opacity:.72}50%{transform:scale(1.08);opacity:1}}
 @media(max-width:680px){.v221Maintenance:after{font-size:56px;right:-40px;bottom:20px}.v221MaintenanceCard{padding:22px!important}.bondSky span{width:80vw}}
+
+
+/* v2.2.1 FIX: bakım ekranı sade güncelleme metni + oyun temalı wallpaper */
+.gameWallpaperMaintenance{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,rgba(5,7,13,.88),rgba(5,7,13,.68),rgba(5,7,13,.92)),
+    url('/assets/hayatimiz-kapak.png') center/cover no-repeat,
+    radial-gradient(circle at 20% 20%,rgba(244,63,94,.22),transparent 34%),
+    radial-gradient(circle at 80% 15%,rgba(59,130,246,.24),transparent 36%),#05070d!important;
+}
+.gameWallpaperMaintenance:before{content:'';position:absolute;inset:-8%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.08) 42%,transparent 56%);animation:wallpaperSweep 7s linear infinite;pointer-events:none}.gameWallpaperMaintenance:after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.34);pointer-events:none}.gameWallpaperMaintenance .maintenanceCard{position:relative;z-index:2;backdrop-filter:blur(16px)}
+@keyframes wallpaperSweep{0%{transform:translateX(-60%) rotate(8deg)}100%{transform:translateX(60%) rotate(8deg)}}
+.gameWallpaperMaintenance .maintenanceCard h1{letter-spacing:-.055em}.gameWallpaperMaintenance .maintenanceInfoGrid article:nth-child(2){background:rgba(59,130,246,.12)!important;border-color:rgba(96,165,250,.26)!important}

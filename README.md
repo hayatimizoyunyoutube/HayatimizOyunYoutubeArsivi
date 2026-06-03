@@ -54,3 +54,12 @@ Profesyonel Yönetim Merkezi ve Takvim Sistemi yeni sürüm paketi eklendi.
 ## v2.2.1
 
 Bakım ekranı, Supabase kalıcılık ve ban güvenliği eklendi. Bu sürümde schema.sql gereklidir ama güvenli yazılmıştır; mevcut verileri silmez.
+
+
+---
+
+## 🧹 v2.2.1 FIX — Güncellemeler Klasörü Düzeni
+
+- ✅ Tamamlanan işler `GUNCELLEMELER/TAMAMLANANLAR` içine alındı.
+- 📌 Planlananlarda sadece v2.2.2 ve sonrası bırakıldı.
+- 🏷️ Bundan sonraki fix/sürüm paketlerinde tüm sürüm etiketleri eşitlenecek.
