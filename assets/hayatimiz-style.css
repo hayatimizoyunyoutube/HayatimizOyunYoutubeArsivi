@@ -562,10 +562,40 @@
   overflow:hidden;
   background:
     linear-gradient(90deg,rgba(5,7,13,.88),rgba(5,7,13,.68),rgba(5,7,13,.92)),
-    url('/assets/hayatimiz-kapak.png') center/cover no-repeat,
+    url('/assets/007-first-light-maintenance-wallpaper.png') center/cover no-repeat,
     radial-gradient(circle at 20% 20%,rgba(244,63,94,.22),transparent 34%),
     radial-gradient(circle at 80% 15%,rgba(59,130,246,.24),transparent 36%),#05070d!important;
 }
 .gameWallpaperMaintenance:before{content:'';position:absolute;inset:-8%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.08) 42%,transparent 56%);animation:wallpaperSweep 7s linear infinite;pointer-events:none}.gameWallpaperMaintenance:after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.34);pointer-events:none}.gameWallpaperMaintenance .maintenanceCard{position:relative;z-index:2;backdrop-filter:blur(16px)}
 @keyframes wallpaperSweep{0%{transform:translateX(-60%) rotate(8deg)}100%{transform:translateX(60%) rotate(8deg)}}
 .gameWallpaperMaintenance .maintenanceCard h1{letter-spacing:-.055em}.gameWallpaperMaintenance .maintenanceInfoGrid article:nth-child(2){background:rgba(59,130,246,.12)!important;border-color:rgba(96,165,250,.26)!important}
+
+
+/* v2.2.1 FIX: kullanıcının gönderdiği 007 First Light wallpaper arka planı */
+.gameWallpaperMaintenance{
+  background:
+    linear-gradient(90deg,rgba(2,6,23,.82),rgba(2,6,23,.50),rgba(2,6,23,.88)),
+    url('/assets/007-first-light-maintenance-wallpaper.png') center/cover no-repeat!important;
+  animation:maintenanceWallpaperFloat 18s ease-in-out infinite alternate;
+}
+.gameWallpaperMaintenance:before{
+  content:'';
+  position:absolute;
+  inset:-6%;
+  background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.09) 44%,transparent 58%);
+  animation:wallpaperSweep 8s linear infinite;
+  pointer-events:none;
+}
+.gameWallpaperMaintenance:after{
+  content:''!important;
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 74% 20%,rgba(250,204,21,.16),transparent 24%),rgba(0,0,0,.22)!important;
+  pointer-events:none;
+  font-size:0!important;
+}
+.v221Maintenance:after{content:''!important}
+@keyframes maintenanceWallpaperFloat{
+  0%{background-position:center center;filter:saturate(1.05) contrast(1)}
+  100%{background-position:54% 48%;filter:saturate(1.18) contrast(1.06)}
+}
