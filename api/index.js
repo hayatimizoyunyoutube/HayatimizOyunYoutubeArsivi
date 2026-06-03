@@ -1165,15 +1165,17 @@ export default async function handler(req, res){
     if(action === 'games-delete'){
       await requireStaff(body.adminToken);
       const gameId = String(body.gameId || '').trim();
+      const confirmPhrase = String(body.confirmPhrase || '').trim();
       if(!gameId) throw new Error('Oyun ID gerekli.');
+      if(confirmPhrase !== 'OYUNU SIL') return json(res, 423, { ok:false, protected:true, error:'Oyun silme engellendi. Manuel silme onayı olmadan mevcut oyunlar silinmez.' });
       await supabase(`games?id=eq.${encodeURIComponent(gameId)}`, { method:'DELETE', headers:{ Prefer:'return=minimal' } });
-      return json(res, 200, { ok:true });
+      return json(res, 200, { ok:true, deleted:true });
     }
 
 
     if(action === 'games-delete-all'){
       await requireStaff(body.adminToken);
-      return json(res, 423, { ok:false, error:'Toplu oyun silme v2.2.2 FIX ile kapatıldı. Supabase arşivi yanlışlıkla sıfırlanmaz.' });
+      return json(res, 423, { ok:false, error:'Toplu oyun silme kapalı. Supabase oyun arşivi korunuyor.', protected:true });
     }
 
 

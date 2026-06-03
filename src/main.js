@@ -276,17 +276,21 @@ async function refreshGamesFromSupabase({force=false}={}){
     const localBefore=loadGames();
     const data=await apiJson('games-list',{});
     const remote=(Array.isArray(data.games)?data.games:[]).map(normalizeRemoteGame);
-    if(Array.isArray(data.games)){
-      // v2.2.2 FIX: Supabase boş/yanlış dönerse yereldeki gerçek oyunları sıfırlama.
-      // Güncelleme veya deploy sonrası kayıtların kaybolmasının ana sebebi boş remote listeyi direkt saveGames(remote) yapmak idi.
-      if(remote.length>0 || localBefore.length===0 || force===true){
-        saveGames(remote);
+    const remoteOk = data && data.ok === true && Array.isArray(data.games);
+    const remoteEmpty = remoteOk && remote.length === 0;
+    // v2.2.3 FIX: Supabase 0 döndü diye yerel veya ekrandaki oyunları asla silme.
+    // Sıfır kayıt sadece gerçekten ilk kurulumda ve yerelde kayıt yoksa kabul edilir.
+    if(remoteOk){
+      if(remote.length > 0){
+        saveGames(remote, {source:'supabase-refresh'});
         localStorage.setItem(STORAGE.lastRemoteSync,new Date().toISOString());
-      }else{
+      }else if(localBefore.length > 0){
         localStorage.setItem(STORAGE.lastRemoteSync,new Date().toISOString());
-        saveSyncState({mode:'supabase', status:'Supabase boş döndü, yerel arşiv korundu', message:`Supabase 0 oyun döndürdü; ${localBefore.length} yerel kayıt sıfırlanmadı.`, remoteCount:0, preservedLocalCount:localBefore.length});
-        if(force) { toast('Supabase boş döndü; mevcut yerel oyunlar korunuyor.'); render(); }
+        saveSyncState({mode:'supabase-safe', status:'Supabase boş döndü, arşiv korunuyor', message:`Supabase 0 oyun döndürdü; ${localBefore.length} mevcut oyun silinmedi.`, remoteCount:0, preservedLocalCount:localBefore.length});
+        if(force) { toast('Supabase boş döndü; mevcut oyunlar korunuyor.'); render(); }
         return;
+      }else{
+        saveSyncState({mode:'supabase-empty', status:'Supabase bağlı ama oyun yok', message:'Supabase oyun tablosu boş. Yeni oyun eklenene kadar arşiv boş kalır.', remoteCount:0});
       }
     }
     saveSyncState({mode:'supabase', status:remote.length?'Supabase aktif':'Supabase aktif ama oyun tablosu boş', message:data.warning || `${remote.length} oyun Supabase üzerinden okundu.`, remoteCount:remote.length, recovered:data.recovered===true});
@@ -312,7 +316,7 @@ async function persistGameToSupabase(game, editId=''){
   saveSyncState({mode:'supabase', status:'Supabase kayıt aktif', message:editId?'Oyun Supabase üzerinde güncellendi.':'Oyun Supabase üzerine kaydedildi.', lastGameSync:game.title || game.id});
   return data;
 }
-async function deleteGameRemote(id){ const token=sessionToken(); if(!token) return null; await apiJson('games-delete',{adminToken:token, gameId:id}); saveSyncState({mode:'supabase', status:'Supabase silme aktif', message:'Oyun Supabase üzerinden silindi.'}); }
+async function deleteGameRemote(id, options={}){ const token=sessionToken(); if(!token || options.explicitDelete !== true) return null; await apiJson('games-delete',{adminToken:token, gameId:id, confirmPhrase:'OYUNU SIL'}); saveSyncState({mode:'supabase', status:'Supabase silme aktif', message:'Oyun Supabase üzerinden manuel onayla silindi.'}); }
 async function clearAllGamesRemote(){ const token=sessionToken(); if(!token) return null; await apiJson('games-delete-all',{adminToken:token}); saveSyncState({mode:'supabase', status:'Supabase toplu silme aktif', message:'Supabase games tablosu boşaltıldı.'}); }
 
 function normalizeRemoteEvent(e,i=0){
@@ -551,14 +555,41 @@ function loadGames(){
   writeJson(STORAGE.games, []);
   return [];
 }
-function saveGames(rows){
-  const normalized = (Array.isArray(rows)?rows:[]).map(normalizeGame);
+function saveGames(rows, options={}){
+  const incoming = Array.isArray(rows)?rows:[];
+  const normalized = incoming.map(normalizeGame);
+  const current = firstStoredArray(GAME_KEYS) || [];
+  const allowEmpty = options && options.allowEmpty === true;
+  const allowDecrease = options && options.allowDecrease === true;
+  const explicitDelete = options && options.explicitDelete === true;
+  // v2.2.3 FIX: Ben silmeden mevcut oyunlar silinmesin.
+  // Boş liste veya daha az kayıt, yalnızca açık/manuel silme onayıyla yazılabilir.
+  if(current.length > 0 && normalized.length === 0 && !allowEmpty && !explicitDelete){
+    saveSyncState({mode:'protected', status:'Arşiv korundu', message:`Boş oyun listesi yazma engellendi. ${current.length} kayıt korunuyor.`});
+    return;
+  }
+  if(current.length > 0 && normalized.length < current.length && !allowDecrease && !explicitDelete){
+    saveSyncState({mode:'protected', status:'Arşiv korundu', message:`Kayıt sayısı ${current.length} → ${normalized.length} düşecekti; manuel silme onayı olmadığı için engellendi.`});
+    return;
+  }
+  try{
+    localStorage.setItem('hayatimiz_games_last_backup', JSON.stringify(current));
+    localStorage.setItem('hayatimiz_games_last_backup_at', new Date().toISOString());
+  }catch{}
   for(const key of GAME_KEYS) writeJson(key, normalized);
   localStorage.setItem(STORAGE.gamesInitialized,'1');
   localStorage.setItem('hayatimiz_games_last_saved_at', new Date().toISOString());
 }
-function deleteGame(id){ saveGames(loadGames().filter(g=>String(g.id)!==String(id))); }
-function clearAllGames(){ saveGames([]); }
+function deleteGame(id, options={}){
+  if(!options.explicitDelete){
+    saveSyncState({mode:'protected', status:'Silme engellendi', message:'Oyun silme işlemi açık manuel onay olmadan çalıştırılmadı.'});
+    return false;
+  }
+  const next=loadGames().filter(g=>String(g.id)!==String(id));
+  saveGames(next, {source:'confirmed-single-delete', allowEmpty:true, allowDecrease:true, explicitDelete:true});
+  return true;
+}
+function clearAllGames(){ toast('Toplu oyun silme güvenlik için kapalı. Mevcut oyunlar korunuyor.'); saveSyncState({mode:'protected', status:'Toplu silme kapalı', message:'Tüm oyunları sil işlemi kapatıldı.'}); }
 function restoreDemoGames(){ saveGames(DEFAULT_GAMES.map(normalizeGame)); }
 function firstArray(keys, fallback=[]){ const stored=firstStoredArray(keys); return stored === null ? fallback : stored; }
 function loadEvents(){ return firstArray(EVENTS_KEYS, []); }
@@ -1500,7 +1531,7 @@ function bind(){
     const selectAllSeries=e.target.closest('[data-series-select-all]'); if(selectAllSeries){ e.preventDefault(); const form=selectAllSeries.closest('form'); form?.querySelectorAll('input[type="checkbox"][name="gameIds"]').forEach(cb=>{ cb.checked=true; cb.closest('[data-series-dnd-item]')?.classList.add('selected'); }); renumberSeriesEditor(form); toast('Seri için tüm oyunlar seçildi.'); return; }
     const clearSeries=e.target.closest('[data-series-clear]'); if(clearSeries){ e.preventDefault(); const form=clearSeries.closest('form'); form?.querySelectorAll('input[type="checkbox"][name="gameIds"]').forEach(cb=>{ cb.checked=false; cb.closest('[data-series-dnd-item]')?.classList.remove('selected'); }); renumberSeriesEditor(form); toast('Seri seçimi temizlendi.'); return; }
     const quickSeriesSort=e.target.closest('[data-series-sort-preview]'); if(quickSeriesSort){ e.preventDefault(); sortSeriesEditorRows(quickSeriesSort.closest('form'), quickSeriesSort.dataset.seriesSortPreview || 'az'); toast('Seçili seri oyunları yeniden sıralandı.'); return; }
-    const delGame=e.target.closest('[data-delete-game]'); if(delGame){ if(confirm('Bu oyunu kalıcı olarak silmek istiyor musun?')){ const id=delGame.dataset.deleteGame; deleteGame(id); deleteGameRemote(id).catch(err=>{ console.warn('Supabase silme yerel modda kaldı:', err.message); }); toast('Oyun kalıcı olarak silindi.'); render(); } return; }
+    const delGame=e.target.closest('[data-delete-game]'); if(delGame){ const id=delGame.dataset.deleteGame; const game=loadGames().find(g=>String(g.id)===String(id)); const code=prompt(`Bu işlem sadece sen manuel silersen çalışır. Silmek için oyun adını aynen yaz:\n${game?.title||id}`); if(code && game && code.trim()===String(game.title||'').trim()){ const ok=deleteGame(id,{explicitDelete:true}); deleteGameRemote(id,{explicitDelete:true}).catch(err=>{ console.warn('Supabase silme yerel modda kaldı:', err.message); }); if(ok) toast('Oyun manuel onayla silindi.'); render(); }else{ toast('Silme iptal edildi. Mevcut oyunlar korundu.'); } return; }
     if(e.target.closest('[data-delete-all-games]')){ toast('Toplu silme güvenlik için kapatıldı. Oyunları tek tek silebilirsin.'); return; }
     if(e.target.closest('[data-reset-demo-games]')){ if(confirm('Örnek oyunları geri yüklemek istiyor musun?')){ restoreDemoGames(); toast('Örnek oyunlar geri yüklendi.'); render(); } return; }
     const delEvent=e.target.closest('[data-delete-event]'); if(delEvent){ const rows=loadEvents(); const idx=Number(delEvent.dataset.deleteEvent); const event=rows[idx]; rows.splice(idx,1); saveEvents(rows); deleteEventRemote(event).catch(err=>{ console.warn('Supabase takvim silme yerel modda kaldı:', err.message); }); toast('Yayın silindi.'); render(); return; }
