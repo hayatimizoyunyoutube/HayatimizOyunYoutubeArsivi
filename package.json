@@ -1,10 +1,10 @@
 {
-  "name": "hayatimiz-oyun-v218-fix-ana-sayfa-bos-tasarim-kesin",
+  "name": "hayatimiz-oyun-v218-fix-vercel-building-takilma",
   "private": true,
   "type": "module",
   "version": "2.1.8",
   "scripts": {
-    "build": "node scripts/vercel-static-build-check.mjs",
+    "build": "node --no-warnings scripts/vercel-static-build-check.mjs",
     "dev": "vite --host 127.0.0.1 --port 5173 --open /ana-sayfa",
     "local": "vite --host 127.0.0.1 --port 5173 --open /ana-sayfa",
     "preview": "vite preview --host 127.0.0.1 --port 4173 --open /ana-sayfa"

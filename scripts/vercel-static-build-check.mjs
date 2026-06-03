@@ -25,7 +25,7 @@ html = html.replace(/\s*<script\s+type=["']module["']\s+src=["']\/src\/main\.js[
 fs.writeFileSync(path.join(dist, 'index.html'), html);
 fs.writeFileSync(path.join(dist, '404.html'), html);
 fs.writeFileSync(path.join(dist, '_redirects'), '/* /index.html 200\n');
-fs.writeFileSync(path.join(dist, 'vercel-root-check.txt'), 'v2.1.8 FIX ana sayfa bos tasarim kesin build ok\n');
+fs.writeFileSync(path.join(dist, 'vercel-root-check.txt'), 'v2.1.8 FIX vercel building takilma build ok\n');
 for (const file of ['robots.txt','sitemap.xml']) { const f=path.join(root,'public',file); if(fs.existsSync(f)) fs.copyFileSync(f, path.join(dist,file)); }
 const publicData=path.join(root,'public','data','update-notes.json'); if(fs.existsSync(publicData)) fs.copyFileSync(publicData, path.join(dist,'data','update-notes.json'));
 const js = fs.readFileSync(path.join(assets,'hayatimiz-app-v218-authority-users.js'), 'utf8');
@@ -69,4 +69,4 @@ if(!css.includes('v218RoleStats')) throw new Error('v2.1.8 yetki paneli CSS eksi
 if(!js.includes('emergencySafeHtml')) throw new Error('v2.1.8 FIX güvenli açılış fonksiyonu eksik.');
 if(!js.includes('Henüz oyun eklenmedi')) throw new Error('v2.1.8 FIX boş arşiv ana sayfa vitrini eksik.');
 if(js.includes('|| DEFAULT_GAMES[0]')) throw new Error('Ana sayfa boşken demo oyun gösteren fallback kaldı.');
-console.log('v2.1.8 FIX Ana Sayfa Boş Arşiv Tasarımı Kesin build başarılı.');
+console.log('v2.1.8 FIX Vercel Building Takilma build başarılı.');

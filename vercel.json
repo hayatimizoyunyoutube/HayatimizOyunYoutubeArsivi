@@ -1,45 +1,33 @@
 {
   "version": 2,
-  "installCommand": "echo \"v2.1.8 FIX ana sayfa bos tasarim kesin\"",
-  "buildCommand": "node scripts/vercel-static-build-check.mjs",
+  "framework": null,
+  "installCommand": "node -e \"console.log('v2.1.8 FIX: npm install atlandi, build hizli calisacak')\"",
+  "buildCommand": "node --no-warnings scripts/vercel-static-build-check.mjs",
   "outputDirectory": "dist",
   "cleanUrls": false,
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/api",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 10
     }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/api", "destination": "/api/index.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
       "source": "/index.html",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "X-Hayatimiz-Oyun-Fix",
-          "value": "v2.1.8-FIX-ANA-SAYFA-BOS-TASARIM-KESIN"
-        }
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "X-Hayatimiz-Oyun-Fix", "value": "v2.1.8-FIX-VERCEL-BUILDING-TAKILMA" }
       ]
     },
     {
       "source": "/assets/(.*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
     }
   ]
