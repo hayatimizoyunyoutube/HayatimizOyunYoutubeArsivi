@@ -1173,10 +1173,7 @@ export default async function handler(req, res){
 
     if(action === 'games-delete-all'){
       await requireStaff(body.adminToken);
-      await supabase('games?id=not.is.null', { method:'DELETE', headers:{ Prefer:'return=minimal' } }).catch(async ()=>{
-        await supabase('games?title=not.is.null', { method:'DELETE', headers:{ Prefer:'return=minimal' } });
-      });
-      return json(res, 200, { ok:true, deleted:'all' });
+      return json(res, 423, { ok:false, error:'Toplu oyun silme v2.2.2 FIX ile kapatıldı. Supabase arşivi yanlışlıkla sıfırlanmaz.' });
     }
 
 
