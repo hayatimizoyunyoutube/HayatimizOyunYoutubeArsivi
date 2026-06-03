@@ -58,10 +58,19 @@ function cleanUser(user){
   if(!user) return null;
   const role = roleForEmail(user.email, user.role);
   return {
-    id:user.id, full_name:user.full_name || '', avatar_url:user.avatar_url || '', email:user.email, role,
+    id:user.id,
+    full_name:user.full_name || user.display_name || '',
+    displayName:user.display_name || user.full_name || user.email || '',
+    avatar_url:user.avatar_url || '',
+    email:user.email,
+    role,
     is_active:user.is_active !== false && role !== 'banned',
-    banned_at:user.banned_at || null, ban_reason:user.ban_reason || null,
-    created_at:user.created_at, updated_at:user.updated_at, last_login_at:user.last_login_at
+    banned_at:user.banned_at || null,
+    ban_reason:user.ban_reason || null,
+    created_at:user.created_at,
+    updated_at:user.updated_at,
+    last_login_at:user.last_login_at,
+    source:user.source || 'Supabase'
   };
 }
 function cleanGame(game){
@@ -252,6 +261,60 @@ async function supabaseAuthAdminUsers(){
   return out;
 }
 
+
+async function supabaseAuthCreateUser({email,password,fullName,role}){
+  const { url, key } = env();
+  if(!email || !password) return null;
+  const response = await fetch(`${url}/auth/v1/admin/users`, {
+    method:'POST',
+    headers:{ apikey:key, Authorization:`Bearer ${key}`, 'Content-Type':'application/json' },
+    body:JSON.stringify({ email, password, email_confirm:true, user_metadata:{ full_name:fullName || email.split('@')[0], role:roleForEmail(email, role || 'user') } })
+  });
+  const text = await response.text();
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch { data = null; }
+  if(!response.ok && !String(text || '').toLowerCase().includes('already')) throw new Error(data?.message || text || `Supabase Auth create HTTP ${response.status}`);
+  return data;
+}
+
+async function upsertSiteUserFromAuth(authUser){
+  const email = String(authUser?.email || '').trim().toLowerCase();
+  if(!email) return null;
+  const now = new Date().toISOString();
+  const role = roleForEmail(email, authUser.role || 'user');
+  const fullName = authUser.full_name || authUser.displayName || email.split('@')[0];
+  const payload = {
+    email,
+    full_name:fullName,
+    display_name:fullName,
+    avatar_url:authUser.avatar_url || '',
+    role,
+    is_active:authUser.is_active !== false && role !== 'banned',
+    last_login_at:authUser.last_login_at || null,
+    updated_at:now,
+    created_at:authUser.created_at || now
+  };
+  const rows = await supabase('site_users?on_conflict=email', {
+    method:'POST',
+    headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
+    body:JSON.stringify([payload])
+  }).catch(()=>[]);
+  return Array.isArray(rows) && rows[0] ? { ...rows[0], source:'Supabase Auth + Supabase Kayıt' } : { ...payload, id:authUser.id || `auth-${email}`, source:'Supabase Auth' };
+}
+
+async function bootstrapOwnerByEmail(email){
+  const e = String(email || '').trim().toLowerCase();
+  if(!ADMIN_EMAILS.includes(e)) return null;
+  const now = new Date().toISOString();
+  const payload = { email:e, full_name:'Hayatımız Oyun Yönetim', display_name:'Hayatımız Oyun Yönetim', role:'kurucu', is_active:true, created_at:now, updated_at:now };
+  const rows = await supabase('site_users?on_conflict=email', {
+    method:'POST',
+    headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
+    body:JSON.stringify([payload])
+  }).catch(()=>[]);
+  return Array.isArray(rows) && rows[0] ? { ...rows[0], source:'Supabase Kurucu' } : payload;
+}
+
 async function supabaseStorageUpload(bucket, objectPath, buffer, contentType){
   const { url, key } = env();
   const response = await fetch(`${url}/storage/v1/object/${bucket}/${objectPath}`, {
@@ -275,8 +338,10 @@ async function getUserById(id){
 async function requireStaff(token){
   const data = verifyToken(token);
   if(!data || !isStaff(data.role)) throw new Error('Yetkili oturum gerekli.');
-  const user = await getUserByEmail(String(data.email || '').toLowerCase()).catch(()=>null);
-  if(user) user.role = roleForEmail(user.email, user.role);
+  const email = String(data.email || '').toLowerCase();
+  let user = await getUserByEmail(email).catch(()=>null);
+  if(!user && ADMIN_EMAILS.includes(email)) user = await bootstrapOwnerByEmail(email).catch(()=>null);
+  if(user) user.role = roleForEmail(user.email, user.role || data.role);
   if(!user || user.is_active === false || !isStaff(user.role)) throw new Error('Yetki güncel değil. Tekrar giriş yap.');
   return user;
 }
@@ -538,10 +603,11 @@ export default async function handler(req, res){
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
-      const rows = await supabase('site_users', { method:'POST', body: JSON.stringify([payload]) });
+      await supabaseAuthCreateUser({email,password,fullName:payload.full_name,role:payload.role}).catch(()=>null);
+      const rows = await supabase('site_users?on_conflict=email', { method:'POST', headers:{ Prefer:'resolution=merge-duplicates,return=representation' }, body: JSON.stringify([payload]) });
       const inserted = Array.isArray(rows) && rows[0] ? rows[0] : await getUserByEmail(email);
-      const user = cleanUser(inserted);
-      if(!user || !user.email) throw new Error('Kullanıcı Supabase site_users tablosuna kaydedilemedi. schema-v2.5.2-fix13-safe.sql dosyasını Supabase SQL Editor içinde çalıştır.');
+      const user = cleanUser({ ...inserted, source:'Supabase Kayıt' });
+      if(!user || !user.email) throw new Error('Kullanıcı Supabase site_users tablosuna kaydedilemedi. schema.sql dosyasını Supabase SQL Editor içinde çalıştır.');
       return json(res, 200, { ok:true, user, adminToken:isStaff(user.role) ? signToken({ email:user.email, role:user.role }) : null });
     }
 
@@ -561,7 +627,9 @@ export default async function handler(req, res){
 
     if(action === 'session-refresh'){
       const email = String(body.email || '').trim().toLowerCase();
-      const user = cleanUser(await getUserByEmail(email));
+      let raw = await getUserByEmail(email).catch(()=>null);
+      if(!raw && ADMIN_EMAILS.includes(email)) raw = await bootstrapOwnerByEmail(email).catch(()=>null);
+      const user = cleanUser(raw);
       return json(res, 200, { ok:true, user, adminToken:user && isStaff(user.role) ? signToken({ email:user.email, role:user.role }) : null });
     }
 
@@ -590,25 +658,28 @@ export default async function handler(req, res){
     }
 
     if(action === 'users-list'){
-      await requireOwner(body.adminToken);
-      const rows = await supabase('site_users?select=id,full_name,avatar_url,email,role,is_active,banned_at,ban_reason,created_at,updated_at,last_login_at&order=created_at.desc', { method:'GET' }).catch(()=>[]);
-      const authorityRows = await supabase('site_authority_panel?select=email,display_name,role_code,role_label_tr,is_active,updated_at&order=updated_at.desc', { method:'GET' }).catch(()=>[]);
+      const owner = await requireOwner(body.adminToken);
+      await bootstrapOwnerByEmail(owner.email).catch(()=>{});
       const authRows = await supabaseAuthAdminUsers().catch(()=>[]);
+      for(const u of (authRows || [])) await upsertSiteUserFromAuth(u).catch(()=>{});
+      const rows = await supabase('site_users?select=id,display_name,full_name,avatar_url,email,role,is_active,banned_at,ban_reason,created_at,updated_at,last_login_at&order=created_at.desc', { method:'GET' }).catch(()=>[]);
+      const authorityRows = await supabase('site_authority_panel?select=email,display_name,role_code,role_label_tr,is_active,updated_at&order=updated_at.desc', { method:'GET' }).catch(()=>[]);
       const map = new Map();
+      (rows || []).map(x=>cleanUser({ ...x, source:'Supabase Kayıt' })).filter(Boolean).forEach(u => {
+        const email = String(u.email || '').toLowerCase();
+        if(email) map.set(email, { ...u, role:roleForEmail(email, u.role), source:'Supabase Kayıt' });
+      });
       for(const u of (authRows || [])){
         const email = String(u.email || '').toLowerCase();
-        if(email) map.set(email, { ...u, source:'Supabase Auth' });
-      }
-      (rows || []).map(cleanUser).filter(Boolean).forEach(u => {
-        const email = String(u.email || '').toLowerCase();
+        if(!email) continue;
         const existing = map.get(email) || {};
-        map.set(email, { ...existing, ...u, full_name:u.full_name || existing.full_name || email, role:normalizeRole(u.role || existing.role), is_active:u.is_active !== false, source: existing.source === 'Supabase Auth' ? 'Supabase Auth + site_users' : 'site_users' });
-      });
+        map.set(email, { ...u, ...existing, id:existing.id || u.id, full_name:existing.full_name || u.full_name || email, role:roleForEmail(email, existing.role || u.role), is_active:existing.is_active !== false && u.is_active !== false, source: existing.email ? 'Supabase Auth + Supabase Kayıt' : 'Supabase Auth' });
+      }
       for(const a of (authorityRows || [])){
         const email = String(a.email || '').toLowerCase();
         if(!email) continue;
         const existing = map.get(email) || { id:`authority-${email}`, email, created_at:a.updated_at };
-        map.set(email, { ...existing, full_name:a.display_name || existing.full_name || email, role:normalizeRole(a.role_code || existing.role), is_active:a.is_active !== false, updated_at:a.updated_at || existing.updated_at, source: existing.source ? `${existing.source} + Yetki` : 'site_authority_assignments' });
+        map.set(email, { ...existing, full_name:a.display_name || existing.full_name || email, role:roleForEmail(email, a.role_code || existing.role), is_active:a.is_active !== false, updated_at:a.updated_at || existing.updated_at, source: existing.source ? `${existing.source} + Yetki` : 'Supabase Yetki' });
       }
       return json(res, 200, { ok:true, users:[...map.values()].sort((a,b)=>String(b.created_at||b.updated_at||'').localeCompare(String(a.created_at||a.updated_at||''))), sources:{ auth:authRows.length, site_users:(rows||[]).length, authority:(authorityRows||[]).length } });
     }
@@ -625,7 +696,7 @@ export default async function handler(req, res){
         ? { role:'banned', is_active:false, banned_at:now, ban_reason:'Yönetim panelinden banlandı', updated_at:now }
         : { role, is_active:true, banned_at:null, ban_reason:null, updated_at:now };
       let rows = [];
-      if(userId && !userId.startsWith('authority-')){
+      if(userId && !userId.startsWith('authority-') && !userId.startsWith('auth-')){
         rows = await supabase(`site_users?id=eq.${encodeURIComponent(userId)}`, { method:'PATCH', body: JSON.stringify(patch) }).catch(()=>[]);
       }
       if((!rows || !rows[0]) && email){
@@ -684,7 +755,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.1.9', note:'Profesyonel ana sayfa final cila ve status güncellemesi', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.1.9', note:'v2.1.9 bakım modu ve kullanıcı yönetimi kalıcı kayıt fix', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -701,7 +772,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.1.9', note:'Profesyonel ana sayfa final cila ve status güncellemesi', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.1.9', note:'v2.1.9 bakım modu ve kullanıcı yönetimi kalıcı kayıt fix', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
