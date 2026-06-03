@@ -456,3 +456,81 @@
 .adminDock.proAdminDock nav,.adminDock nav{flex-wrap:nowrap!important;overflow-x:auto!important;scrollbar-width:thin!important}
 .userTablePanel .userList .userRow small{color:#bae6fd!important}.userRow[data-user-source*="Supabase"]{border-color:rgba(34,197,94,.28)!important}
 @media(max-width:980px){.adminDashboardHero{grid-template-columns:1fr!important}.adminDock.proAdminDock,.adminDock{grid-template-columns:1fr!important}.adminDashboardHero aside{display:none!important}}
+
+
+/* v2.1.9 FIX - Yönetim menüsü gerçek kompakt + banlı açıklama */
+.adminDock.proAdminDock,
+.adminDock{
+  max-width:1180px!important;
+  min-height:52px!important;
+  padding:8px 10px!important;
+  border-radius:18px!important;
+  display:grid!important;
+  grid-template-columns:170px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:8px!important;
+  overflow:hidden!important;
+  margin-top:8px!important;
+  margin-bottom:14px!important;
+  box-shadow:0 12px 36px rgba(0,0,0,.18)!important;
+}
+.adminDock.proAdminDock > div,
+.adminDock > div{
+  min-width:0!important;
+  max-width:170px!important;
+}
+.adminDock.proAdminDock > div b,
+.adminDock > div b{
+  display:block!important;
+  font-size:12px!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.adminDock.proAdminDock > div small,
+.adminDock > div small{
+  display:block!important;
+  font-size:9.5px!important;
+  line-height:1.25!important;
+  max-height:24px!important;
+  overflow:hidden!important;
+  color:#cbd5e1!important;
+}
+.adminDock.proAdminDock nav,
+.adminDock nav{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:5px!important;
+  min-width:0!important;
+  width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:0 0 3px!important;
+  scrollbar-width:thin!important;
+}
+.adminDock.proAdminDock nav a,
+.adminDock nav a{
+  flex:0 0 auto!important;
+  min-height:30px!important;
+  height:30px!important;
+  padding:0 8px!important;
+  border-radius:999px!important;
+  font-size:11px!important;
+  line-height:1!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
+}
+.v218RoleGuide article:has(.role-banned),
+.roleGuideCard:has(h2){min-height:0!important}
+.v218RoleGuide article span,
+.roleGuideCard p{line-height:1.42!important}
+@media(max-width:980px){
+  .adminDock.proAdminDock,.adminDock{grid-template-columns:1fr!important;padding:8px!important;}
+  .adminDock.proAdminDock > div,.adminDock > div{max-width:none!important;}
+  .adminDock.proAdminDock > div small,.adminDock > div small{display:none!important;}
+}
