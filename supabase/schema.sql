@@ -1505,3 +1505,50 @@ select
   'Tek kurucu kilidi ve kullanıcı/yetki senkronizasyonu güçlendirildi.'::text as "Kullanıcı / Yetki",
   'Vercel/GitHub etiketi v2.2.2-supabase-kullanici-yetki-stabilite olarak güncel.'::text as "Vercel Etiketi",
   'Veri silinmez, bakım modu ve kullanıcı kayıtları sıfırlanmaz.'::text as "Koruma";
+
+
+-- =========================================================
+-- v2.2.3 - Arşiv, Form ve Bakım Deneyimi
+-- Bu blok veri silmez. Sadece sürüm/status/results kayıtlarını günceller.
+-- =========================================================
+
+insert into public.site_runtime_config (key, value, updated_at)
+values
+  ('site_version', jsonb_build_object('version','v2.2.3','label','Arşiv, Form ve Bakım Deneyimi','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.3','label','Arşiv, Form ve Bakım Deneyimi','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.3','label','v2.2.3-arsiv-form-bakim-deneyimi','updated_at',now()), now())
+on conflict (key) do update
+set value = excluded.value,
+    updated_at = now();
+
+insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
+select
+  'v2.2.3',
+  '🎮 Arşiv, Form ve Bakım Deneyimi',
+  'Arşiv kapakları kompakt hale getirildi; oyun ekle formunda etiketler butonlu, türler profesyonel seçimli yapıldı. Bakım ekranı güncelleme notları daha okunabilir hale getirildi.',
+  'Tamamlandı',
+  now(),
+  now()
+where not exists (
+  select 1 from public.site_update_notes where version='v2.2.3' and title='🎮 Arşiv, Form ve Bakım Deneyimi'
+);
+
+insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
+select
+  'v2.2.4',
+  '📘 Site Rehberi ve Yardım Merkezi Geliştirme',
+  'Site Rehberi, Yetkili Rehberi ve yardım kartları daha anlaşılır hale getirilecek.',
+  'Planlandı',
+  now(),
+  now()
+where not exists (
+  select 1 from public.site_update_notes where version='v2.2.4' and title='📘 Site Rehberi ve Yardım Merkezi Geliştirme'
+);
+
+select
+  '✅ Başarılı'::text as "Durum",
+  'v2.2.3'::text as "Sürüm",
+  'Arşiv, Form ve Bakım Deneyimi'::text as "İşlem",
+  'Arşiv kapakları kompakt; oyun formu etiket/tür butonlu; bakım notları okunabilir.'::text as "Yapılanlar",
+  'Vercel/GitHub etiketi v2.2.3-arsiv-form-bakim-deneyimi olarak güncel.'::text as "Vercel Etiketi",
+  'Veri silinmez, oyunlar ve bakım modu sıfırlanmaz.'::text as "Koruma";
