@@ -1,0 +1,317 @@
+[
+  {
+    "id": "v220-bakim-supabase-ban-guvenligi",
+    "version": "v2.2.0",
+    "title": "🛠️ Bakım, Supabase Kalıcılık ve Ban Güvenliği",
+    "summary": "Bakım modu animasyonlu ziyaretçi ekranına taşındı. Oyun, kullanıcı, yetki, takvim ve bakım kayıtlarında Supabase kalıcılığı güçlendirildi. Banlı kullanıcıların siteye erişimi engellendi. Sürüm/Vercel/Results etiketleri v2.2.0 olarak eşitlendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v219-profesyonel-yonetim-merkezi-takvim",
+    "version": "v2.1.9",
+    "title": "🛡️ Profesyonel Yönetim Merkezi ve Takvim Sistemi",
+    "summary": "Dashboard, yönetim panelleri ve yayın takvimi yeni sürüm olarak toparlandı. Takvim gün kutulu gerçek görünümle çalışır; v2.2.0 planı Supabase veri sağlığı ve yedek sistemidir.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v218-ana-sayfa-bos-tasarim-kesin",
+    "version": "v2.1.8 FIX",
+    "title": "🏠 Ana Sayfa Boş Arşiv Tasarımı Kesin Fix",
+    "summary": "Yeni sürüm yapılmadan oyun ekli değilken ana sayfanın güvenli hata ekranına düşmesi engellendi. Öne çıkan oyun yoksa profesyonel boş arşiv vitrini gösterilir; Alan Wake/demo oyun otomatik basılmaz.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v218-ana-sayfa-bos-arsiv-vercel-etiket",
+    "version": "v2.1.8 FIX",
+    "title": "🏠 Ana Sayfa Boş Arşiv ve Vercel Etiket Fix",
+    "summary": "Yeni sürüm yapılmadan oyun ekli değilken ana sayfada örnek/yanlış oyun görünmesi engellendi. Supabase oyun tablosu boşsa site boş arşiv durumunu korur. Vercel deploy/BAT/marker metinleri v2.1.8 FIX olarak güncellendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v218-kullanici-yetki-tablolari-temiz-sifirlama",
+    "version": "v2.1.8 FIX",
+    "title": "🧹 Kullanıcı ve Yetki Tabloları Temiz Sıfırlama",
+    "summary": "Yeni sürüm yapılmadan schema güncellendi. Kullanıcılar, yetkililer, rol audit kayıtları ve izleme geçmişi temizlenir; oyunlar, seriler, takvim, bakım modu ve güncelleme notları korunur. Yetkiler baştan verilebilir.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v218-yetki-paneli-kullanici-yonetimi",
+    "version": "v2.1.8",
+    "title": "👑 Yetki Paneli ve Kullanıcı Yönetimi",
+    "summary": "Kullanıcılar ve Yetkiler paneli profesyonel hale getirildi. Kayıtlı kullanıcılar, Supabase yetki kayıtları, rol özetleri, arama/filtreleme, Türkçe rol seçimi, kullanıcı ekleme ve yetki kaydetme akışı güçlendirildi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v217-kullanici-profili-izleme-gecmisi",
+    "version": "v2.1.7",
+    "title": "👤 Kullanıcı Profili ve İzleme Geçmişi",
+    "summary": "Profil sayfası profesyonel hale getirildi. Kullanıcı adı, rol, kayıt tarihi, izleme özeti, devam et kartları, son izlenenler ve yerel/Supabase güvenli izleme geçmişi akışı eklendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v216-seri-yonetimi-gelismis-siralama",
+    "version": "v2.1.6",
+    "title": "🎬 Seri Yönetimi Gelişmiş Sıralama",
+    "summary": "Seri yönetimi ekranı profesyonelleştirildi. Seri içindeki oyunları seçme/çıkarma, sürükle-bırak, sayı ile düzenleme, hızlı A-Z/bölüm/durum/tarih sıralama, seri sırası önizleme ve Supabase kalıcı kayıt akışı güçlendirildi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v215-seri-adi-bakim-kesin",
+    "version": "v2.1.5 FIX",
+    "title": "🛠️ Seri Adı ve Bakım Modu Kesin Fix",
+    "summary": "Yeni sürüm yapılmadan A Plague Tale: Innocence gibi oyunlarda yanlış Avatar seri eşleşmesi engellendi. Bakım modu açıkken Supabase yenile düğmesinin eski kapalı değerle bakım modunu kapatması önlendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v215-kullanicilar-yetkiler-paneli",
+    "version": "v2.1.5 FIX",
+    "title": "👥 Kullanıcılar ve Yetkiler Paneli Fix",
+    "summary": "Yeni sürüm yapılmadan yönetim panelindeki 'Yetkililer' görünen alanı 'Kullanıcılar ve Yetkiler' olarak düzeltildi. Kayıtlı kullanıcı listesi, kullanıcı ekleme ve yetki verme aynı panelde daha belirgin hale getirildi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v215-seri-takvim-rehber-kesin",
+    "version": "v2.1.5 FIX",
+    "title": "🛠️ Seri Adı, Public Yayın Takvimi ve Yetkili Rehberi Menü Fix",
+    "summary": "Yeni sürüm yapılmadan A Plague Tale gibi oyunlarda yanlış seri adı eşleşmesi engellendi. Yetkili Rehberi üst public menüden kaldırıldı ve yönetim panelinde kaldı. Yayın Takvimi normal kullanıcıların görebileceği public sayfa olarak eklendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v215-seri-hikaye-takvim-alfabetik-rehber",
+    "version": "v2.1.5 FIX",
+    "title": "🛠️ Seri Adı, Hikaye, Takvim, Alfabetik ve Yetkili Rehberi Fix",
+    "summary": "Yeni sürüm yapılmadan seri adı okuma, profesyonel hikaye metni, ana sayfa takvim görünümü, oyun/seri içinde harfe git ve yönetim panelindeki Yetkili Rehberi bağlantısı düzeltildi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v215-oyun-detay-siteden-izleme",
+    "version": "v2.1.5",
+    "title": "▶️ Oyun Detay ve Siteden İzleme Geliştirme",
+    "summary": "Oyun detay sayfası profesyonel kapak/banner, hikaye, bölüm ilerlemesi, etiketler ve izleme bağlantılarıyla güçlendirildi. Siteden izleme ekranına sıradaki bölüm, güvenli oynatıcı uyarısı ve izleme ilerlemesi eklendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v214-ana-sayfa-acilis-asset",
+    "version": "v2.1.4 FIX",
+    "title": "🏠 Ana Sayfa Açılış ve Asset Fix",
+    "summary": "Yeni sürüm yapılmadan ana sayfanın açılmamasına neden olan eski v2.1.3 JS/CSS asset referansları düzeltildi. index.html artık mevcut v2.1.4 uygulama dosyalarını yükler.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v214-profesyonel-ana-sayfa-final-cila",
+    "version": "v2.1.4",
+    "title": "🏠 Profesyonel Ana Sayfa Final Cila",
+    "summary": "Ana sayfa yayıncı/video arşivi havasına daha yakın hale getirildi. Büyük sinematik hero, akıllı arama, öne çıkan oyun, devam eden seriler, son eklenenler, hızlı erişimler ve yayın öncesi güven panelleri daha profesyonel yerleşime alındı.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v213-supabase-veri-fix-admin-guclendirme",
+    "version": "v2.1.3",
+    "title": "🛠️ Supabase Veri Fix ve Admin Güçlendirme",
+    "summary": "Supabase oyun ekle/düzenle/sil, kullanıcı yetkileri, admin veri sağlığı ve güvenli yenileme akışı güçlendirildi. API/ENV eksikse site yerel güvenli moda düşer; boş ekran oluşmaz. Schema güvenli modda güncellendi, mevcut veriler silinmez.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v212-schema-supabase-yetki-verme",
+    "version": "v2.1.2 FIX",
+    "title": "🗄️ Supabase Schema Yetki Verme Fix",
+    "summary": "Yeni sürüm yapılmadan schema.sql güvenli güncellendi. Supabase Table Editor içindeki site_authority_assignments tablosundan veya SQL Editor içinde set_site_user_role fonksiyonuyla Kurucu, Moderatör, İçerik Editörü, Üye ve Banlı yetkisi verilebilir. DROP TABLE yok, mevcut veriler silinmez.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v212-ust-menu-sabit-degil-turkce-yetki-tablosu",
+    "version": "v2.1.2 FIX",
+    "title": "🧭 Üst Menü Takip Etmeme ve Türkçe Yetki Tablosu Fix",
+    "summary": "Yeni sürüm yapılmadan üst menünün sayfayı aşağı kaydırınca kullanıcıyla birlikte gelmesi engellendi. Yönetim panelindeki kullanıcı/yetki tablosu Türkçe/emojili rollere alındı; Kurucu, Moderatör, İçerik Editörü, Üye ve Banlı rolleri tablodan eklenip kaydedilebilir hale getirildi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v212-ust-menu-yazi-tasma-profesyonel",
+    "version": "v2.1.2 FIX",
+    "title": "🧭 Üst Menü Yazı Taşma Profesyonel Fix",
+    "summary": "Yeni sürüm yapılmadan üst menü profesyonel kapsül tasarıma alındı. Yazılar kısaltılmadan görünür bırakıldı, alta düşme engellendi ve dar ekranda sayfayı bozmayan güvenli yatay kaydırma eklendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v212-ust-menu-tek-satir-tasma",
+    "version": "v2.1.2 FIX",
+    "title": "🧭 Üst Menü Tek Satır Taşma Fix",
+    "summary": "Yeni sürüm yapılmadan üst menü sıkıştırıldı ve tek satırda kalacak şekilde düzenlendi. Ana sayfa, Arşiv, Koleksiyonlar, Seriler, Site Durumu, Site Rehberi, Yetkili Rehberi, Yönetim Paneli, rol, profil ve çıkış butonları alta taşmadan aynı satırda korunur.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v212-ust-menu-ana-sayfa-hata-yonetim-ui",
+    "version": "v2.1.2 FIX",
+    "title": "🧭 Üst Menü, Ana Sayfa Hata ve Profesyonel Yönetim Paneli Fix",
+    "summary": "Yeni sürüm yapılmadan sol menü tamamen kaldırıldı; tüm site bağlantıları üst bara taşındı. Ana sayfadaki localStorage kota hatası güvenli/kompakt kayıt sistemiyle düzeltildi. Yönetim paneli daha profesyonel yönetim merkezi görünümüne alındı.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v212-bakim-kullanici-yonetim-menu",
+    "version": "v2.1.2 FIX",
+    "title": "🛠️ Bakım, Kullanıcı ve Yönetim Menü Fix",
+    "summary": "Yeni sürüm yapılmadan bakım modu kapatılınca ziyaretçide takılı kalan bakım ekranı düzeltildi. Yeni kayıt olan kullanıcıların Kullanıcılar ve Yetkiler ekranında görünmesi güçlendirildi. Sol menüde sadece Yönetim Paneli bırakıldı; yönetim alt araçları panel içine taşındı.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v212-planlananlar-15-adim-sabitleme",
+    "version": "v2.1.2 FIX",
+    "title": "📌 Planlananlar 15 Adım Sabitleme Fix",
+    "summary": "Yeni sürüm yapılmadan PLANLANANLAR klasörü tam 15 dolu plana tamamlandı. Her planın içine amaç, yapılacaklar, kontrol adımları ve schema durumu eklendi. Bundan sonra plan klasörü boş kalmayacak; tamamlanan her planın yerine yeni plan eklenecek.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v212-profesyonel-menu-bakim-ui",
+    "version": "v2.1.2 FIX",
+    "title": "✨ Profesyonel Menü ve Bakım Modu Tasarım Fix",
+    "summary": "Yeni sürüm yapılmadan sol menü, üst bar, yönetim ayrımı ve bakım modu ziyaretçi ekranı profesyonel hale getirildi. Bakım kapatma/açma davranışı güçlendirildi. Schema gerekli değildir.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v212-public-yayin-oncesi-stabilite",
+    "version": "v2.1.2",
+    "title": "🚀 Public Yayın Öncesi Stabilite",
+    "summary": "Ana sayfa, oyun arşivi, seriler, koleksiyonlar, siteden izleme, rehberler, bakım modu ve boş ekran koruması yayın öncesi kontrol edildi. /status site durum sayfası eklendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "plan-v218",
+    "version": "v2.1.8",
+    "title": "👑 Yetki Paneli ve Kullanıcı Yönetimi",
+    "summary": "Kurucu, moderatör, içerik editörü, üye ve banlı rollerini net yönetilebilir hale getirmek. Kayıtlı kullanıcıları görme ekranı daha okunabilir tabloya alınacak.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v219",
+    "version": "v2.1.9",
+    "title": "🚧 Bakım Modu, Duyuru ve Bildirim Sistemi",
+    "summary": "Bakım modu ekranını, duyuruları ve ziyaretçi bilgilendirme akışını profesyonelleştirmek. Bakım modu aç/kapat işlemi Supabase değerini yanlışlıkla tersine çevirmeyecek.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v220",
+    "version": "v2.2.0",
+    "title": "🗄️ Supabase Veri Sağlığı ve Yedek Planı",
+    "summary": "Canlı veri kaybı riskini azaltmak ve admin için veri kontrol araçları eklemek. Veri sağlık kontrol paneli eklenecek.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v221",
+    "version": "v2.2.1",
+    "title": "🎮 RAWG / Steam / YouTube API Dayanıklılık",
+    "summary": "Harici API hatalarında sitenin bozulmamasını ve formların düzgün çalışmasını sağlamak. RAWG arama sonucunda kapak, tür, tarih ve açıklama daha güvenli doldurulacak.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v222",
+    "version": "v2.2.2",
+    "title": "📱 Mobil, PWA ve Performans İyileştirme",
+    "summary": "Telefon, tablet ve masaüstünde arayüzü daha hızlı ve düzgün çalışır hale getirmek. Mobil menü ve üst bar taşmaları düzeltilecek.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v223",
+    "version": "v2.2.3",
+    "title": "🔎 Arama, Filtre ve Alfabetik Sıralama Geliştirme",
+    "summary": "Arama ve sıralamayı hem oyunlar hem seriler içinde daha güçlü hale getirmek. A-Z, Z-A ve 0-9 grupları oyun arşivi içinde korunacak.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v224",
+    "version": "v2.2.4",
+    "title": "📘 Site Rehberi ve Yardım Merkezi Geliştirme",
+    "summary": "Siteyi ilk kez giren kullanıcıya ve yetkili ekibe anlaşılır rehber sunmak. Site Rehberi daha adım adım anlatımlı hale getirilecek.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v225",
+    "version": "v2.2.5",
+    "title": "📊 Admin Dashboard İstatistikleri",
+    "summary": "Yönetim panelinde arşivin genel durumunu daha güçlü göstermek. Toplam oyun, seri, bölüm, kullanıcı ve güncelleme notu metrikleri güçlendirilecek.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v226",
+    "version": "v2.2.6",
+    "title": "🌐 SEO, Sitemap ve Paylaşım Görselleri",
+    "summary": "Public yayın öncesi arama motoru ve paylaşım görünümünü güçlendirmek. Sayfa başlıkları ve açıklamaları Türkçe ve temiz hale getirilecek.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v227",
+    "version": "v2.2.7",
+    "title": "✅ Yayın Öncesi Genel Stabilite",
+    "summary": "Büyük yayın öncesi tüm sayfaları, yönetim akışını ve public kullanıcı deneyimini kontrol etmek. Ana sayfa, oyun arşivi, seriler, koleksiyonlar, izleme, rehberler ve status sayfası test edilecek.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "fix-v211-rehber-yetkili-alfabetik-entegre",
+    "version": "v2.1.1 FIX",
+    "title": "📘 Site Rehberi, 👑 Yetkili Rehberi ve 🔤 Entegre Alfabetik Sıralama Fix",
+    "summary": "Yeni sürüm yapılmadan site rehberi ve yetkili rehberi eklendi. Yetki rollerinin ne anlama geldiği Türkçe ve emojili anlatıldı. Alfabetik sıralama ayrı bölüm olmaktan çıkarılıp oyun arşivi ve seriler içine taşındı.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v211-seri-izleme-siralama-supabase",
+    "version": "v2.1.1 FIX",
+    "title": "Seri İzleme, Seri Yönetimi ve Supabase Kayıt Fix",
+    "summary": "Yeni sürüm yapılmadan Tüm Seriyi İzle, seri içindeki oyunları seçme, seri adını düzenleme, sürükle-bırak ve sayı ile sıralama, Supabase kalıcı seri kayıt akışı eklendi. Schema sıfırlanmadı; mevcut games alanları kullanıldı.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v211-izleme-kalite-alfabetik-yetki-bakim",
+    "version": "v2.1.1 FIX",
+    "title": "Site İçi İzleme, Kalite, Alfabetik Sıralama, Yetki ve Bakım Fix",
+    "summary": "Yeni sürüm yapılmadan site içinden izleme sayfası, kalite tercihi paneli, A/B/0-9 alfabetik sıralama, profesyonel hikaye oluşturma, kayıtlı kullanıcıları görme ve yetki verme ekranı eklendi. Bakım modunda Supabase yenileme kapalı değeri zorla basmayacak şekilde düzeltildi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "fix-v211-profesyonel-arayuz-turkce",
+    "version": "v2.1.1 FIX",
+    "title": "Profesyonel Arayüz ve Türkçe Menü Fix",
+    "summary": "Yönetim butonları solda bırakıldı; profil, çıkış yap, giriş yap ve kayıt ol işlemleri sağ üst alana taşındı. Kurucu, Moderatör, İçerik Editörü ve Üye rol adları Türkçeleştirildi. Yeni sürüm yapılmadı.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v211-takvim-notlar-bakim",
+    "version": "v2.1.1",
+    "title": "Takvim, Güncelleme Notları ve Bakım Modu",
+    "summary": "Yayın takvimi, güncelleme notları ve bakım modu Supabase kalıcı veri bağlantısına kontrollü şekilde taşındı. Servis veya ortam ayarı hata verirse yerel güvenli mod korunur; yetkili geçişi ve ziyaretçi bakım ekranı bozulmaz.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v210-supabase-kalici-veri",
+    "version": "v2.1.0",
+    "title": "Supabase Kalıcı Veri Geri Dönüş",
+    "summary": "Yerel stabil sistem bozulmadan Supabase kalıcı veri bağlantısı geri eklendi. Oyun listeleme, ekleme, düzenleme, silme ve toplu silme işlemleri servis üzerinden Supabase ile senkron çalışır; servis veya ortam ayarı hata verirse site yerel güvenli moda düşer.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v209-koleksiyon-seri-durum",
+    "version": "v2.0.9",
+    "title": "Koleksiyon, Seri, Durum ve Sayaçlar",
+    "summary": "Koleksiyonlar, seri grupları, durum sayaçları ve arşiv istatistikleri aynı veri kaynağından beslenen stabil yapıya alındı.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v208-youtube-playlist-bolum",
+    "version": "v2.0.8",
+    "title": "YouTube Oynatma Listesi ve Bölüm Takibi",
+    "summary": "YouTube oynatma listesi otomasyonu, bölüm listesi ve kaldığımız bölüm takibi kontrollü şekilde geri eklendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v207-rawg-steam-kapak-meta",
+    "version": "v2.0.7",
+    "title": "RAWG / Steam / Kapak / Bilgi Geri Dönüş",
+    "summary": "RAWG / Steam bilgi paneli oyun ekle ve düzenle formuna kontrollü şekilde geri eklendi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "v206-oyun-ekle-duzenle-formu",
+    "version": "v2.0.6",
+    "title": "Oyun Ekle / Düzenle Formu",
+    "summary": "Oyun ekleme ve düzenleme formu profesyonel kartlı yapıya alındı.",
+    "status": "Tamamlandı"
+  }
+]

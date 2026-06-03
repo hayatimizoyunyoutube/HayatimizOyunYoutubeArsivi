@@ -1,0 +1,9 @@
+{
+  "name": "hayatimiz-oyun-v220-bakim-supabase-ban-guvenligi",
+  "private": true,
+  "type": "module",
+  "version": "2.2.0",
+  "engines": {
+    "node": ">=20"
+  }
+}
