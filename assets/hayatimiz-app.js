@@ -1052,7 +1052,7 @@ function adminOnly(contentFn){
 function maintenanceZiyaretçi(){
   const m=loadMaintenance();
   const pct=Math.max(0, Math.min(100, Number(m.percent||0)));
-  return `<main class="maintenanceZiyaretçi proMaintenance v221Maintenance gameWallpaperMaintenance"><section class="maintenanceCard proMaintenanceCard v221MaintenanceCard"><div class="bondSky"><span></span><span></span><span></span></div><div class="bondScan"></div><div class="maintenanceGlow bondGlow"></div><span class="badge amber">🛠️ ${VERSION} • Bakım Modu</span><h1>Site Güncelleniyor</h1><p>${esc(m.message || 'Hayatımız Oyun şu anda bakımda. Kısa süre sonra tekrar aktif olacak.')}</p><div class="maintenanceProgress bondProgress"><i><span style="width:${pct}%"></span></i><b>%${pct}</b></div><div class="maintenanceInfoGrid"><article><b>🎮 Durum</b><span>Site bakımda.</span></article><article><b>📝 Güncelleme Notları</b><span>Yeni düzenlemeler hazırlanıyor.</span></article><article><b>⏰ Tahmini Açılış</b><span>${esc(m.eta || 'Yakında güncellenecek.')}</span></article></div><div class="maintenancePublicActions"><button class="btn ghost" type="button" data-maintenance-retry>🔄 Tekrar Kontrol Et</button></div><small class="maintenanceNote">Bakım tamamlanınca site otomatik normal ekrana döner.</small></section></main>`;
+  return `<main class="maintenanceZiyaretçi proMaintenance v221Maintenance gameWallpaperMaintenance"><section class="maintenanceCard proMaintenanceCard v221MaintenanceCard"><div class="bondSky"><span></span><span></span><span></span></div><div class="bondScan"></div><div class="maintenanceGlow bondGlow"></div><span class="badge amber">🛠️ ${VERSION} • Site Bakımda</span><h1>Site Güncelleniyor</h1><p>${esc(m.message || 'Kısa süreli güncelleme yapılıyor. Birazdan yeniden aktif olacağız.')}</p><div class="maintenanceProgress bondProgress"><i><span style="width:${pct}%"></span></i><b>%${pct}</b></div><div class="maintenanceInfoGrid"><article><b>🎮 Durum</b><span>Güncelleme devam ediyor.</span></article><article><b>📝 Güncelleme Notları</b><span>Yeni özellikler hazırlanıyor.</span></article><article><b>⏰ Tahmini Açılış</b><span>${esc(m.eta || 'Yakında güncellenecek.')}</span></article></div><div class="maintenancePublicActions"><button class="btn ghost" type="button" data-maintenance-retry>🔄 Tekrar Kontrol Et</button></div><small class="maintenanceNote">Bakım tamamlanınca site otomatik normal ekrana döner.</small></section></main>`;
 }
 function bannedZiyaretçi(){
   const discord='https://discord.gg/QXc74Q6UUE';
@@ -1087,13 +1087,21 @@ function trTodayInfo(){
   const time=now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
   return {now, day, time, iso:now.toISOString().slice(0,10)};
 }
+function normalizeCalendarText(v){ return String(v||'').toLocaleLowerCase('tr').replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ]+/gi,' ').replace(/\s+/g,' ').trim(); }
 function eventGameCover(e){
-  const name=String(e?.gameTitle||e?.title||'').trim().toLowerCase();
   const games=loadGames();
-  const found=games.find(g=>String(g.title||'').trim().toLowerCase()===name)
-    || games.find(g=>name && String(g.title||'').toLowerCase().includes(name))
-    || games.find(g=>name && String(g.seriesName||'').toLowerCase().includes(name));
-  return (e && (e.cover || e.coverUrl || e.cover_url)) || found?.cover || found?.banner || '/assets/hayatimiz-kapak.png';
+  const explicit=e && (e.cover || e.coverUrl || e.cover_url || e.gameCover || e.game_cover);
+  if(explicit) return explicit;
+  const gid=String(e?.gameId||e?.game_id||'').trim();
+  const title=normalizeCalendarText(e?.gameTitle || e?.game_title || e?.title);
+  const cleanTitle=normalizeCalendarText(String(e?.title||'').replace(/yayın|canlı|video|bölüm|bolum|plan/gi,' '));
+  const found=(gid && games.find(g=>String(g.id||g.slug||'')===gid))
+    || games.find(g=>title && normalizeCalendarText(g.title)===title)
+    || games.find(g=>cleanTitle && normalizeCalendarText(g.title)===cleanTitle)
+    || games.find(g=>title && (normalizeCalendarText(g.title).includes(title) || title.includes(normalizeCalendarText(g.title))))
+    || games.find(g=>cleanTitle && (normalizeCalendarText(g.title).includes(cleanTitle) || cleanTitle.includes(normalizeCalendarText(g.title))))
+    || games.find(g=>title && normalizeCalendarText(g.seriesName).includes(title));
+  return found?.cover || found?.banner || found?.coverUrl || found?.cover_url || '/assets/hayatimiz-kapak.png';
 }
 function eventDisplayTitle(e){
   const game=String(e?.gameTitle||'').trim();
@@ -1126,7 +1134,7 @@ function publicCalendarPage(){
   rows.forEach(e=>{ const d=new Date(String(e.date)+'T12:00:00'); if(d.getFullYear()===year && d.getMonth()===month){ const key=d.getDate(); if(!byDay.has(key)) byDay.set(key,[]); byDay.get(key).push(e); } });
   const cells=[];
   for(let i=0;i<firstDay;i++) cells.push({empty:true});
-  for(let d=1;d<=daysInMonth;d++) cells.push({day:d,events:byDay.get(d)||[]});
+  for(let d=1;d<=daysInMonth;d++){ const dd=String(d).padStart(2,'0'); cells.push({day:d,date:`${year}-${String(month+1).padStart(2,'0')}-${dd}`,events:byDay.get(d)||[]}); }
   while(cells.length%7) cells.push({empty:true});
   const week=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
   const listHtml=rows.length?`<section class="publicCalendarList panel"><div class="sectionHead compact"><div><h2>📌 Yaklaşan Yayınlar</h2><p>Tüm kayıtlar takvimin altında oyun kapaklı kartlar olarak da görünür.</p></div></div><div class="miniList coverEventList">${rows.map(e=>`<article class="event coverEvent"><img src="${esc(eventGameCover(e))}" onerror="this.src='/assets/hayatimiz-kapak.png'" alt="${esc(eventDisplayTitle(e))}"><div><span class="pill green">${esc(e.date||'Tarih yok')} • ${esc(e.time||'20:00')}</span><h3>${esc(eventDisplayTitle(e))}</h3><p>${esc(e.type||'Yayın')} ${e.videoUrl?'• Video bağlantısı hazır':''}</p>${e.videoUrl?`<a class="miniBtn primary" href="${esc(e.videoUrl)}" target="_blank" rel="noreferrer">▶️ Video / Yayını Aç</a>`:''}</div></article>`).join('')}</div></section>`:'';

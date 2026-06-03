@@ -599,3 +599,47 @@
   0%{background-position:center center;filter:saturate(1.05) contrast(1)}
   100%{background-position:54% 48%;filter:saturate(1.18) contrast(1.06)}
 }
+
+
+/* v2.2.2 FIX: profesyonel bakım wallpaper tam ekran + hareketli odak */
+.gameWallpaperMaintenance,
+.v221Maintenance.gameWallpaperMaintenance{
+  position:relative!important;
+  min-height:100vh!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:24px!important;
+  overflow:hidden!important;
+  background:#020617!important;
+}
+.gameWallpaperMaintenance::before{
+  content:''!important;
+  position:absolute!important;
+  inset:-4%!important;
+  z-index:-3!important;
+  background-image:url('/assets/007-first-light-maintenance-wallpaper.png')!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  transform:scale(1.04)!important;
+  animation:maintenanceWallpaperCinematic 18s ease-in-out infinite alternate!important;
+  filter:saturate(1.14) contrast(1.06) brightness(.86)!important;
+}
+.gameWallpaperMaintenance::after{
+  content:''!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:-2!important;
+  background:
+    linear-gradient(90deg,rgba(2,6,23,.76) 0%,rgba(2,6,23,.34) 46%,rgba(2,6,23,.68) 100%),
+    radial-gradient(circle at 78% 15%,rgba(250,204,21,.22),transparent 22%),
+    radial-gradient(circle at 18% 88%,rgba(14,165,233,.18),transparent 34%)!important;
+  pointer-events:none!important;
+  font-size:0!important;
+}
+.gameWallpaperMaintenance .bondSky{z-index:-1!important;opacity:.45!important}.gameWallpaperMaintenance .bondScan{opacity:.10!important}.gameWallpaperMaintenance .maintenanceCard{max-width:860px!important;margin:0 auto!important;background:linear-gradient(135deg,rgba(2,6,23,.76),rgba(15,23,42,.62))!important;border:1px solid rgba(255,255,255,.18)!important;box-shadow:0 36px 120px rgba(0,0,0,.55)!important;backdrop-filter:blur(14px)!important}.gameWallpaperMaintenance .maintenanceCard h1{font-size:clamp(44px,7vw,82px)!important;line-height:.92!important}.gameWallpaperMaintenance .maintenanceCard p{max-width:720px!important;color:#e5e7eb!important}.gameWallpaperMaintenance .maintenanceInfoGrid article{background:rgba(2,6,23,.44)!important}.maintenancePublicActions + .maintenanceNote{color:#cbd5e1!important;background:rgba(2,6,23,.38)!important}
+@keyframes maintenanceWallpaperCinematic{0%{transform:scale(1.04) translate3d(-1.2%,0,0);background-position:48% 50%}100%{transform:scale(1.10) translate3d(1.2%,-1%,0);background-position:54% 48%}}
+@media(max-width:760px){.gameWallpaperMaintenance .maintenanceCard{padding:22px!important}.gameWallpaperMaintenance .maintenanceCard h1{font-size:42px!important}.gameWallpaperMaintenance::before{background-position:58% center!important}}
+
+/* v2.2.2 FIX: yayın takvimi oyun kapağı otomatik çekme görünümü */
+.publicTinyEvent.withCover img,.calendarTinyEvent.withCover img,.coverEvent>img,.coverDay>img{background:#0f172a url('/assets/hayatimiz-kapak.png') center/cover no-repeat!important}.publicMonthCell.todayCell{outline:2px solid rgba(34,197,94,.9)!important}.calendarBoardPanel .adminCalendarCell.hasEvent,.publicMonthCell.hasEvent{background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(30,41,59,.58))!important}
