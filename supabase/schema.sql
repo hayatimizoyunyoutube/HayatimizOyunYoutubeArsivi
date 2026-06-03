@@ -1354,92 +1354,94 @@ create table if not exists public.site_reset_audit (
   created_at timestamptz not null default now()
 );
 
--- Kullanıcı/yetki sistemini baştan kurmak için sadece ilgili tablolar boşaltılır.
-do $$
-begin
-  if to_regclass('public.site_user_role_audit') is not null then
-    delete from public.site_user_role_audit;
-  end if;
+-- =========================================================
+-- Eski v2.1.8 kullanıcı/yetki temiz sıfırlama bloğu kaldırıldı.
+-- ÖNEMLİ: Bundan sonra schema.sql kullanıcıları, yetkileri, oyunları, bakım modunu veya takvimi silmez.
+-- Her yeni sürüm/fix sadece güvenli ALTER TABLE / INSERT ON CONFLICT / UPDATE kullanır.
+-- =========================================================
 
-  if to_regclass('public.site_user_watch_history') is not null then
-    delete from public.site_user_watch_history;
-  end if;
+-- =========================================================
+-- v2.2.0 - Bakım ekranı, Supabase kalıcılık ve ban güvenliği
+-- Güvenli ekleme: mevcut verileri silmez/sıfırlamaz.
+-- =========================================================
+alter table public.site_users add column if not exists banned_at timestamptz;
+alter table public.site_users add column if not exists ban_reason text;
+alter table public.site_users add column if not exists last_login_at timestamptz;
+alter table public.site_users add column if not exists is_active boolean not null default true;
 
-  if to_regclass('public.site_authority_assignments') is not null then
-    delete from public.site_authority_assignments;
-  end if;
+alter table public.site_runtime_config add column if not exists value jsonb not null default '{}'::jsonb;
+alter table public.site_runtime_config add column if not exists updated_at timestamptz not null default now();
 
-  if to_regclass('public.site_admin_profiles') is not null then
-    delete from public.site_admin_profiles;
-  end if;
+insert into public.site_runtime_config(key, value)
+values (
+  'schema_version',
+  jsonb_build_object('version','v2.2.0','note','Bakım ekranı, Supabase kalıcılık ve ban güvenliği','updated_at',now())
+)
+on conflict (key) do update
+set value = excluded.value,
+    updated_at = now()
+where public.site_runtime_config.key = 'schema_version';
 
-  if to_regclass('public.site_users') is not null then
-    delete from public.site_users;
-  end if;
+-- ÖNEMLİ: maintenance_mode burada overwrite edilmez.
+-- Bakım açık/kapalı değeri sadece yönetim panelinden kaydedilir.
 
-  insert into public.site_reset_audit(reset_type, affected_tables, note)
-  values (
-    'users-and-authorities-clean-reset',
-    array['site_users','site_admin_profiles','site_authority_assignments','site_user_role_audit','site_user_watch_history'],
-    'v2.1.8 FIX: Kullanıcı, yetkili, rol audit ve izleme geçmişi kayıtları temizlendi. Site verileri, oyunlar, seriler, takvim, bakım modu ve güncelleme notları korunur.'
-  );
-end $$;
-
--- Rol sözlüğü ve yetki fonksiyonu korunur; yeniden yetki verebilmek için altyapı hazır kalır.
-insert into public.site_runtime_config(key,value) values
-('schema_version', jsonb_build_object('version','v2.1.8 FIX','note','Kullanıcı/yetki tabloları temiz sıfırlama fixi','updated_at',now(),'schema_mode','safe-user-authority-reset','drop_tables',false,'schema_required',true)),
-('user_authority_reset_status', jsonb_build_object('version','v2.1.8 FIX','status','Başarılı','message','Kullanıcı ve yetkili tabloları temizlendi. Yetkiler baştan verilebilir.','cleared_tables',jsonb_build_array('site_users','site_admin_profiles','site_authority_assignments','site_user_role_audit','site_user_watch_history'),'updated_at',now()))
-on conflict (key) do update set value = excluded.value, updated_at = now();
+-- =========================================================
+-- v2.2.0 FIX - Sürüm / Vercel / Results Etiketi Düzeltmesi
+-- GÜVENLİ: Veri silmez, bakım ayarını overwrite etmez.
+-- =========================================================
+insert into public.site_runtime_config(key, value)
+values
+(
+  'site_version',
+  jsonb_build_object(
+    'version','v2.2.0',
+    'status','Tamamlandı',
+    'title','Bakım, Supabase Kalıcılık ve Ban Güvenliği',
+    'schema_mode','safe-no-reset',
+    'drop_tables',false,
+    'schema_required',true,
+    'vercel_label','v2.2.0-bakim-supabase-ban-guvenligi',
+    'updated_at',now()
+  )
+),
+(
+  'schema_version',
+  jsonb_build_object(
+    'version','v2.2.0',
+    'note','Sürüm etiketi, Vercel/GitHub etiketi, Results çıktısı ve Supabase runtime kayıtları v2.2.0 olarak eşitlendi.',
+    'schema_mode','safe-no-reset',
+    'drop_tables',false,
+    'schema_required',true,
+    'updated_at',now()
+  )
+)
+on conflict (key) do update
+set value = excluded.value,
+    updated_at = now();
 
 insert into public.site_update_notes(version,title,summary,status,pinned,planned,sort_order)
-select 'v2.1.8 FIX','Kullanıcı ve Yetki Tabloları Temiz Sıfırlama','Yeni sürüm yapılmadan schema güncellendi. Kullanıcılar, yetkililer, rol audit kayıtları ve izleme geçmişi temizlenir; oyunlar, seriler, takvim, bakım modu ve güncelleme notları korunur. Yetkiler Supabase veya yönetim panelinden baştan verilebilir.','published',true,false,0
-where not exists (select 1 from public.site_update_notes where version='v2.1.8 FIX' and title='Kullanıcı ve Yetki Tabloları Temiz Sıfırlama');
-
-insert into public.site_status_logs(status,scope,message,details) values
-('ok','fix','v2.1.8 FIX çalıştırıldı. Kullanıcı ve yetki tabloları temizlendi; versiyon/status kaydı güncellendi.', jsonb_build_object('version','v2.1.8 FIX','schema_required',true,'drop_tables',false,'cleared_tables',jsonb_build_array('site_users','site_admin_profiles','site_authority_assignments','site_user_role_audit','site_user_watch_history'),'kept_data',jsonb_build_array('games','game_series','site_calendar_events','site_update_notes','site_runtime_config')));
-
--- Temizlik sonrası kontrol için:
--- select count(*) from public.site_users;
--- select count(*) from public.site_authority_assignments;
--- select * from public.site_runtime_config where key='user_authority_reset_status';
-
--- =========================================================
--- v2.1.8 FIX - SQL Editor Results Çıktısı
--- Amaç: Supabase Results alanında "Success. No rows returned" yerine
--- ne yapıldığını açıkça gösteren kontrol satırı döndürmek.
--- =========================================================
 select
-  '✅ Başarılı'::text as "Durum",
-  'v2.1.8 FIX'::text as "Sürüm",
-  'Kullanıcı ve Yetki Tabloları Temiz Sıfırlama'::text as "İşlem",
-  'site_users, site_admin_profiles, site_authority_assignments, site_user_role_audit, site_user_watch_history temizlendi.'::text as "Temizlenen Tablolar",
-  'Oyunlar, seriler, yayın takvimi, bakım modu, güncelleme notları ve site ayarları korundu.'::text as "Korunan Veriler",
-  'Yönetim Paneli > Kullanıcılar ve Yetkiler bölümünden veya public.set_site_user_role(...) fonksiyonuyla yetkileri baştan verebilirsin.'::text as "Sonraki Adım",
-  now() as "Çalışma Zamanı";
+  'v2.2.0',
+  '🛠️ Bakım, Supabase Kalıcılık ve Ban Güvenliği',
+  'Bakım modu animasyonlu ziyaretçi ekranına taşındı. Oyun, kullanıcı, yetki, takvim ve bakım kayıtlarında Supabase kalıcılığı güçlendirildi. Banlı kullanıcıların siteye erişimi engellendi. Sürüm/Vercel/Results etiketleri v2.2.0 olarak eşitlendi.',
+  'published',true,false,0
+where not exists (
+  select 1 from public.site_update_notes where version='v2.2.0' and title='🛠️ Bakım, Supabase Kalıcılık ve Ban Güvenliği'
+);
 
-
--- =========================================================
--- v2.1.8 FIX - Ana Sayfa Boş Arşiv ve Vercel Etiket
--- GÜNCELLEME TİPİ: GÜVENLİ / VERİ SİLMEZ
--- Amaç: Status ve Results tarafında bu FIX işlemini açık göstermek.
--- =========================================================
-insert into public.site_runtime_config(key,value) values
-('site_version', jsonb_build_object('version','v2.1.8 FIX','status','Tamamlandı','title','Ana Sayfa Boş Arşiv ve Vercel Etiket Fix','schema_mode','safe-no-reset','drop_tables',false,'updated_at',now())),
-('schema_version', jsonb_build_object('version','v2.1.8 FIX','note','Ana sayfada oyun yokken örnek oyun gösterimi kapatıldı; Vercel/BAT markerları güncellendi.','updated_at',now(),'schema_mode','safe-no-reset','drop_tables',false,'schema_required',false))
-on conflict (key) do update set value = excluded.value, updated_at = now();
-
-insert into public.site_update_notes(version,title,summary,status,pinned,planned,sort_order)
-select 'v2.1.8 FIX','Ana Sayfa Boş Arşiv ve Vercel Etiket Fix','Yeni sürüm yapılmadan oyun ekli değilken ana sayfada örnek/yanlış oyun görünmesi engellendi. Supabase oyun tablosu boşsa site boş arşiv durumunu korur. Vercel deploy/BAT/marker metinleri v2.1.8 FIX olarak güncellendi.','published',true,false,0
-where not exists (select 1 from public.site_update_notes where version='v2.1.8 FIX' and title='Ana Sayfa Boş Arşiv ve Vercel Etiket Fix');
-
-insert into public.site_status_logs(status,scope,message,details) values
-('ok','fix','v2.1.8 FIX ana sayfa boş arşiv ve Vercel etiket düzeltmesi hazır.', jsonb_build_object('version','v2.1.8 FIX','schema_required',false,'drop_tables',false,'home_empty_archive_fixed',true,'vercel_marker_updated',true));
+insert into public.site_status_logs(status,scope,message,details)
+values (
+  'ok',
+  'release',
+  'v2.2.0 sürüm etiketi ve schema Results çıktısı güncellendi. Veri silinmedi.',
+  jsonb_build_object('version','v2.2.0','schema_required',true,'drop_tables',false,'vercel_label','v2.2.0-bakim-supabase-ban-guvenligi','maintenance_overwrite',false)
+);
 
 select
   '✅ Başarılı'::text as "Durum",
-  'v2.1.8 FIX'::text as "Sürüm",
-  'Ana Sayfa Boş Arşiv ve Vercel Etiket Fix'::text as "İşlem",
-  'Oyun yokken örnek/yanlış oyun gösterimi kapatıldı.'::text as "Ana Sayfa",
-  'Vercel installCommand, root-check ve BAT commit etiketi v2.1.8 FIX olarak güncellendi.'::text as "Vercel Etiketi",
-  'Veri silinmedi. Oyunlar, kullanıcılar, yetkiler, takvim ve bakım modu korunur.'::text as "Veri Durumu",
+  'v2.2.0'::text as "Sürüm",
+  'Bakım, Supabase Kalıcılık ve Ban Güvenliği'::text as "İşlem",
+  'Vercel/GitHub etiketi v2.2.0-bakim-supabase-ban-guvenligi olarak güncel.'::text as "Vercel Etiketi",
+  'Oyunlar, kullanıcılar, yetkiler, takvim, bakım modu ve güncelleme notları silinmedi/sıfırlanmadı.'::text as "Veri Durumu",
+  'Bundan sonraki sürüm/fix paketlerinde siteConfig, schema Results, update-notes, health/status ve commit etiketi aynı sürümü gösterecek.'::text as "Sürüm Kuralı",
   now() as "Çalışma Zamanı";

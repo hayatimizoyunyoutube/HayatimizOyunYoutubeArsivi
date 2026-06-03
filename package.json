@@ -1,8 +1,8 @@
 {
-  "name": "hayatimiz-oyun-v219-profesyonel-yonetim-takvim",
+  "name": "hayatimiz-oyun-v220-bakim-supabase-ban-guvenligi",
   "private": true,
   "type": "module",
-  "version": "2.1.9",
+  "version": "2.2.0",
   "engines": {
     "node": ">=20"
   }

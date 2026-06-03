@@ -1,5 +1,12 @@
 [
   {
+    "id": "v220-bakim-supabase-ban-guvenligi",
+    "version": "v2.2.0",
+    "title": "🛠️ Bakım, Supabase Kalıcılık ve Ban Güvenliği",
+    "summary": "Bakım modu animasyonlu ziyaretçi ekranına taşındı. Oyun, kullanıcı, yetki, takvim ve bakım kayıtlarında Supabase kalıcılığı güçlendirildi. Banlı kullanıcıların siteye erişimi engellendi. Sürüm/Vercel/Results etiketleri v2.2.0 olarak eşitlendi.",
+    "status": "Tamamlandı"
+  },
+  {
     "id": "v219-profesyonel-yonetim-merkezi-takvim",
     "version": "v2.1.9",
     "title": "🛡️ Profesyonel Yönetim Merkezi ve Takvim Sistemi",

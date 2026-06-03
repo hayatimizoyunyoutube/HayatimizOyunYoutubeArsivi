@@ -1,3 +1,9 @@
+# v2.2.0 FIX - Sürüm / Vercel / Results Eşitleme
+
+- Supabase Results çıktısı v2.2.0 olarak güncellendi.
+- Vercel/GitHub commit etiketi v2.2.0 olarak düzeltildi.
+- Eski v2.1.8 temiz sıfırlama schema bloğu kaldırıldı; veriler korunur.
+
 # Hayatımız Oyun v2.1.9 - Profesyonel Yönetim Merkezi ve Takvim Sistemi
 
 Bu paket **v2.1.9 - Profesyonel Yönetim Merkezi ve Takvim Sistemi
@@ -32,3 +38,7 @@ Bu pakette `supabase/schema.sql` sonunda kontrol satırı döndürülür. Supaba
 ## v2.1.9
 
 Profesyonel Yönetim Merkezi ve Takvim Sistemi yeni sürüm paketi eklendi.
+
+## v2.2.0
+
+Bakım ekranı, Supabase kalıcılık ve ban güvenliği eklendi. Bu sürümde schema.sql gereklidir ama güvenli yazılmıştır; mevcut verileri silmez.
