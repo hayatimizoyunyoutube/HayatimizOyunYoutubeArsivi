@@ -1,10 +1,10 @@
 {
-  "name": "hayatimiz-oyun-v227-3-0-acilis-plani-bakim-ilerleme-sistemi",
+  "name": "hayatimiz-oyun-v227-public-acilis-cilasi",
   "private": true,
   "type": "module",
   "version": "2.2.7",
   "engines": {
     "node": ">=20"
   },
-  "description": "Hayatımız Oyun v2.2.8 3.0 Açılış Planı ve Bakım İlerleme Sistemi"
+  "description": "Hayatımız Oyun v2.2.9 Public Açılış Cilası"
 }

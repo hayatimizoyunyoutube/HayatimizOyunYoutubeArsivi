@@ -1,4 +1,4 @@
-# 🛠️ FIX v2.2.8 - Veri Sağlığı loadJson Hatası
+# 🛠️ FIX v2.2.9 - Veri Sağlığı loadJson Hatası
 
 ## Yapılanlar
 

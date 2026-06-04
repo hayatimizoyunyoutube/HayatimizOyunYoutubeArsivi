@@ -1,14 +1,12 @@
-# Gelecek Güncellemeler — 3.0 Açılış Yolu
-
-## v2.2.9 — Public Açılış Cilası
-- 🏠 Ana sayfa ve arşiv görünümü açılış için cilalanacak.
-- 🎮 Seri/koleksiyon/takvim alanları son kullanıcıya göre sadeleştirilecek.
+# Gelecek Güncellemeler
 
 ## v2.3.0 — Büyük Stabilite Kontrolü
-- 🧪 Public sayfalar, bakım modu, ban sistemi ve Supabase kayıtları test edilecek.
+- Public sayfalar test edilecek.
+- Ban/bakım/yetki akışı kontrol edilecek.
+- Supabase veri kaybı koruması test edilecek.
 
 ## v2.4.0 — Admin + Supabase Son Kontrol
-- 👑 Kurucu/yetki, yedekleme ve veri sağlığı son kez kontrol edilecek.
+- Yönetim paneli, veri sağlığı, oyun ekleme ve takvim son kez kontrol edilecek.
 
-## v3.0.0 — Ana Açılış
-- 🚀 Site bakım modundan çıkarılıp ana açılış sürümüne alınacak.
+## v4.0.0 — Ana Açılış
+- Bakım modu kapatılıp site yayına alınacak.

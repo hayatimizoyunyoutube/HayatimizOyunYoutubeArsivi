@@ -1,4 +1,4 @@
-# v2.2.8 FIX — Seri Bölüm Listesi Düzeltme
+# v2.2.9 FIX — Seri Bölüm Listesi Düzeltme
 
 ## Yapılanlar
 - 🎬 Seriler içinde bölüm listesi tekilleştirildi.

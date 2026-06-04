@@ -76,31 +76,6 @@ function cleanUser(user){
     source:user.source || 'Supabase'
   };
 }
-
-function normalizeEpisodeServer(ep={}, i=0){
-  const n = Number(ep.number || ep.episodeNumber || ep.episode_number || ep.position || ep.index || i+1) || i+1;
-  const videoId = String(ep.videoId || ep.youtubeVideoId || ep.youtube_video_id || ep.resourceId?.videoId || ep.snippet?.resourceId?.videoId || '').trim();
-  const titleRaw = ep.title || ep.episodeTitle || ep.episode_title || ep.name || ep.snippet?.title || `${n}. Bölüm`;
-  const title = /^page[-_ ]?\d+\.(png|jpg|jpeg|webp)$/i.test(String(titleRaw||'')) ? `${n}. Bölüm` : String(titleRaw || `${n}. Bölüm`).trim();
-  const thumbs = ep.thumbnails || ep.thumbnail?.thumbnails || ep.snippet?.thumbnails || ep.thumbnailOverlays?.[0]?.thumbnail?.thumbnails;
-  let thumb = ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || ep.cover || ep.coverUrl || ep.image || ep.imageUrl || '';
-  if(!thumb && Array.isArray(thumbs) && thumbs.length) thumb = thumbs[thumbs.length-1]?.url || thumbs[0]?.url || '';
-  if(!thumb && thumbs && typeof thumbs === 'object'){
-    for(const k of ['maxres','standard','high','medium','default']){ if(thumbs[k]?.url){ thumb = thumbs[k].url; break; } }
-  }
-  if(!thumb && videoId) thumb = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-  return { id:ep.id || (videoId ? `yt-${videoId}` : `ep-${n}`), number:n, title, description:ep.description || ep.snippet?.description || '', thumbnail:thumb || '/assets/hayatimiz-kapak.png', videoId, videoUrl:ep.videoUrl || ep.video_url || ep.url || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : ''), watched:ep.watched === true || ep.is_watched === true };
-}
-function normalizeEpisodesServer(list){
-  const seen = new Set();
-  return (Array.isArray(list) ? list : []).map(normalizeEpisodeServer).filter((ep,idx)=>{
-    const key = ep.videoId ? `video:${ep.videoId}` : `num:${ep.number || idx+1}:${ep.title}`;
-    if(seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  }).sort((a,b)=>Number(a.number||0)-Number(b.number||0)).map((ep,idx)=>({...ep, number:Number(ep.number||idx+1)}));
-}
-
 function cleanGame(game){
   if(!game) return null;
   const tags = Array.isArray(game.tags) ? game.tags.join(', ') : (game.tags || '');
@@ -129,7 +104,7 @@ function cleanGame(game){
     youtube_playlist_url:game.youtube_playlist_url || game.playlist_url || '',
     youtube_playlist_id:game.youtube_playlist_id || '',
     video_url:game.video_url || '',
-    episodes:normalizeEpisodesServer(game.episodes),
+    episodes:Array.isArray(game.episodes) ? game.episodes : [],
     watched_episode_count:Number(game.watched_episode_count ?? 0),
     series_order:Number(game.series_order ?? game.sort_order ?? 0),
     sort_order:Number(game.sort_order ?? game.series_order ?? 0),
@@ -222,7 +197,7 @@ function gamePayload(game={}, existing={}){
     cover_source:String(game.coverSource || game.cover_source || existing.cover_source || ''),
     playlist_url:playlistUrl, youtube_playlist_url:playlistUrl, youtube_playlist_id:String(game.youtubePlaylistId || game.youtube_playlist_id || existing.youtube_playlist_id || ''),
     video_url:String(game.videoUrl || game.video_url || existing.video_url || ''),
-    episodes:normalizeEpisodesServer(Array.isArray(game.episodes) && game.episodes.length ? game.episodes : existing.episodes),
+    episodes:Array.isArray(game.episodes) ? game.episodes : (Array.isArray(existing.episodes) ? existing.episodes : []),
     series_order:Number(game.seriesOrder ?? game.series_order ?? game.sortOrder ?? game.sort_order ?? existing.series_order ?? 0),
     sort_order:Number(game.sortOrder ?? game.sort_order ?? game.seriesOrder ?? game.series_order ?? existing.sort_order ?? 0),
     status_bucket:String(game.statusBucket || game.status_bucket || existing.status_bucket || ''),
@@ -629,7 +604,7 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v2.2.8', status:'Veri sağlığı ve otomatik yedekleme aktif' });
+    if(action === 'health') return json(res, 200, { ok:true, version:'v2.2.9', status:'Veri sağlığı ve otomatik yedekleme aktif' });
 
     if(action === 'game-meta-lite'){
       const title = String(body.title || '').trim();
@@ -654,7 +629,7 @@ export default async function handler(req, res){
         return json(res, 200, { ok:true, steam:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
       const steamDate = pickDateTR(steam.releaseDate, steam.released);
-      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v2.2.8' });
+      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v2.2.9' });
     }
 
     if(action === 'register'){
@@ -860,7 +835,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.2.8', note:'v2.2.8 sürüm senkronizasyonu ve mobil deploy güvenliği', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.2.9', note:'v2.2.9 sürüm senkronizasyonu ve mobil deploy güvenliği', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -877,7 +852,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.2.8', note:'v2.2.8 sürüm senkronizasyonu ve mobil deploy güvenliği', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.2.9', note:'v2.2.9 sürüm senkronizasyonu ve mobil deploy güvenliği', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -1116,14 +1091,14 @@ export default async function handler(req, res){
         schemaVersion: schemaRow?.value?.version || 'Bilinmiyor',
         checkedAt: new Date().toISOString()
       };
-      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v2.2.8 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
+      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v2.2.9 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
       return json(res, 200, { ok:true, health, message:'Supabase veri sağlığı kontrol edildi.' });
     }
 
     if(action === 'data-backup-save'){
       await requireStaff(body.adminToken);
       const payload = body.payload || {};
-      const row = { backup_type:String(body.backupType||'manual'), version:'v2.2.8', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
+      const row = { backup_type:String(body.backupType||'manual'), version:'v2.2.9', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
       const rows = await supabase('site_data_backups', { method:'POST', body: JSON.stringify([row]) }).catch(()=>[]);
       return json(res, 200, { ok:true, backup:Array.isArray(rows)?rows[0]:row, message:'Yedek kaydı oluşturuldu.' });
     }

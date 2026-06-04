@@ -1,4 +1,4 @@
-# ✅ v2.2.8 — 3.0 Açılış Planı ve Bakım İlerleme Sistemi
+# ✅ v2.2.9 — Public Açılış Cilası
 
 ## Yapılanlar
 
@@ -9,7 +9,7 @@
 - 🛡️ Arşiv sağlık kontrolleri genişletildi.
 - 🔎 Arama, etiket ve tür filtreleri korunarak güçlendirildi.
 - 💾 Mevcut oyunlar manuel silme olmadan korunmaya devam eder.
-- 🏷️ ZIP adı, Vercel etiketi, site sürümü, health/status, update notes ve schema Results v2.2.8 olarak eşitlendi.
+- 🏷️ ZIP adı, Vercel etiketi, site sürümü, health/status, update notes ve schema Results v2.2.9 olarak eşitlendi.
 
 ## Schema Durumu
 

@@ -1,27 +1,27 @@
 [
   {
-    "version": "v2.2.8",
-    "title": "🚀 3.0 Açılış Planı ve Bakım İlerleme Sistemi",
-    "summary": "Gelecek planlar 3.0 ana açılış hedefine göre düzenlendi. Bakım modunda ziyaretçilere otomatik ilerleyen açılış yüzdesi gösterilir.",
+    "version": "v2.2.9",
+    "title": "🚀 Public Açılış Cilası",
+    "summary": "Gelecek planlar 4.0 ana açılış hedefine göre düzenlendi. Bakım modunda ziyaretçilere otomatik ilerleyen açılış yüzdesi gösterilir.",
     "status": "Tamamlandı"
   },
   {
-    "id": "v227-3-0-acilis-plani-bakim-ilerleme-sistemi",
-    "version": "v2.2.8",
-    "title": "🏷️ 3.0 Açılış Planı ve Bakım İlerleme Sistemi",
-    "summary": "SiteConfig, Vercel etiketi, health/status, update notes, schema Results ve Termux yükleme akışı v2.2.8 olarak eşitlendi. Veri koruma sistemi korunur.",
+    "id": "v227-public-acilis-cilasi",
+    "version": "v2.2.9",
+    "title": "🏷️ Public Açılış Cilası",
+    "summary": "SiteConfig, Vercel etiketi, health/status, update notes, schema Results ve Termux yükleme akışı v2.2.9 olarak eşitlendi. Veri koruma sistemi korunur.",
     "status": "Tamamlandı"
   },
   {
-    "id": "v225-3-0-acilis-plani-bakim-ilerleme-sistemi",
-    "version": "v2.2.8",
-    "title": "💾 3.0 Açılış Planı ve Bakım İlerleme Sistemi",
+    "id": "v225-public-acilis-cilasi",
+    "version": "v2.2.9",
+    "title": "💾 Public Açılış Cilası",
     "summary": "Supabase veri sağlığı merkezi eklendi; oyun, kullanıcı, takvim, not ve bakım kayıtları tek ekranda kontrol edilir. Eksik kapak/tarih uyarıları, takvim kapak kontrolü ve manuel JSON yedek alma aracı hazırlandı.",
     "status": "Tamamlandı"
   },
   {
     "id": "plan-v226-mobil-menu-responsive-cila",
-    "version": "v2.2.8",
+    "version": "v2.2.9",
     "title": "📱 Mobil Menü ve Responsive Cila",
     "summary": "Üst menü, yönetim menüsü, büyük kartlar ve public/admin sayfaları mobilde daha kompakt hale getirilecek.",
     "status": "Planlandı"
@@ -266,14 +266,14 @@
   },
   {
     "id": "plan-v226",
-    "version": "v2.2.8",
+    "version": "v2.2.9",
     "title": "🌐 SEO, Sitemap ve Paylaşım Görselleri",
     "summary": "Public yayın öncesi arama motoru ve paylaşım görünümünü güçlendirmek. Sayfa başlıkları ve açıklamaları Türkçe ve temiz hale getirilecek.",
     "status": "Planlandı"
   },
   {
     "id": "plan-v227",
-    "version": "v2.2.8",
+    "version": "v2.2.9",
     "title": "✅ Yayın Öncesi Genel Stabilite",
     "summary": "Büyük yayın öncesi tüm sayfaları, yönetim akışını ve public kullanıcı deneyimini kontrol etmek. Ana sayfa, oyun arşivi, seriler, koleksiyonlar, izleme, rehberler ve status sayfası test edilecek.",
     "status": "Planlandı"

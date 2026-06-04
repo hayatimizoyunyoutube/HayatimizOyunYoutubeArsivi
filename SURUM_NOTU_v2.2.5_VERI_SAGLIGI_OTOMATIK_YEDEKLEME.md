@@ -1,4 +1,4 @@
-# v2.2.8 — 3.0 Açılış Planı ve Bakım İlerleme Sistemi
+# v2.2.9 — Public Açılış Cilası
 
 ## Yapılanlar
 
@@ -8,7 +8,7 @@
 - ☁️ Manuel JSON yedek alma aracı eklendi.
 - 🛡️ Mevcut oyunlar sen silmeden silinmez koruması korundu.
 - 📝 Yönetici aktivite ve yedekleme tabloları için güvenli schema eklendi.
-- 🏷️ Sürüm etiketleri v2.2.8 olarak eşitlendi.
+- 🏷️ Sürüm etiketleri v2.2.9 olarak eşitlendi.
 
 ## Schema Durumu
 

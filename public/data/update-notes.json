@@ -1,21 +1,21 @@
 [
   {
-    "version": "v2.2.8",
-    "title": "🚀 3.0 Açılış Planı ve Bakım İlerleme Sistemi",
-    "summary": "Gelecek planlar 3.0 ana açılış hedefine göre düzenlendi. Bakım modunda ziyaretçilere otomatik ilerleyen açılış yüzdesi gösterilir.",
+    "version": "v2.2.9",
+    "title": "🚀 Public Açılış Cilası",
+    "summary": "Gelecek planlar 4.0 ana açılış hedefine göre düzenlendi. Bakım modunda ziyaretçilere otomatik ilerleyen açılış yüzdesi gösterilir.",
     "status": "Tamamlandı"
   },
   {
-    "id": "v227-3-0-acilis-plani-bakim-ilerleme-sistemi",
-    "version": "v2.2.8",
-    "title": "🏷️ 3.0 Açılış Planı ve Bakım İlerleme Sistemi",
-    "summary": "SiteConfig, Vercel etiketi, health/status, update notes, schema Results ve Termux yükleme akışı v2.2.8 olarak eşitlendi. Veri koruma sistemi korunur.",
+    "id": "v227-public-acilis-cilasi",
+    "version": "v2.2.9",
+    "title": "🏷️ Public Açılış Cilası",
+    "summary": "SiteConfig, Vercel etiketi, health/status, update notes, schema Results ve Termux yükleme akışı v2.2.9 olarak eşitlendi. Veri koruma sistemi korunur.",
     "status": "Tamamlandı"
   },
   {
-    "version": "v2.2.8",
-    "title": "📚 3.0 Açılış Planı ve Bakım İlerleme Sistemi",
-    "summary": "Seri gruplama, seri ilerleme, eksik kapak önerileri ve arşiv sağlık kontrolleri için altyapı güçlendirildi. Tüm sürüm etiketleri v2.2.8 olarak eşitlendi.",
+    "version": "v2.2.9",
+    "title": "📚 Public Açılış Cilası",
+    "summary": "Seri gruplama, seri ilerleme, eksik kapak önerileri ve arşiv sağlık kontrolleri için altyapı güçlendirildi. Tüm sürüm etiketleri v2.2.9 olarak eşitlendi.",
     "status": "Tamamlandı"
   },
   {
@@ -258,7 +258,7 @@
   },
   {
     "id": "plan-v227",
-    "version": "v2.2.8",
+    "version": "v2.2.9",
     "title": "✅ Yayın Öncesi Genel Stabilite",
     "summary": "Büyük yayın öncesi tüm sayfaları, yönetim akışını ve public kullanıcı deneyimini kontrol etmek. Ana sayfa, oyun arşivi, seriler, koleksiyonlar, izleme, rehberler ve status sayfası test edilecek.",
     "status": "Planlandı"
