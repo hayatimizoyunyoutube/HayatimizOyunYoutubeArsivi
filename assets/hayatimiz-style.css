@@ -736,3 +736,97 @@
 .fixedEpisodeSidebar .watchEpisode span{gap:4px}
 .fixedEpisodeSidebar .watchEpisode .pill.green{width:max-content;font-size:11px;padding:4px 9px;margin-bottom:2px}
 .fixedEpisodeSidebar p.compact{font-size:12px;margin:0 0 10px;color:#9fb0c9}
+
+/* v2.2.9 FIX - Arşiv ortalama + seri kompakt kart düzeltmesi */
+.alphaGroup .archiveGrid,
+.grid.archiveGrid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fit,minmax(240px,280px)) !important;
+  justify-content:start !important;
+  align-items:start !important;
+  gap:16px !important;
+}
+.alphaGroup .archiveGrid > *,
+.grid.archiveGrid > *{
+  width:100% !important;
+  max-width:280px !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+.alphaGroup .archiveGrid img,
+.grid.archiveGrid img{
+  width:100% !important;
+  height:150px !important;
+  object-fit:cover !important;
+  border-radius:18px !important;
+}
+.alphaGroup .sectionHead{
+  max-width:100% !important;
+}
+.proSeriesGrid,
+.seriesGrid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr)) !important;
+  gap:14px !important;
+}
+.proSeriesPanel,
+.seriesPanel{
+  max-width:100% !important;
+  min-width:0 !important;
+  padding:14px !important;
+  border-radius:22px !important;
+}
+.seriesCoverLine{
+  display:grid !important;
+  grid-template-columns:86px 1fr !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+.seriesCoverLine img{
+  width:86px !important;
+  height:58px !important;
+  object-fit:cover !important;
+  border-radius:14px !important;
+}
+.seriesCoverLine h3{
+  font-size:18px !important;
+  line-height:1.1 !important;
+  margin:6px 0 4px !important;
+}
+.seriesCoverLine p,
+.seriesGameLine small{
+  font-size:12px !important;
+}
+.seriesGameList{
+  display:grid !important;
+  gap:8px !important;
+  margin-top:10px !important;
+}
+.seriesGameLine{
+  display:grid !important;
+  grid-template-columns:30px 1fr auto !important;
+  gap:8px !important;
+  align-items:center !important;
+  padding:9px 10px !important;
+  border-radius:14px !important;
+}
+.seriesActions{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+  margin-top:10px !important;
+}
+.seriesActions .miniBtn{
+  padding:8px 10px !important;
+  font-size:12px !important;
+}
+@media(max-width:760px){
+  .alphaGroup .archiveGrid,.grid.archiveGrid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;justify-content:stretch !important;gap:10px !important;}
+  .alphaGroup .archiveGrid > *,.grid.archiveGrid > *{max-width:none !important;}
+  .alphaGroup .archiveGrid img,.grid.archiveGrid img{height:105px !important;}
+  .proSeriesGrid,.seriesGrid{grid-template-columns:1fr !important;}
+  .seriesCoverLine{grid-template-columns:74px 1fr !important;}
+  .seriesCoverLine img{width:74px !important;height:52px !important;}
+  .seriesGameLine{grid-template-columns:26px 1fr !important;}
+  .seriesGameLine small{grid-column:2;}
+}
