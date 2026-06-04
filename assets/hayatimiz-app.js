@@ -997,29 +997,45 @@ function extractYoutubePlaylistId(raw){
 }
 function episodeStoreKey(gameId){ return `${STORAGE.episodes}:${String(gameId||'global')}`; }
 function normalizeEpisode(ep, i){
-  const n=Number(ep.number || ep.episodeNumber || ep.episode_number || i+1);
+  const rawNumber=Number(ep.number || ep.episodeNumber || ep.episode_number || i+1);
+  const n=Number.isFinite(rawNumber) && rawNumber>0 ? rawNumber : i+1;
   const videoId=String(ep.videoId || ep.youtubeVideoId || ep.youtube_video_id || '').trim();
   const url=ep.videoUrl || ep.video_url || (videoId?`https://www.youtube.com/watch?v=${videoId}`:'');
-  return {id:ep.id || (videoId?`yt-${videoId}`:`ep-${n}`), number:n, title:ep.title || `${n}. Bölüm`, description:ep.description || '', thumbnail:ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || (videoId?`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`:'/assets/hayatimiz-kapak.png'), videoId, videoUrl:url, watched:ep.watched === true || ep.is_watched === true};
+  const thumb=ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || (videoId?`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`:'/assets/hayatimiz-kapak.png');
+  return {id:ep.id || (videoId?`yt-${videoId}`:`ep-${n}`), number:n, title:ep.title || `${n}. Bölüm`, description:ep.description || '', thumbnail:thumb, videoId, videoUrl:url, watched:ep.watched === true || ep.is_watched === true};
+}
+function dedupeEpisodes(episodes){
+  const seen=new Set();
+  return (Array.isArray(episodes)?episodes:[])
+    .map(normalizeEpisode)
+    .filter((ep,idx)=>{
+      const key=ep.videoId ? `video:${ep.videoId}` : `num:${ep.number}`;
+      if(seen.has(key)) return false;
+      seen.add(key);
+      if(!ep.number) ep.number=idx+1;
+      return true;
+    })
+    .sort((a,b)=>Number(a.number||0)-Number(b.number||0))
+    .map((ep,idx)=>({...ep, number:Number(ep.number||idx+1)}));
 }
 function loadEpisodes(gameId){
   const id=String(gameId||'');
   const direct=readJson(episodeStoreKey(id), null);
-  if(Array.isArray(direct) && direct.length) return direct.map(normalizeEpisode);
+  if(Array.isArray(direct) && direct.length) return dedupeEpisodes(direct);
   const game=loadGames().find(g=>String(g.id)===id);
-  if(game && Array.isArray(game.episodes) && game.episodes.length) return game.episodes.map(normalizeEpisode);
+  if(game && Array.isArray(game.episodes) && game.episodes.length) return dedupeEpisodes(game.episodes);
   // v2.1.9 FIX: Eski kayıt playlist çekmiş ama bölüm JSON'u oyuna yazılmamışsa
   // seri/izleme sayfası boş kalmasın; mevcut bölüm sayısı ve playlist URL'den güvenli liste oluştur.
   if(game && (game.youtubePlaylistUrl || game.youtubePlaylistId) && Number(game.episodeCount||0)>0){
     const generated=makeLocalEpisodes(game.title, game.youtubePlaylistUrl || `https://www.youtube.com/playlist?list=${game.youtubePlaylistId}`, Number(game.episodeCount||8));
     saveEpisodes(id, generated, {skipGamePatch:true});
-    return generated.map(normalizeEpisode);
+    return dedupeEpisodes(generated);
   }
   return [];
 }
 function saveEpisodes(gameId, episodes, options={}){
   const id=String(gameId||'');
-  const list=(Array.isArray(episodes)?episodes:[]).map(normalizeEpisode);
+  const list=dedupeEpisodes(episodes);
   writeJson(episodeStoreKey(id), list);
   localStorage.setItem('hayatimiz_episodes_last_saved_at', new Date().toISOString());
   if(id && !options.skipGamePatch){
@@ -1042,7 +1058,7 @@ async function fetchPlaylistEpisodes(playlistUrl, title){
   if(!playlistId) throw new Error('Geçerli playlist linki gerekli.');
   try{
     const data=await apiJson('playlist-items', {playlistUrl});
-    const episodes=Array.isArray(data.episodes) ? data.episodes.map(normalizeEpisode) : [];
+    const episodes=Array.isArray(data.episodes) ? dedupeEpisodes(data.episodes) : [];
     if(episodes.length) return {episodes, count:data.count || episodes.length, source:'YouTube API / güvenli tarama'};
   }catch(err){ console.warn('Oynatma listesi servisi yedek moda geçti:', err); }
   const fallback=makeLocalEpisodes(title, playlistUrl, 8);
@@ -1399,7 +1415,7 @@ function watchPage(){
   const next=currentIndex>=0 && currentIndex<episodes.length-1?episodes[currentIndex+1]:null;
   const embed=videoEmbedSrc(game,current); const settings=watchSettings(); const story=publicStoryForGame(game);
   const seriesTitle=activeSeries ? `${activeSeries} Serisi` : game.title;
-  return layout(`<section class="watchHero seriesWatchHero watchHeroV215"><div><span class="badge green">${activeSeries?'🎬 Tüm Seriyi İzle':'▶️ Site İçi İzleme'} • ${VERSION}</span><h1>${esc(seriesTitle)}</h1><p>${esc(activeSeries?`${activeSeries} içindeki oyunları sırayla izleyebilir, bölüm ilerlemesini takip edebilir ve listedeki oyunlar arasında geçiş yapabilirsin.`:story)}</p><div class="actions"><a class="btn secondary" href="/oyun-detay?id=${encodeURIComponent(game.id)}">📖 Oyun Detayı</a><a class="btn secondary" href="/seriler">🎬 Serilere Dön</a><a class="btn secondary" href="/oyun-arsivi">🎮 Arşive Dön</a>${isYönetim()?`<a class="btn secondary" href="/yonetim/oyun-duzenle?id=${encodeURIComponent(game.id)}">Oyunu Düzenle</a>`:''}</div></div><aside><b>${esc(settings.quality)} kalite tercihi</b><span>${activeSeriesRows.length} oyun • ${totals.episodes} bölüm • ${totals.watched} izlendi</span><small>Aktif oyun: ${esc(game.title)}. Kalite tercihi siteye kaydedilir; gerçek kalite YouTube oynatıcı dişlisinden seçilir.</small></aside></section>${watchStatusPanel(game, episodes, current)}${activeSeriesRows.length>1?`<section class="seriesWatchStrip">${activeSeriesRows.map((g,i)=>`<a class="seriesWatchGame ${String(g.id)===String(game.id)?'active':''}" href="/izle?series=${encodeURIComponent(activeSeries)}&id=${encodeURIComponent(g.id)}"><b>${i+1}</b><span>${esc(g.title)}</span><small>${Number(g.watchedEpisodeCount||0)}/${loadEpisodes(g.id).length || Number(g.episodeCount||0)} bölüm</small></a>`).join('')}</section>`:''}<section class="watchLayout watchLayoutV215"><article class="watchPlayer proWatchPlayer">${embed?`<iframe src="${esc(embed)}" title="${esc(game.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`:`<div class="empty playerEmpty"><b>Video bağlantısı yok</b><p>Bu oyun için YouTube video veya playlist bağlantısı bulunamadı. Yönetimden YouTube video/playlist URL eklenirse oynatıcı otomatik aktif olur.</p>${isYönetim()?`<a class="btn primary" href="/yonetim/oyun-duzenle?id=${encodeURIComponent(game.id)}">Bağlantı Ekle</a>`:''}</div>`}<div class="watchControls"><div class="qualityPanel"><b>Kalite Ayarları</b><div class="qualityButtons">${['Otomatik','1080p','720p','480p','360p'].map(q=>`<button class="miniBtn ${settings.quality===q?'primary':''}" data-quality="${q}">${q}</button>`).join('')}</div></div><div class="episodeNavButtons">${prev?`<a class="miniBtn" href="/izle?id=${encodeURIComponent(game.id)}&ep=${encodeURIComponent(prev.number)}">← Önceki</a>`:''}${current?`<button class="miniBtn primary" data-watch-mark="${esc(game.id)}" data-ep="${esc(current.number)}">Bu Bölüme Kadar İzledim</button>`:''}${next?`<a class="miniBtn" href="/izle?id=${encodeURIComponent(game.id)}&ep=${encodeURIComponent(next.number)}">Sonraki →</a>`:''}</div></div></article><aside class="episodeSidebar episodeSidebarV215"><h2>${esc(game.title)} Bölümleri</h2>${current?`<div class="currentEpisodeBox"><span class="pill green">Şu an</span><b>${esc(current.number)}. Bölüm</b><small>${esc(current.title)}</small></div>`:''}${episodes.length?episodes.map(ep=>`<a class="watchEpisode ${current && String(current.id)===String(ep.id)?'active':''} ${Number(ep.number)<=watched?'watched':''}" href="/izle?${activeSeries?`series=${encodeURIComponent(activeSeries)}&`:''}id=${encodeURIComponent(game.id)}&ep=${encodeURIComponent(ep.number)}"><img src="${esc(ep.thumbnail||'/assets/hayatimiz-kapak.png')}" onerror="this.src='/assets/hayatimiz-kapak.png'" alt="${esc(ep.title)}"><span><b>${esc(ep.number)}. Bölüm</b><small>${esc(ep.title)}</small></span></a>`).join(''):`<div class="empty compactEmpty">Bölüm listesi yok. Playlist çekilirse burada görünür.</div>`}</aside></section><section class="panel storyPanel detailStory"><span class="badge">🎭 Hikaye</span><h2>${esc(game.title)} Hikaye Anlatımı</h2><p>${esc(story)}</p><div class="actions"><a class="btn secondary" href="/oyun-detay?id=${encodeURIComponent(game.id)}">Detay Sayfasını Aç</a>${game.seriesName?`<a class="btn secondary" href="${seriesWatchHref(game.seriesName)}">Tüm Seriyi İzle</a>`:''}</div></section>`);
+  return layout(`<section class="watchHero seriesWatchHero watchHeroV215"><div><span class="badge green">${activeSeries?'🎬 Tüm Seriyi İzle':'▶️ Site İçi İzleme'} • ${VERSION}</span><h1>${esc(seriesTitle)}</h1><p>${esc(activeSeries?`${activeSeries} içindeki oyunları sırayla izleyebilir, bölüm ilerlemesini takip edebilir ve listedeki oyunlar arasında geçiş yapabilirsin.`:story)}</p><div class="actions"><a class="btn secondary" href="/oyun-detay?id=${encodeURIComponent(game.id)}">📖 Oyun Detayı</a><a class="btn secondary" href="/seriler">🎬 Serilere Dön</a><a class="btn secondary" href="/oyun-arsivi">🎮 Arşive Dön</a>${isYönetim()?`<a class="btn secondary" href="/yonetim/oyun-duzenle?id=${encodeURIComponent(game.id)}">Oyunu Düzenle</a>`:''}</div></div><aside><b>${esc(settings.quality)} kalite tercihi</b><span>${activeSeriesRows.length} oyun • ${totals.episodes} bölüm • ${totals.watched} izlendi</span><small>Aktif oyun: ${esc(game.title)}. Kalite tercihi siteye kaydedilir; gerçek kalite YouTube oynatıcı dişlisinden seçilir.</small></aside></section>${watchStatusPanel(game, episodes, current)}${activeSeriesRows.length>1?`<section class="seriesWatchStrip">${activeSeriesRows.map((g,i)=>`<a class="seriesWatchGame ${String(g.id)===String(game.id)?'active':''}" href="/izle?series=${encodeURIComponent(activeSeries)}&id=${encodeURIComponent(g.id)}"><b>${i+1}</b><span>${esc(g.title)}</span><small>${Number(g.watchedEpisodeCount||0)}/${loadEpisodes(g.id).length || Number(g.episodeCount||0)} bölüm</small></a>`).join('')}</section>`:''}<section class="watchLayout watchLayoutV215"><article class="watchPlayer proWatchPlayer">${embed?`<iframe src="${esc(embed)}" title="${esc(game.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`:`<div class="empty playerEmpty"><b>Video bağlantısı yok</b><p>Bu oyun için YouTube video veya playlist bağlantısı bulunamadı. Yönetimden YouTube video/playlist URL eklenirse oynatıcı otomatik aktif olur.</p>${isYönetim()?`<a class="btn primary" href="/yonetim/oyun-duzenle?id=${encodeURIComponent(game.id)}">Bağlantı Ekle</a>`:''}</div>`}<div class="watchControls"><div class="qualityPanel"><b>Kalite Ayarları</b><div class="qualityButtons">${['Otomatik','1080p','720p','480p','360p'].map(q=>`<button class="miniBtn ${settings.quality===q?'primary':''}" data-quality="${q}">${q}</button>`).join('')}</div></div><div class="episodeNavButtons">${prev?`<a class="miniBtn" href="/izle?id=${encodeURIComponent(game.id)}&ep=${encodeURIComponent(prev.number)}">← Önceki</a>`:''}${current?`<button class="miniBtn primary" data-watch-mark="${esc(game.id)}" data-ep="${esc(current.number)}">Bu Bölüme Kadar İzledim</button>`:''}${next?`<a class="miniBtn" href="/izle?id=${encodeURIComponent(game.id)}&ep=${encodeURIComponent(next.number)}">Sonraki →</a>`:''}</div></div></article><aside class="episodeSidebar episodeSidebarV215 fixedEpisodeSidebar"><h2>${esc(game.title)} Bölümleri</h2><p class="muted compact">${episodes.length?`${episodes.length} bölüm listeleniyor. Aktif bölüm listede yeşil rozetle gösterilir.`:'Bölüm listesi bekleniyor.'}</p>${episodes.length?episodes.map(ep=>{ const active=current && Number(current.number)===Number(ep.number); return `<a class="watchEpisode ${active?'active currentFixed':''} ${Number(ep.number)<=watched?'watched':''}" href="/izle?${activeSeries?`series=${encodeURIComponent(activeSeries)}&`:''}id=${encodeURIComponent(game.id)}&ep=${encodeURIComponent(ep.number)}"><img src="${esc(ep.thumbnail||game.cover||'/assets/hayatimiz-kapak.png')}" onerror="this.src='${esc(game.cover||'/assets/hayatimiz-kapak.png')}'" alt="${esc(ep.title)}"><span>${active?'<small class="pill green">Şu an</small>':''}<b>${esc(ep.number)}. Bölüm</b><small>${esc(ep.title)}</small></span></a>`; }).join(''):`<div class="empty compactEmpty">Bölüm listesi yok. Playlist çekilirse burada görünür.</div>`}</aside></section><section class="panel storyPanel detailStory"><span class="badge">🎭 Hikaye</span><h2>${esc(game.title)} Hikaye Anlatımı</h2><p>${esc(story)}</p><div class="actions"><a class="btn secondary" href="/oyun-detay?id=${encodeURIComponent(game.id)}">Detay Sayfasını Aç</a>${game.seriesName?`<a class="btn secondary" href="${seriesWatchHref(game.seriesName)}">Tüm Seriyi İzle</a>`:''}</div></section>`);
 }
 
 function alphabetPage(){

@@ -728,3 +728,11 @@
 .dataHealthGrid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));align-items:stretch}
 .dataHealthGrid .panel{min-height:220px}
 .dataHealthGrid .activityItem{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.04);margin:8px 0}
+
+/* v2.2.8 FIX: Seri izleme bölüm listesi temizleme */
+.fixedEpisodeSidebar .currentEpisodeBox{display:none!important}
+.fixedEpisodeSidebar .watchEpisode.currentFixed{border-color:rgba(34,197,94,.65)!important;background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(15,23,42,.72))!important;box-shadow:0 0 0 1px rgba(34,197,94,.22) inset}
+.fixedEpisodeSidebar .watchEpisode.currentFixed img{border-color:rgba(34,197,94,.35)}
+.fixedEpisodeSidebar .watchEpisode span{gap:4px}
+.fixedEpisodeSidebar .watchEpisode .pill.green{width:max-content;font-size:11px;padding:4px 9px;margin-bottom:2px}
+.fixedEpisodeSidebar p.compact{font-size:12px;margin:0 0 10px;color:#9fb0c9}
