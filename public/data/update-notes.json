@@ -1,5 +1,11 @@
 [
   {
+    "version": "v2.2.9 FIX",
+    "title": "🎬 Seri Ayrı Düzenleme + v4.0.0 Güncelleme Notları",
+    "summary": "Seri yönetiminde başka serilere ait oyunların seçili seriye karışması engellendi. Her seri kendi ekranında düzenlenir. Güncelleme notları ve gelecek planlar v4.0.0 ana açılış hedefine göre yenilendi.",
+    "status": "Tamamlandı"
+  },
+  {
     "version": "v2.2.9",
     "title": "🚀 Public Açılış Cilası",
     "summary": "Gelecek planlar 4.0 ana açılış hedefine göre düzenlendi. Bakım modunda ziyaretçilere otomatik ilerleyen açılış yüzdesi gösterilir.",
