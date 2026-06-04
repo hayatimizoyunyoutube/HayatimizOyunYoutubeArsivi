@@ -1161,24 +1161,41 @@ function maintenanceZiyaretçi(){
     }
     return Array.from(map.values());
   };
+  // v2.2.9 FIX: Bakım ekranı eski localStorage planlarına takılmasın.
+  // Sadece güncel açılış çizgisi gösterilir; eski v2.1.x/v2.2.1 planları bakım ekranına geri basılmaz.
+  const currentNo=versionNumber(VERSION);
   const allNotes=uniqueById([...DEFAULT_NOTES, ...loadNotes()]);
   const isPlanned=(n)=>String(n.status||'').toLocaleLowerCase('tr').includes('plan') || n.planned===true;
-  const done=allNotes.filter(n=>!isPlanned(n) && !String(n.status||'').toLocaleLowerCase('tr').includes('sil')).sort((a,b)=>versionNumber(b.version)-versionNumber(a.version)).slice(0,3);
-  const planned=allNotes.filter(isPlanned).sort((a,b)=>versionNumber(a.version)-versionNumber(b.version)).slice(0,3);
+  const isDeleted=(n)=>String(n.status||'').toLocaleLowerCase('tr').includes('sil');
   const doneFallback=[
-    {version:VERSION,title:'3.0 Açılış Planı ve Bakım İlerleme',summary:'Planlar 4.0 açılış hedefine göre düzenlendi; bakım ekranı ziyaretçilere güncel ilerleme ve notlar gösterir.'},
-    {version:'v2.2.7',title:'Sürüm Senkronizasyonu',summary:'Site, Vercel, health/status ve güncelleme notları aynı sürüm çizgisine alındı.'},
-    {version:'v2.2.6',title:'Mobil Menü ve Responsive Cila',summary:'Üst menü taşmaları, mobil buton sıralaması ve büyük kart yerleşimleri iyileştirildi.'}
+    {version:'v2.2.9',title:'Public Açılış Cilası',summary:'Ana sayfa, arşiv, seri kartları, bakım ekranı ve mobil görünüm v4.0.0 açılış hedefine göre cilalandı.'},
+    {version:'v2.2.8',title:'4.0 Açılış Planı ve Bakım İlerleme Sistemi',summary:'Bakım ekranı ziyaretçilere otomatik ilerleme, güncel eklenenler ve gelecek planları gösterecek şekilde düzenlendi.'},
+    {version:'v2.2.7',title:'Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği',summary:'Site, Vercel, health/status, güncelleme notları ve paket etiketleri aynı sürüm çizgisine alındı.'}
   ];
   const plannedFallback=[
-    {version:'v2.2.9',title:'Takvim ve Playlist Stabilite',summary:'Yayın takvimi ekleme/düzenleme, oyun kapak eşleşmesi ve playlist bölüm listeleri daha sağlam hale getirilecek.'},
-    {version:'v2.3.0',title:'Admin Dashboard ve Veri Sağlığı Geliştirme',summary:'Veri sağlığı, yedekleme, eksik kapak/tarih kontrolü ve yönetim metrikleri geliştirilecek.'},
-    {version:'v4.0.0',title:'Ana Açılış Sürümü',summary:'Public arşiv, takvim, seri merkezi, bakım/ban güvenliği ve yönetim paneli yayın için son hale getirilecek.'}
+    {version:'v2.3.0',title:'Admin Dashboard ve Veri Sağlığı Geliştirme',summary:'Veri sağlığı, yedekleme, eksik kapak/tarih kontrolü, yönetim metrikleri ve güvenli onarım araçları geliştirilecek.'},
+    {version:'v2.3.1',title:'Takvim ve Playlist Stabilite Geliştirme',summary:'Yayın takvimi ekleme/düzenleme, oyun kapak eşleşmesi ve playlist bölüm listeleri daha sağlam hale getirilecek.'},
+    {version:'v4.0.0',title:'Ana Açılış Sürümü',summary:'Public arşiv, seri merkezi, yayın takvimi, bakım/ban güvenliği ve yönetim paneli yayın için son hale getirilecek.'}
   ];
+  const done=allNotes
+    .filter(n=>!isPlanned(n) && !isDeleted(n) && versionNumber(n.version) >= versionNumber('v2.2.7') && versionNumber(n.version) <= currentNo)
+    .sort((a,b)=>versionNumber(b.version)-versionNumber(a.version))
+    .slice(0,3);
+  const planned=allNotes
+    .filter(n=>isPlanned(n) && !isDeleted(n) && (versionNumber(n.version) > currentNo || String(n.version||'').includes('4.0.0')))
+    .sort((a,b)=>versionNumber(a.version)-versionNumber(b.version))
+    .slice(0,3);
   const doneRows=(done.length?done:doneFallback);
   const plannedRows=(planned.length?planned:plannedFallback);
+  const autoEta=()=>{
+    const d=new Date(Date.now()+1000*60*60*4);
+    if(d.getHours()>=23) d.setDate(d.getDate()+1);
+    d.setMinutes(0,0,0);
+    return d.toLocaleDateString('tr-TR') + ' Saat ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  };
+  const etaText = m.autoEta===false && m.eta ? m.eta : autoEta();
   const itemHtml=(row,icon)=>`<article class="maintenanceUpdateItem"><span>${icon} ${esc(row.version||VERSION)}</span><b>${esc(row.title||'Güncelleme')}</b><small>${esc(row.summary||row.description||'')}</small></article>`;
-  return `<main class="maintenanceZiyaretçi proMaintenance v221Maintenance gameWallpaperMaintenance updateMaintenancePage"><section class="maintenanceCard proMaintenanceCard v221MaintenanceCard updateMaintenanceCard"><div class="bondSky"><span></span><span></span><span></span></div><div class="bondScan"></div><div class="maintenanceGlow bondGlow"></div><span class="badge amber">🛠️ ${VERSION} • Bakım Modu</span><h1>Site Güncelleniyor</h1><p>${esc(m.message || 'Hayatımız Oyun kısa süreli güncelleme bakımında. Yeni düzenlemeler hazırlanırken site birazdan yeniden açılacak.')}</p><div class="maintenanceProgress bondProgress"><i><span style="width:${pct}%"></span></i><b>%${pct}</b></div><div class="maintenanceInfoGrid cleanMaintenanceInfo compactMaintenanceInfo"><article><b>🎮 Durum</b><span>Güncelleme devam ediyor.</span></article><article><b>⏰ Tahmini Açılış</b><span>${esc(m.eta || 'Yakında güncellenecek.')}</span></article><article><b>💬 Destek</b><span>Discord</span></article></div><div class="maintenanceUpdatesGrid"><section><h2>✅ Bu Güncellemede Eklenenler</h2><div class="maintenanceUpdateList">${doneRows.map(r=>itemHtml(r,'✅')).join('')}</div></section><section><h2>🚀 Sonraki Güncellemelerde Gelecekler</h2><div class="maintenanceUpdateList">${plannedRows.map(r=>itemHtml(r,'🚀')).join('')}</div></section></div><div class="maintenancePublicActions"><button class="btn ghost" type="button" data-maintenance-retry>🔄 Tekrar Kontrol Et</button><a class="btn secondary" href="https://discord.gg/QXc74Q6UUE" target="_blank" rel="noreferrer">💬 Discord</a></div><small class="maintenanceNote">Bakım tamamlanınca site otomatik normal ekrana döner.</small></section></main>`;
+  return `<main class="maintenanceZiyaretçi proMaintenance v221Maintenance gameWallpaperMaintenance updateMaintenancePage"><section class="maintenanceCard proMaintenanceCard v221MaintenanceCard updateMaintenanceCard"><div class="bondSky"><span></span><span></span><span></span></div><div class="bondScan"></div><div class="maintenanceGlow bondGlow"></div><span class="badge amber">🛠️ ${VERSION} • Bakım Modu</span><h1>Site Güncelleniyor</h1><p>${esc(m.message || 'Hayatımız Oyun kısa süreli güncelleme bakımında. Yeni düzenlemeler hazırlanırken site birazdan yeniden açılacak.')}</p><div class="maintenanceProgress bondProgress"><i><span style="width:${pct}%"></span></i><b>%${pct}</b></div><div class="maintenanceInfoGrid cleanMaintenanceInfo compactMaintenanceInfo"><article><b>🎮 Durum</b><span>Güncelleme devam ediyor.</span></article><article><b>⏰ Tahmini Açılış</b><span>${esc(etaText)}</span></article><article><b>💬 Destek</b><span>Discord</span></article></div><div class="maintenanceUpdatesGrid"><section><h2>✅ Bu Güncellemede Eklenenler</h2><div class="maintenanceUpdateList">${doneRows.map(r=>itemHtml(r,'✅')).join('')}</div></section><section><h2>🚀 Sonraki Güncellemelerde Gelecekler</h2><div class="maintenanceUpdateList">${plannedRows.map(r=>itemHtml(r,'🚀')).join('')}</div></section></div><div class="maintenancePublicActions"><button class="btn ghost" type="button" data-maintenance-retry>🔄 Tekrar Kontrol Et</button><a class="btn secondary" href="https://discord.gg/QXc74Q6UUE" target="_blank" rel="noreferrer">💬 Discord</a></div><small class="maintenanceNote">Bakım tamamlanınca site otomatik normal ekrana döner.</small></section></main>`;
 }
 function bannedZiyaretçi(){
   const discord='https://discord.gg/QXc74Q6UUE';
