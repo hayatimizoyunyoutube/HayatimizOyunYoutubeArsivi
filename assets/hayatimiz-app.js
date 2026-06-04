@@ -336,18 +336,40 @@ async function refreshGamesFromSupabase({force=false}={}){
 }
 async function persistGameToSupabase(game, editId=''){
   const token=sessionToken();
+  const targetId=String(editId || game.id || '').trim();
+  const localRowsBefore=loadGames();
+  const localBefore=localRowsBefore.find(g=>String(g.id)===targetId || String(g.id)===String(game.id));
+  const localEpisodes=mergeEpisodeListsForSave(
+    Array.isArray(game.episodes) && game.episodes.length ? game.episodes : [],
+    Array.isArray(localBefore?.episodes) && localBefore.episodes.length ? localBefore.episodes : loadEpisodes(targetId || game.id)
+  );
+  if(localEpisodes.length){
+    game={...game, episodes:localEpisodes, episodeCount:Math.max(Number(game.episodeCount||0), localEpisodes.length)};
+    if(targetId || game.id) saveEpisodes(targetId || game.id, localEpisodes, {skipGamePatch:true});
+  }
   if(!token){ saveSyncState({mode:'local', status:'Yetkili Supabase oturumu yok', message:'Oyun yerel kaydedildi. Supabase için kurucu hesabıyla tekrar giriş yap.'}); return null; }
   const action=editId?'games-update':'games-add';
   const data=await apiJson(action,{adminToken:token, gameId:editId, game:gameToRemotePayload(game)});
   if(data?.game){
-    const remote=normalizeRemoteGame(data.game);
+    let remote=normalizeRemoteGame(data.game);
+    const remoteEpisodes=Array.isArray(remote.episodes) ? remote.episodes : [];
+    const mergedEpisodes=mergeEpisodeListsForSave(localEpisodes, remoteEpisodes);
+    if(mergedEpisodes.length){
+      remote={...remote, episodes:mergedEpisodes, episodeCount:Math.max(Number(remote.episodeCount||0), mergedEpisodes.length)};
+      saveEpisodes(remote.id || targetId || game.id, mergedEpisodes, {skipGamePatch:true});
+    }
     const rows=loadGames();
-    const targetId=String(editId||game.id||remote.id);
-    const exists=rows.some(g=>String(g.id)===targetId || String(g.id)===String(remote.id));
-    // v2.2.2 FIX: Yeni oyun Supabase'e kaydolduktan sonra yerel listeye de ekle; sadece map yapmak yeni kaydı düşürüyordu.
-    saveGames(exists ? rows.map(g=>(String(g.id)===targetId || String(g.id)===String(remote.id))?remote:g) : [remote, ...rows]);
+    const finalTargetId=String(targetId||game.id||remote.id);
+    const exists=rows.some(g=>String(g.id)===finalTargetId || String(g.id)===String(remote.id));
+    saveGames(exists ? rows.map(g=>{
+      if(String(g.id)===finalTargetId || String(g.id)===String(remote.id)){
+        const preserved=mergeEpisodeListsForSave(mergedEpisodes, Array.isArray(g.episodes)?g.episodes:[]);
+        return {...g, ...remote, id:g.id, episodes:preserved, episodeCount:Math.max(Number(remote.episodeCount||0), preserved.length)};
+      }
+      return g;
+    }) : [{...remote, episodes:mergedEpisodes}, ...rows]);
   }
-  saveSyncState({mode:'supabase', status:'Supabase kayıt aktif', message:editId?'Oyun Supabase üzerinde güncellendi.':'Oyun Supabase üzerine kaydedildi.', lastGameSync:game.title || game.id});
+  saveSyncState({mode:'supabase', status:'Supabase kayıt aktif', message:editId?'Oyun Supabase üzerinde güncellendi; bölüm adı/kapakları korundu.':'Oyun Supabase üzerine kaydedildi; bölüm adı/kapakları korundu.', lastGameSync:game.title || game.id});
   return data;
 }
 async function deleteGameRemote(id, options={}){ const token=sessionToken(); if(!token || options.explicitDelete !== true) return null; await apiJson('games-delete',{adminToken:token, gameId:id, confirmPhrase:'OYUNU SIL'}); saveSyncState({mode:'supabase', status:'Supabase silme aktif', message:'Oyun Supabase üzerinden manuel onayla silindi.'}); }
@@ -1068,13 +1090,24 @@ function extractYoutubePlaylistId(raw){
   return m ? decodeURIComponent(m[1] || m[0]) : '';
 }
 function episodeStoreKey(gameId){ return `${STORAGE.episodes}:${String(gameId||'global')}`; }
-function normalizeEpisode(ep, i){
+function pickEpisodeThumbnail(ep={}, videoId=''){
+  const direct = ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || ep.image || ep.image_url || ep.cover || ep.cover_url || ep.snippet?.thumbnails?.maxres?.url || ep.snippet?.thumbnails?.standard?.url || ep.snippet?.thumbnails?.high?.url || ep.snippet?.thumbnails?.medium?.url || ep.snippet?.thumbnails?.default?.url || '';
+  if(direct && !/hayatimiz-kapak|hayatimiz-logo|site-logo|logo\.png/i.test(String(direct))) return String(direct);
+  const yt = videoId || ep.videoId || ep.youtubeVideoId || ep.youtube_video_id || ep.contentDetails?.videoId || '';
+  if(yt) return `https://i.ytimg.com/vi/${yt}/hqdefault.jpg`;
+  return '';
+}
+function normalizeEpisode(ep={}, i=0){
   const rawNumber=Number(ep.number || ep.episodeNumber || ep.episode_number || i+1);
   const n=Number.isFinite(rawNumber) && rawNumber>0 ? rawNumber : i+1;
-  const videoId=String(ep.videoId || ep.youtubeVideoId || ep.youtube_video_id || '').trim();
-  const url=ep.videoUrl || ep.video_url || (videoId?`https://www.youtube.com/watch?v=${videoId}`:'');
-  const thumb=ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || (videoId?`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`:'/assets/hayatimiz-kapak.png');
-  return {id:ep.id || (videoId?`yt-${videoId}`:`ep-${n}`), number:n, title:ep.title || `${n}. Bölüm`, description:ep.description || '', thumbnail:thumb, videoId, videoUrl:url, watched:ep.watched === true || ep.is_watched === true};
+  const rawUrl=String(ep.videoUrl || ep.video_url || ep.url || '').trim();
+  const fromUrl = typeof videoIdFromUrl==='function' ? videoIdFromUrl(rawUrl) : '';
+  const videoId=String(ep.videoId || ep.youtubeVideoId || ep.youtube_video_id || ep.contentDetails?.videoId || fromUrl || '').trim();
+  const url=rawUrl || (videoId?`https://www.youtube.com/watch?v=${videoId}`:'');
+  const thumb=pickEpisodeThumbnail(ep, videoId);
+  const rawTitle=ep.title || ep.name || ep.snippet?.title || ep.episodeTitle || ep.episode_title || `${n}. Bölüm`;
+  const title=typeof cleanYoutubeTitle==='function' ? cleanYoutubeTitle(rawTitle) : String(rawTitle||`${n}. Bölüm`);
+  return {id:ep.id || (videoId?`yt-${videoId}`:`ep-${n}`), number:n, title, description:ep.description || ep.snippet?.description || '', thumbnail:thumb, videoId, videoUrl:url, watched:ep.watched === true || ep.is_watched === true};
 }
 function dedupeEpisodes(episodes){
   const seen=new Set();
@@ -1089,6 +1122,28 @@ function dedupeEpisodes(episodes){
     })
     .sort((a,b)=>Number(a.number||0)-Number(b.number||0))
     .map((ep,idx)=>({...ep, number:Number(ep.number||idx+1)}));
+}
+function mergeEpisodeListsForSave(localList=[], remoteList=[]){
+  const local=dedupeEpisodes(localList || []);
+  const remote=dedupeEpisodes(remoteList || []);
+  if(!remote.length) return local;
+  if(!local.length) return remote;
+  const byKey=new Map();
+  local.forEach(ep=>byKey.set(ep.videoId?`video:${ep.videoId}`:`num:${ep.number}`, ep));
+  remote.forEach(ep=>{
+    const key=ep.videoId?`video:${ep.videoId}`:`num:${ep.number}`;
+    const old=byKey.get(key);
+    if(!old){ byKey.set(key, ep); return; }
+    byKey.set(key, {
+      ...old,
+      ...ep,
+      title: ep.title && !/^\d+\.\s*Bölüm$/i.test(String(ep.title)) ? ep.title : old.title,
+      thumbnail: ep.thumbnail && !/hayatimiz-kapak|hayatimiz-logo|site-logo/i.test(String(ep.thumbnail)) ? ep.thumbnail : old.thumbnail,
+      videoId: ep.videoId || old.videoId,
+      videoUrl: ep.videoUrl || old.videoUrl
+    });
+  });
+  return [...byKey.values()].sort((a,b)=>Number(a.number||0)-Number(b.number||0));
 }
 function loadEpisodes(gameId){
   const id=String(gameId||'');
