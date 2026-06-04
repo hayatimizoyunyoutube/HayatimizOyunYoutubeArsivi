@@ -604,7 +604,7 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v2.2.9', status:'Veri sağlığı ve otomatik yedekleme aktif' });
+    if(action === 'health') return json(res, 200, { ok:true, version:'v2.2.9', status:'Otomatik oyun çekme fix aktif' });
 
     if(action === 'game-meta-lite'){
       const title = String(body.title || '').trim();
@@ -613,7 +613,8 @@ export default async function handler(req, res){
       if(fixed?.meta){
         return json(res, 200, { ok:true, meta:fixed.meta, candidates:fixed.candidates || [], source:fixed.source || 'v2.0.7 güvenli RAWG/meta' });
       }
-      const fallback = localGameMeta(title);
+      const fallback = localGameMeta(title) || {title, genre:'Genel, Hikaye Odaklı', releaseDate:'', cover:'', banner:'', source:'Yerel güvenli meta'};
+      if(fallback?.exact === true){ return json(res, 200, { ok:true, meta:fallback, candidates:[fallback], source:'Kesin yerel oyun eşleşmesi' }); }
       const rawg = await fetchRawgMeta(fallback.title || title).catch(()=>null);
       const meta = rawg ? { ...fallback, ...rawg } : fallback;
       const releaseDate = pickDateTR(meta.releaseDate, meta.released, fallback.releaseDate, fallback.released);

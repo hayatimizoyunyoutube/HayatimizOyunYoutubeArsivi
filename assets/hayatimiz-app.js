@@ -229,6 +229,9 @@ function normalizeGame(g,i){
   };
 }
 
+
+/* v2.2.9 FIX - Otomatik oyun çekme dayanıklılığı
+   API/RAWG/Steam yanıtı gelmezse form boş kalmaz; yerel güvenli katalog ve mevcut alanlar korunur. */
 const LOCAL_META_CATALOG = [
   {rx:/007|first\s*light|james\s*bond/i,title:'007 First Light',seriesName:'James Bond',genre:'Aksiyon, Gizlilik, Macera',releaseDate:'27.03.2026',platforms:'PC, PlayStation 5, Xbox Series S/X, Nintendo Switch',tags:'Türkçe Altyazılı, Sinematik, Aksiyon',score:0,steamAppId:'',rawgSlug:'007-first-light',cover:'/assets/hayatimiz-kapak.png',banner:'/assets/hayatimiz-kapak.png',description:`James Bond'un MI6 içindeki ilk büyük operasyonunu, gizli yapılanmalar ve yüksek riskli ajanlık görevleri üzerinden takip eden sinematik aksiyon arşivi.`,storyText:`Görevin henüz başında, çiçeği burnunda bir ajan olan James Bond, MI6 tarafından küresel dengeleri tehdit eden gizli bir yapılanmayı çökertmekle görevlendirilir. First Light operasyonu, Bond'un sadece fiziksel sınırlarını değil, aynı zamanda bir ajan olarak ahlaki sınırlarını ve sadakatini de ilk kez ciddi şekilde test edeceği bir vaftiz törenine dönüşür.`},
   {rx:/plague.*innocence|innocence/i,title:'A Plague Tale: Innocence',seriesName:'A Plague Tale',genre:'Macera, Gizlilik, Hikaye',releaseDate:'14.05.2019',platforms:'PC, PlayStation, Xbox, Nintendo Switch',tags:'Türkçe Altyazılı, Hikaye, Macera',score:8.3,steamAppId:'752590',rawgSlug:'a-plague-tale-innocence',cover:'https://cdn.akamai.steamstatic.com/steam/apps/752590/header.jpg',banner:'https://cdn.akamai.steamstatic.com/steam/apps/752590/capsule_616x353.jpg'},
@@ -578,25 +581,45 @@ async function resolveMetaForForm(form, source){
   const title=String(form?.elements?.title?.value || '').trim();
   if(!title){ toast('Önce oyun adını yaz.'); return; }
   const statusBox=form.querySelector('[data-meta-status]');
-  if(statusBox) statusBox.textContent='Bilgi çekiliyor...';
+  if(statusBox) statusBox.textContent='Oyun bilgileri aranıyor...';
+  const current={
+    title,
+    releaseDate:form?.elements?.releaseDate?.value || '',
+    cover:form?.elements?.cover?.value || '',
+    banner:form?.elements?.banner?.value || ''
+  };
   let raw=null;
-  try{
-    raw = await apiJson(source==='steam'?'steam-meta-lite':'game-meta-lite', {title, releaseDate:form?.elements?.releaseDate?.value || '', cover:form?.elements?.cover?.value || ''});
-  }catch(err){
-    raw = {ok:true, meta:localGameMetaCandidate(title), source:'Servis yok / yerel güvenli bilgi'};
+  const tries = source==='steam'
+    ? ['steam-meta-lite','game-meta-lite','game-meta']
+    : ['game-meta-lite','game-meta','steam-meta-lite'];
+  for(const action of tries){
+    try{
+      raw = await apiJson(action, current);
+      if(raw && (raw.meta || raw.steam || raw.ok !== false)) break;
+    }catch(err){
+      console.warn('Meta servis denemesi başarısız:', action, err?.message || err);
+    }
+  }
+  if(!raw || (!raw.meta && !raw.steam)){
+    raw = {ok:true, meta:localGameMetaCandidate(title), source:'Yerel güvenli otomatik oyun bilgisi'};
   }
   let meta=null;
   try{
     meta=mapMeta(raw, title);
   }catch(err){
     console.warn('Meta eşleme yerel güvenli moda düştü:', err);
-    meta=mapMeta({ok:true, meta:localGameMetaCandidate(title), source:'Yerel güvenli bilgi'}, title);
+    meta=mapMeta({ok:true, meta:localGameMetaCandidate(title), source:'Yerel güvenli otomatik oyun bilgisi'}, title);
   }
+  const existingCover=String(form?.elements?.cover?.value||'').trim();
+  const existingBanner=String(form?.elements?.banner?.value||'').trim();
+  if(existingCover && existingCover !== '/assets/hayatimiz-kapak.png' && (!meta.cover || meta.cover==='/assets/hayatimiz-kapak.png')) meta.cover=existingCover;
+  if(existingBanner && (!meta.banner || meta.banner==='/assets/hayatimiz-kapak.png')) meta.banner=existingBanner;
   if(!meta || !meta.title){
-    meta=mapMeta({ok:true, meta:localGameMetaCandidate(title), source:'Yerel güvenli bilgi'}, title);
+    meta=mapMeta({ok:true, meta:localGameMetaCandidate(title), source:'Yerel güvenli otomatik oyun bilgisi'}, title);
   }
   fillMetaToForm(form, meta, 'safe');
-  toast(source==='steam'?'Steam bilgileri uygulandı.':'RAWG/Bilgi uygulandı.');
+  if(statusBox) statusBox.innerHTML=`<b>Otomatik bilgi hazır:</b> ${esc(meta.source || raw.source || 'Yerel güvenli otomatik oyun bilgisi')} • ${esc(meta.title || title)}`;
+  toast('Oyun bilgileri otomatik dolduruldu.');
 }
 
 function loadGames(){
