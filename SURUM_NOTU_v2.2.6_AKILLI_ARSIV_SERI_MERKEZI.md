@@ -1,4 +1,4 @@
-# ✅ v2.2.6 — Akıllı Arşiv ve Seri Merkezi
+# ✅ v2.2.7 — Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği
 
 ## Yapılanlar
 
@@ -9,7 +9,7 @@
 - 🛡️ Arşiv sağlık kontrolleri genişletildi.
 - 🔎 Arama, etiket ve tür filtreleri korunarak güçlendirildi.
 - 💾 Mevcut oyunlar manuel silme olmadan korunmaya devam eder.
-- 🏷️ ZIP adı, Vercel etiketi, site sürümü, health/status, update notes ve schema Results v2.2.6 olarak eşitlendi.
+- 🏷️ ZIP adı, Vercel etiketi, site sürümü, health/status, update notes ve schema Results v2.2.7 olarak eşitlendi.
 
 ## Schema Durumu
 

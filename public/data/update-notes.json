@@ -1,8 +1,15 @@
 [
   {
-    "version": "v2.2.6",
-    "title": "📚 Akıllı Arşiv ve Seri Merkezi",
-    "summary": "Seri gruplama, seri ilerleme, eksik kapak önerileri ve arşiv sağlık kontrolleri için altyapı güçlendirildi. Tüm sürüm etiketleri v2.2.6 olarak eşitlendi.",
+    "id": "v227-surum-senkronizasyonu-mobil-deploy-guvenligi",
+    "version": "v2.2.7",
+    "title": "🏷️ Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği",
+    "summary": "SiteConfig, Vercel etiketi, health/status, update notes, schema Results ve Termux yükleme akışı v2.2.7 olarak eşitlendi. Veri koruma sistemi korunur.",
+    "status": "Tamamlandı"
+  },
+  {
+    "version": "v2.2.7",
+    "title": "📚 Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği",
+    "summary": "Seri gruplama, seri ilerleme, eksik kapak önerileri ve arşiv sağlık kontrolleri için altyapı güçlendirildi. Tüm sürüm etiketleri v2.2.7 olarak eşitlendi.",
     "status": "Tamamlandı"
   },
   {

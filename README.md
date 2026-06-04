@@ -1,14 +1,11 @@
-# Hayatımız Oyun — v2.2.6 Mobil Menü ve Responsive Cila Tam Paket
+# Hayatımız Oyun — v2.2.7
 
-Bu ZIP eksik fix paketi değildir; siteyi kökten yükleyebileceğin tam proje paketidir.
+## 💾 Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği
 
-## Yapılanlar
-- 📱 Üst menü taşmaları azaltıldı.
-- 🧭 Yönetim menüsü kompakt tutuldu.
-- 🎛️ Mobil buton sıralaması düzeltildi.
-- 📏 Büyük kartların ekranı kaplaması engellendi.
-- ✨ Public/admin responsive cila yapıldı.
-- 🛡️ Mevcut oyun silinme korumaları korundu.
-- 🏷️ Aktif sürüm etiketi v2.2.6 olarak tutuldu.
+- Supabase veri sağlığı merkezi eklendi.
+- Eksik kapak/tarih/takvim kapak kontrolü eklendi.
+- Manuel JSON yedek alma aracı eklendi.
+- Mevcut oyunlar sen silmeden silinmeyecek koruma korunur.
+- Sürüm etiketi: v2.2.7
 
-Schema durumu: schema.sql gerekli değil.
+Schema: Gerekli. Veri silmez; güvenli tablo ve status/version kayıtları ekler.

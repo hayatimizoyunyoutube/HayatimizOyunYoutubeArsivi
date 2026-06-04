@@ -1,10 +1,10 @@
 {
-  "name": "hayatimiz-oyun-v225-akilli-arsiv-seri-merkezi",
+  "name": "hayatimiz-oyun-v227-surum-senkronizasyonu-mobil-deploy-guvenligi",
   "private": true,
   "type": "module",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "engines": {
     "node": ">=20"
   },
-  "description": "Hayatımız Oyun v2.2.6 Akıllı Arşiv ve Seri Merkezi"
+  "description": "Hayatımız Oyun v2.2.7 Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği"
 }

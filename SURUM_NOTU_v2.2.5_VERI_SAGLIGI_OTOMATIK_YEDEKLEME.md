@@ -1,4 +1,4 @@
-# v2.2.6 — Akıllı Arşiv ve Seri Merkezi
+# v2.2.7 — Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği
 
 ## Yapılanlar
 
@@ -8,7 +8,7 @@
 - ☁️ Manuel JSON yedek alma aracı eklendi.
 - 🛡️ Mevcut oyunlar sen silmeden silinmez koruması korundu.
 - 📝 Yönetici aktivite ve yedekleme tabloları için güvenli schema eklendi.
-- 🏷️ Sürüm etiketleri v2.2.6 olarak eşitlendi.
+- 🏷️ Sürüm etiketleri v2.2.7 olarak eşitlendi.
 
 ## Schema Durumu
 
