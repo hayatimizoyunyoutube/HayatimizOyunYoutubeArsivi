@@ -1,4 +1,4 @@
-# v2.2.5 — Veri Sağlığı ve Otomatik Yedekleme
+# v2.2.6 — Akıllı Arşiv ve Seri Merkezi
 
 ## Yapılanlar
 
@@ -8,7 +8,7 @@
 - ☁️ Manuel JSON yedek alma aracı eklendi.
 - 🛡️ Mevcut oyunlar sen silmeden silinmez koruması korundu.
 - 📝 Yönetici aktivite ve yedekleme tabloları için güvenli schema eklendi.
-- 🏷️ Sürüm etiketleri v2.2.5 olarak eşitlendi.
+- 🏷️ Sürüm etiketleri v2.2.6 olarak eşitlendi.
 
 ## Schema Durumu
 

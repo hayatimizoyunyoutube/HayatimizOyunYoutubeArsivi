@@ -1,10 +1,10 @@
 {
-  "name": "hayatimiz-oyun-v225-veri-sagligi-otomatik-yedekleme",
+  "name": "hayatimiz-oyun-v225-akilli-arsiv-seri-merkezi",
   "private": true,
   "type": "module",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "engines": {
     "node": ">=20"
   },
-  "description": "Hayatımız Oyun v2.2.5 Veri Sağlığı ve Otomatik Yedekleme"
+  "description": "Hayatımız Oyun v2.2.6 Akıllı Arşiv ve Seri Merkezi"
 }

@@ -1554,19 +1554,19 @@ select
   'Veri silinmez, oyunlar ve bakım modu sıfırlanmaz.'::text as "Koruma";
 
 
--- v2.2.4 yayın takvimi ve oyun kapakları sürüm kaydı.
+-- v2.2.6 akıllı arşiv ve seri merkezi sürüm kaydı.
 -- Mevcut verileri silmez; yalnızca status/version kayıtlarını güncellemek için güvenli upsert blokları kullanılır.
 
 
 -- =========================================================
--- v2.2.5 - Veri Sağlığı ve Otomatik Yedekleme
+-- v2.2.6 - Akıllı Arşiv ve Seri Merkezi
 -- Bu blok veri silmez. Sadece güvenli tablolar ve sürüm/status kayıtları ekler.
 -- =========================================================
 
 create table if not exists public.site_data_backups (
   id uuid primary key default gen_random_uuid(),
   backup_type text default 'manual',
-  version text default 'v2.2.5',
+  version text default 'v2.2.6',
   summary text,
   payload jsonb default '{}'::jsonb,
   created_by text,
@@ -1585,22 +1585,22 @@ create table if not exists public.site_admin_activity_logs (
 
 insert into public.site_runtime_config (key, value, updated_at)
 values
-  ('site_version', jsonb_build_object('version','v2.2.5','label','Veri Sağlığı ve Otomatik Yedekleme','updated_at',now()), now()),
-  ('schema_version', jsonb_build_object('version','v2.2.5','label','Veri Sağlığı ve Otomatik Yedekleme','updated_at',now()), now()),
-  ('vercel_label', jsonb_build_object('version','v2.2.5','label','v2.2.5-veri-sagligi-otomatik-yedekleme','updated_at',now()), now())
+  ('site_version', jsonb_build_object('version','v2.2.6','label','Akıllı Arşiv ve Seri Merkezi','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.6','label','Akıllı Arşiv ve Seri Merkezi','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.6','label','v2.2.6-akilli-arsiv-seri-merkezi','updated_at',now()), now())
 on conflict (key) do update
 set value = excluded.value, updated_at = now();
 
 insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
 select
-  'v2.2.5',
-  '💾 Veri Sağlığı ve Otomatik Yedekleme',
+  'v2.2.6',
+  '💾 Akıllı Arşiv ve Seri Merkezi',
   'Supabase veri sağlığı merkezi, eksik kapak/tarih uyarıları, takvim kapak kontrolü ve manuel JSON yedek alma aracı eklendi. Mevcut veriler silinmez.',
   'Tamamlandı',
   now(),
   now()
 where not exists (
-  select 1 from public.site_update_notes where version='v2.2.5' and title='💾 Veri Sağlığı ve Otomatik Yedekleme'
+  select 1 from public.site_update_notes where version='v2.2.6' and title='💾 Akıllı Arşiv ve Seri Merkezi'
 );
 
 insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
@@ -1617,8 +1617,64 @@ where not exists (
 
 select
   '✅ Başarılı'::text as "Durum",
-  'v2.2.5'::text as "Sürüm",
-  'Veri Sağlığı ve Otomatik Yedekleme'::text as "İşlem",
+  'v2.2.6'::text as "Sürüm",
+  'Akıllı Arşiv ve Seri Merkezi'::text as "İşlem",
   'Veri Sağlığı Merkezi, eksik kapak/tarih kontrolü ve manuel yedek alma aracı eklendi.'::text as "Yapılanlar",
-  'v2.2.5-veri-sagligi-otomatik-yedekleme'::text as "Vercel Etiketi",
+  'v2.2.6-akilli-arsiv-seri-merkezi'::text as "Vercel Etiketi",
   'Veri silinmez, mevcut oyunlar sen silmeden sıfırlanmaz.'::text as "Koruma";
+
+-- v2.2.6 - Akıllı Arşiv ve Seri Merkezi
+-- Güvenlidir: mevcut verileri silmez.
+
+create table if not exists public.series_progress (
+  id uuid primary key default gen_random_uuid(),
+  series_name text not null,
+  total_games int default 0,
+  completed_games int default 0,
+  total_episodes int default 0,
+  watched_episodes int default 0,
+  progress_percent int default 0,
+  status text default 'devam_ediyor',
+  updated_at timestamptz default now()
+);
+
+create table if not exists public.archive_health (
+  id uuid primary key default gen_random_uuid(),
+  check_type text not null,
+  game_id text,
+  game_name text,
+  issue text,
+  status text default 'open',
+  created_at timestamptz default now()
+);
+
+create table if not exists public.cover_suggestions (
+  id uuid primary key default gen_random_uuid(),
+  game_id text,
+  game_name text,
+  suggested_cover_url text,
+  suggested_banner_url text,
+  source text default 'auto',
+  confidence int default 0,
+  created_at timestamptz default now()
+);
+
+insert into public.admin_activity_logs (action, detail, actor_email)
+values (
+  'version_update',
+  'v2.2.6 schema çalıştırıldı. Akıllı Arşiv ve Seri Merkezi tabloları hazırlandı.',
+  'mertdundaroyunda@gmail.com'
+);
+
+insert into public.site_runtime_config (key, value, updated_at)
+values
+  ('site_version', jsonb_build_object('version','v2.2.6','label','Akıllı Arşiv ve Seri Merkezi','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.6','label','Akıllı Arşiv ve Seri Merkezi','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.6','label','v2.2.6-akilli-arsiv-seri-merkezi','updated_at',now()), now())
+on conflict (key) do update set value=excluded.value, updated_at=excluded.updated_at;
+
+select
+  '✅ Başarılı'::text as "Durum",
+  'v2.2.6'::text as "Sürüm",
+  'Akıllı Arşiv ve Seri Merkezi'::text as "İşlem",
+  'v2.2.6-akilli-arsiv-seri-merkezi'::text as "Vercel Etiketi";

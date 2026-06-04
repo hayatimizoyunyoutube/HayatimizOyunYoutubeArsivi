@@ -1,8 +1,8 @@
 [
   {
-    "id": "v225-veri-sagligi-otomatik-yedekleme",
-    "version": "v2.2.5",
-    "title": "💾 Veri Sağlığı ve Otomatik Yedekleme",
+    "id": "v225-akilli-arsiv-seri-merkezi",
+    "version": "v2.2.6",
+    "title": "💾 Akıllı Arşiv ve Seri Merkezi",
     "summary": "Supabase veri sağlığı merkezi eklendi; oyun, kullanıcı, takvim, not ve bakım kayıtları tek ekranda kontrol edilir. Eksik kapak/tarih uyarıları, takvim kapak kontrolü ve manuel JSON yedek alma aracı hazırlandı.",
     "status": "Tamamlandı"
   },

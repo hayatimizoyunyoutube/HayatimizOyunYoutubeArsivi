@@ -721,6 +721,3 @@
 .dataHealthGrid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));align-items:stretch}
 .dataHealthGrid .panel{min-height:220px}
 .dataHealthGrid .activityItem{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.04);margin:8px 0}
-
-/* v2.2.5 FIX: Yayın takvimi ekleme + düzenleme */
-.eventActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calendarFormActions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.adminCalendarForm datalist{display:none}.calendarEventList .event{border:1px solid rgba(255,255,255,.10);background:rgba(8,12,24,.72);border-radius:18px;padding:16px}.calendarEventList .event h3{margin:8px 0 4px}.calendarTinyEvent.withCover img,.publicTinyEvent.withCover img{object-fit:cover}

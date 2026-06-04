@@ -604,7 +604,7 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v2.2.5', status:'Veri sağlığı ve otomatik yedekleme aktif' });
+    if(action === 'health') return json(res, 200, { ok:true, version:'v2.2.6', status:'Veri sağlığı ve otomatik yedekleme aktif' });
 
     if(action === 'game-meta-lite'){
       const title = String(body.title || '').trim();
@@ -629,7 +629,7 @@ export default async function handler(req, res){
         return json(res, 200, { ok:true, steam:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
       const steamDate = pickDateTR(steam.releaseDate, steam.released);
-      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v2.2.4' });
+      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v2.2.6' });
     }
 
     if(action === 'register'){
@@ -835,7 +835,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.2.4', note:'v2.2.4 yayın takvimi ve oyun kapakları', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.2.6', note:'v2.2.6 akıllı arşiv ve seri merkezi', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -852,7 +852,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.2.4', note:'v2.2.4 yayın takvimi ve oyun kapakları', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v2.2.6', note:'v2.2.6 akıllı arşiv ve seri merkezi', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -1091,14 +1091,14 @@ export default async function handler(req, res){
         schemaVersion: schemaRow?.value?.version || 'Bilinmiyor',
         checkedAt: new Date().toISOString()
       };
-      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v2.2.5 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
+      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v2.2.6 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
       return json(res, 200, { ok:true, health, message:'Supabase veri sağlığı kontrol edildi.' });
     }
 
     if(action === 'data-backup-save'){
       await requireStaff(body.adminToken);
       const payload = body.payload || {};
-      const row = { backup_type:String(body.backupType||'manual'), version:'v2.2.5', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
+      const row = { backup_type:String(body.backupType||'manual'), version:'v2.2.6', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
       const rows = await supabase('site_data_backups', { method:'POST', body: JSON.stringify([row]) }).catch(()=>[]);
       return json(res, 200, { ok:true, backup:Array.isArray(rows)?rows[0]:row, message:'Yedek kaydı oluşturuldu.' });
     }
