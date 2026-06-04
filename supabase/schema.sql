@@ -1554,19 +1554,19 @@ select
   'Veri silinmez, oyunlar ve bakım modu sıfırlanmaz.'::text as "Koruma";
 
 
--- v2.2.7 sürüm senkronizasyonu ve mobil deploy güvenliği sürüm kaydı.
+-- v2.2.8 sürüm senkronizasyonu ve mobil deploy güvenliği sürüm kaydı.
 -- Mevcut verileri silmez; yalnızca status/version kayıtlarını güncellemek için güvenli upsert blokları kullanılır.
 
 
 -- =========================================================
--- v2.2.7 - Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği
+-- v2.2.8 - 3.0 Açılış Planı ve Bakım İlerleme Sistemi
 -- Bu blok veri silmez. Sadece güvenli tablolar ve sürüm/status kayıtları ekler.
 -- =========================================================
 
 create table if not exists public.site_data_backups (
   id uuid primary key default gen_random_uuid(),
   backup_type text default 'manual',
-  version text default 'v2.2.7',
+  version text default 'v2.2.8',
   summary text,
   payload jsonb default '{}'::jsonb,
   created_by text,
@@ -1585,45 +1585,45 @@ create table if not exists public.site_admin_activity_logs (
 
 insert into public.site_runtime_config (key, value, updated_at)
 values
-  ('site_version', jsonb_build_object('version','v2.2.7','label','Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği','updated_at',now()), now()),
-  ('schema_version', jsonb_build_object('version','v2.2.7','label','Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği','updated_at',now()), now()),
-  ('vercel_label', jsonb_build_object('version','v2.2.7','label','v2.2.7-surum-senkronizasyonu-mobil-deploy-guvenligi','updated_at',now()), now())
+  ('site_version', jsonb_build_object('version','v2.2.8','label','3.0 Açılış Planı ve Bakım İlerleme Sistemi','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.8','label','3.0 Açılış Planı ve Bakım İlerleme Sistemi','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.8','label','v2.2.8-3-0-acilis-plani-bakim-ilerleme-sistemi','updated_at',now()), now())
 on conflict (key) do update
 set value = excluded.value, updated_at = now();
 
 insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
 select
-  'v2.2.7',
-  '💾 Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği',
+  'v2.2.8',
+  '💾 3.0 Açılış Planı ve Bakım İlerleme Sistemi',
   'Supabase veri sağlığı merkezi, eksik kapak/tarih uyarıları, takvim kapak kontrolü ve manuel JSON yedek alma aracı eklendi. Mevcut veriler silinmez.',
   'Tamamlandı',
   now(),
   now()
 where not exists (
-  select 1 from public.site_update_notes where version='v2.2.7' and title='💾 Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği'
+  select 1 from public.site_update_notes where version='v2.2.8' and title='💾 3.0 Açılış Planı ve Bakım İlerleme Sistemi'
 );
 
 insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
 select
-  'v2.2.7',
+  'v2.2.8',
   '📱 Mobil Menü ve Responsive Cila',
   'Üst menü, yönetim menüsü, büyük kartlar ve public/admin sayfaları mobilde daha kompakt hale getirilecek.',
   'Planlandı',
   now(),
   now()
 where not exists (
-  select 1 from public.site_update_notes where version='v2.2.7' and title='📱 Mobil Menü ve Responsive Cila'
+  select 1 from public.site_update_notes where version='v2.2.8' and title='📱 Mobil Menü ve Responsive Cila'
 );
 
 select
   '✅ Başarılı'::text as "Durum",
-  'v2.2.7'::text as "Sürüm",
-  'Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği'::text as "İşlem",
+  'v2.2.8'::text as "Sürüm",
+  '3.0 Açılış Planı ve Bakım İlerleme Sistemi'::text as "İşlem",
   'Veri Sağlığı Merkezi, eksik kapak/tarih kontrolü ve manuel yedek alma aracı eklendi.'::text as "Yapılanlar",
-  'v2.2.7-surum-senkronizasyonu-mobil-deploy-guvenligi'::text as "Vercel Etiketi",
+  'v2.2.8-3-0-acilis-plani-bakim-ilerleme-sistemi'::text as "Vercel Etiketi",
   'Veri silinmez, mevcut oyunlar sen silmeden sıfırlanmaz.'::text as "Koruma";
 
--- v2.2.7 - Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği
+-- v2.2.8 - 3.0 Açılış Planı ve Bakım İlerleme Sistemi
 -- Güvenlidir: mevcut verileri silmez.
 
 create table if not exists public.series_progress (
@@ -1662,53 +1662,70 @@ create table if not exists public.cover_suggestions (
 insert into public.admin_activity_logs (action, detail, actor_email)
 values (
   'version_update',
-  'v2.2.7 schema çalıştırıldı. Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği tabloları hazırlandı.',
+  'v2.2.8 schema çalıştırıldı. 3.0 Açılış Planı ve Bakım İlerleme Sistemi tabloları hazırlandı.',
   'mertdundaroyunda@gmail.com'
 );
 
 insert into public.site_runtime_config (key, value, updated_at)
 values
-  ('site_version', jsonb_build_object('version','v2.2.7','label','Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği','updated_at',now()), now()),
-  ('schema_version', jsonb_build_object('version','v2.2.7','label','Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği','updated_at',now()), now()),
-  ('vercel_label', jsonb_build_object('version','v2.2.7','label','v2.2.7-surum-senkronizasyonu-mobil-deploy-guvenligi','updated_at',now()), now())
+  ('site_version', jsonb_build_object('version','v2.2.8','label','3.0 Açılış Planı ve Bakım İlerleme Sistemi','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.8','label','3.0 Açılış Planı ve Bakım İlerleme Sistemi','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.8','label','v2.2.8-3-0-acilis-plani-bakim-ilerleme-sistemi','updated_at',now()), now())
 on conflict (key) do update set value=excluded.value, updated_at=excluded.updated_at;
 
 select
   '✅ Başarılı'::text as "Durum",
-  'v2.2.7'::text as "Sürüm",
-  'Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği'::text as "İşlem",
-  'v2.2.7-surum-senkronizasyonu-mobil-deploy-guvenligi'::text as "Vercel Etiketi";
+  'v2.2.8'::text as "Sürüm",
+  '3.0 Açılış Planı ve Bakım İlerleme Sistemi'::text as "İşlem",
+  'v2.2.8-3-0-acilis-plani-bakim-ilerleme-sistemi'::text as "Vercel Etiketi";
 
 
--- v2.2.7 - Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği
+-- v2.2.8 - 3.0 Açılış Planı ve Bakım İlerleme Sistemi
 -- Güvenlidir: mevcut verileri silmez.
 
 insert into public.site_runtime_config (key, value, updated_at) values
-  ('site_version', jsonb_build_object('version','v2.2.7','label','Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği','updated_at',now()), now()),
-  ('schema_version', jsonb_build_object('version','v2.2.7','label','Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği','updated_at',now()), now()),
-  ('vercel_label', jsonb_build_object('version','v2.2.7','label','v2.2.7-surum-senkronizasyonu-mobil-deploy-guvenligi','updated_at',now()), now())
+  ('site_version', jsonb_build_object('version','v2.2.8','label','3.0 Açılış Planı ve Bakım İlerleme Sistemi','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.8','label','3.0 Açılış Planı ve Bakım İlerleme Sistemi','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.8','label','v2.2.8-3-0-acilis-plani-bakim-ilerleme-sistemi','updated_at',now()), now())
 on conflict (key) do update set value=excluded.value, updated_at=now();
 
 insert into public.site_update_notes (version, title, summary, status, created_at)
 select
-  'v2.2.7',
-  '🏷️ Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği',
-  'SiteConfig, Vercel etiketi, health/status, update notes, schema Results ve Termux yükleme akışı v2.2.7 olarak eşitlendi. Veri koruma sistemi korunur.',
+  'v2.2.8',
+  '🏷️ 3.0 Açılış Planı ve Bakım İlerleme Sistemi',
+  'SiteConfig, Vercel etiketi, health/status, update notes, schema Results ve Termux yükleme akışı v2.2.8 olarak eşitlendi. Veri koruma sistemi korunur.',
   'Tamamlandı',
   now()
 where not exists (
-  select 1 from public.site_update_notes where version='v2.2.7' and title='🏷️ Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği'
+  select 1 from public.site_update_notes where version='v2.2.8' and title='🏷️ 3.0 Açılış Planı ve Bakım İlerleme Sistemi'
 );
 
 insert into public.admin_activity_logs (action, detail, actor_email)
 values (
   'version_update',
-  'v2.2.7 schema çalıştırıldı. Sürüm senkronizasyonu ve mobil deploy güvenliği kayıtları güncellendi.',
+  'v2.2.8 schema çalıştırıldı. Sürüm senkronizasyonu ve mobil deploy güvenliği kayıtları güncellendi.',
   'mertdundaroyunda@gmail.com'
 );
 
 select
-  'v2.2.7'::text as "Sürüm",
-  'Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği'::text as "Güncelleme",
-  'v2.2.7-surum-senkronizasyonu-mobil-deploy-guvenligi'::text as "Vercel Etiketi",
+  'v2.2.8'::text as "Sürüm",
+  '3.0 Açılış Planı ve Bakım İlerleme Sistemi'::text as "Güncelleme",
+  'v2.2.8-3-0-acilis-plani-bakim-ilerleme-sistemi'::text as "Vercel Etiketi",
   'Veriler korunur, mevcut oyun/kullanıcı/takvim kayıtları silinmez.'::text as "Veri Durumu";
+
+
+-- v2.2.8 - 3.0 Açılış Planı ve Bakım İlerleme Sistemi
+insert into public.site_runtime_config (key, value, updated_at) values
+  ('site_version', jsonb_build_object('version','v2.2.8','label','3.0 Açılış Planı ve Bakım İlerleme Sistemi','target','v3.0.0','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.8','label','3.0 Açılış Planı ve Bakım İlerleme Sistemi','target','v3.0.0','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.8','label','v2.2.8-3-0-acilis-plani-bakim-ilerleme-sistemi','updated_at',now()), now())
+on conflict (key) do update set value=excluded.value, updated_at=now();
+
+insert into public.site_update_notes (version, title, summary, status)
+select 'v2.2.8', '🚀 3.0 Açılış Planı ve Bakım İlerleme Sistemi', 'Planlar v3.0.0 ana açılış hedefine göre düzenlendi. Bakım modunda ziyaretçi/normal kullanıcıya otomatik ilerleyen açılış yüzdesi gösterilir.', 'Tamamlandı'
+where not exists (select 1 from public.site_update_notes where version='v2.2.8' and title='🚀 3.0 Açılış Planı ve Bakım İlerleme Sistemi');
+
+insert into public.admin_activity_logs (action, detail, actor_email)
+values ('version_update','v2.2.8 schema çalıştırıldı. 3.0 açılış planı ve bakım ilerleme sistemi kayıtları güncellendi.','mertdundaroyunda@gmail.com');
+
+select 'v2.2.8'::text as "Sürüm", 'v3.0.0'::text as "Ana Açılış Hedefi", 'v2.2.8-3-0-acilis-plani-bakim-ilerleme-sistemi'::text as "Vercel Etiketi", 'Veri silmez'::text as "Güvenlik";
