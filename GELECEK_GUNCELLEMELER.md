@@ -9,15 +9,26 @@
 
 ## 📌 Sıradaki Planlar
 
-### v2.3.0 — Seri ve Arşiv Stabilite
-- 🎬 Seri düzenleme ekranları daha güvenli hale getirilecek.
-- 🖼️ Kapak ve bölüm görselleri korunacak.
-- 📅 Takvim kayıtları oyun adıyla doğru eşleşecek.
+### v2.3.1 — Kullanıcı Profil Sistemi
+- 👤 Profil sayfası geliştirilecek.
+- 🖼️ Avatar ve profil kartı sistemi eklenecek.
+- ▶️ Son izlenen bölümler gösterilecek.
+- ⭐ Favori seriler için temel alan hazırlanacak.
 
-### v3.0.0 — Public Yayın Öncesi Büyük Hazırlık
-- 🏠 Ana sayfa, arşiv, seriler ve takvim tek tasarım diline alınacak.
-- 📱 Mobil görünüm final açılışa hazırlanacak.
-- 🛡️ Veri silinme ve Supabase senkron kontrolü güçlendirilecek.
+### v2.3.2 — Favoriler ve Takip Sistemi
+- ⭐ Seri/oyun favorileme yapılacak.
+- 🔔 Takip edilen seriler listesi eklenecek.
+- 📌 Kullanıcıya özel izleme listesi hazırlanacak.
+
+### v2.3.3 — Başarım ve Rozet Sistemi
+- 🏆 Tamamlanan seri rozeti.
+- 🎖️ Bölüm izleme rozetleri.
+- 📊 İzleme istatistikleri.
+
+### v2.4.0 — Tam Otomatik İçerik Motoru
+- 🤖 RAWG/Steam/YouTube çekme daha akıllı hale getirilecek.
+- 🖼️ Kapak/banner doğrulama güçlendirilecek.
+- 📚 Hikaye/karakter/mekan/atmosfer üretimi geliştirilecek.
 
 ### v4.0.0 — Ana Açılış
 - 🚀 Site public açılışa hazır hale getirilecek.

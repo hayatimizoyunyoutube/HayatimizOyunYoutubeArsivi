@@ -1,9 +1,10 @@
-# Hayatımız Oyun — v2.2.9
+# Hayatımız Oyun — v2.3.0
 
-## Public Açılış Cilası
+## Premium Seri Sayfası ve Arşiv Deneyimi
 
-Bu paket tam proje paketidir. v4.0.0 ana açılışına hazırlık için public arayüz, arşiv, seri, takvim ve bakım notları cilalanmıştır.
+Bu paket tam proje paketidir. v4.0.0 ana açılışına hazırlık için seri merkezi, arşiv görünümü, bölüm/sıradaki bölüm bilgisi, bakım notları ve sürüm etiketleri güncellenmiştir.
 
-- Sürüm etiketi: v2.2.9
+- Sürüm etiketi: v2.3.0
 - Açılış hedefi: v4.0.0
 - Veri koruma: Mevcut oyunlar, kullanıcılar, takvim ve bakım kayıtları silinmez.
+- Schema: gerekli değil. Yeni tablo/kolon eklenmedi.

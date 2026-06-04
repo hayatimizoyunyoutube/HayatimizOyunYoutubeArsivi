@@ -1,10 +1,10 @@
 {
-  "name": "hayatimiz-oyun-v227-public-acilis-cilasi",
+  "name": "hayatimiz-oyun-v230-premium-seri-sayfasi",
   "private": true,
   "type": "module",
-  "version": "2.2.7",
+  "version": "2.3.0",
   "engines": {
     "node": ">=20"
   },
-  "description": "Hayatımız Oyun v2.2.9 Public Açılış Cilası"
+  "description": "Hayatımız Oyun v2.3.0 Premium Seri Sayfası ve Arşiv Deneyimi"
 }

@@ -1,3 +1,6 @@
+-- Hayatımız Oyun v2.3.0 - Premium Seri Sayfası ve Arşiv Deneyimi
+-- Bu sürümde yeni tablo/kolon gerekmez; mevcut schema güvenli şekilde korunur.
+
 -- Hayatımız Oyun v2.1.9 - Profesyonel Yönetim Merkezi ve Takvim Sistemi
 -- Mevcut verileri silmeden çalıştırılacak güvenli schema dosyası.
 
