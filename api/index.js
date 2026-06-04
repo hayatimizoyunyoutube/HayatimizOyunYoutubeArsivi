@@ -189,7 +189,7 @@ function gamePayload(game={}, existing={}){
     status_slug:toSlug(status), genre_slug:toSlug(genre), series_slug:seriesName?toSlug(seriesName):null,
     series_name:seriesName, collection_name:collectionName,
     description:String(game.description || existing.description || ''), story_text:String(game.storyText || game.story_text || existing.story_text || ''),
-    episode_count:Number(game.episode_count ?? game.episodeCount ?? game.eps ?? existing.episode_count ?? 0),
+    episode_count:Number((Array.isArray(game.episodes) && game.episodes.length) ? game.episodes.length : (game.episode_count ?? game.episodeCount ?? game.eps ?? existing.episode_count ?? 0)),
     watched_episode_count:Number(game.watched_episode_count ?? game.watchedEpisodeCount ?? game.watchedEps ?? existing.watched_episode_count ?? 0),
     score:Number(game.score ?? existing.score ?? 0),
     cover_url:String(game.cover || game.cover_url || existing.cover_url || ''),

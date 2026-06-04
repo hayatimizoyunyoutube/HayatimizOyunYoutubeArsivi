@@ -293,11 +293,25 @@ function normalizeRemoteGame(g,i=0){
 }
 function gameToRemotePayload(g){
   const game=normalizeGame(g,0);
+  // v2.3.0 FIX: Playlistten çekilen gerçek YouTube bölüm adları ve thumbnail
+  // görselleri Supabase'e doğrudan gönderilir. Önceki paket sadece bölüm
+  // sayısını yolladığı için Supabase dönüşünde seriler ekranı oyun/site kapağına
+  // düşüyordu.
+  const episodeRows = dedupeEpisodes(
+    Array.isArray(game.episodes) && game.episodes.length ? game.episodes : loadEpisodes(game.id)
+  ).map((ep,idx)=>normalizeEpisode({
+    ...ep,
+    number:Number(ep.number||idx+1),
+    title:ep.title || `${Number(ep.number||idx+1)}. Bölüm`,
+    thumbnail:ep.thumbnail || (ep.videoId?`https://i.ytimg.com/vi/${ep.videoId}/hqdefault.jpg`:''),
+    videoUrl:ep.videoUrl || (ep.videoId?`https://www.youtube.com/watch?v=${ep.videoId}`:'')
+  },idx));
   return {
     id:game.id, title:game.title, status:game.status, genre:game.genre, tags:splitMaybeArray(game.tags), seriesName:game.seriesName, collectionName:collectionName(game),
     cover:game.cover, banner:game.banner, releaseDate:bestReleaseDate(game.releaseDate), platforms:splitMaybeArray(game.platforms), description:game.description, storyText:game.storyText,
     youtubePlaylistUrl:game.youtubePlaylistUrl, youtubePlaylistId:game.youtubePlaylistId || extractYoutubePlaylistId(game.youtubePlaylistUrl),
-    episode_count:Number(game.episodeCount||0), watched_episode_count:Number(game.watchedEpisodeCount||0),
+    episode_count:Number(episodeRows.length || game.episodeCount || 0), watched_episode_count:Number(game.watchedEpisodeCount||0),
+    episodes:episodeRows,
     rawgId:game.rawgId, rawgSlug:game.rawgSlug, steamAppId:game.steamAppId, score:Number(game.score||0),
     metaSource:game.metaSource, metaCheckedAt:game.metaCheckedAt, coverSource:game.coverSource,
     sortOrder:Number(game.sortOrder||0), seriesOrder:Number(game.seriesOrder ?? game.sortOrder ?? 0), statusBucket:statusBucket(game.status), isFeatured:game.isFeatured === true
@@ -1210,19 +1224,20 @@ async function syncPlaylistForForm(form){
   const box=form.querySelector('[data-youtube-status]');
   if(box) box.textContent='Oynatma listesi bölümleri çekiliyor...';
   const result=await fetchPlaylistEpisodes(playlistUrl, title || 'Oyun');
-  setField(form,'episodeCount',result.count || result.episodes.length, false);
+  const normalizedEpisodes=dedupeEpisodes((result.episodes||[]).map((ep,idx)=>normalizeEpisode(ep,idx)));
+  setField(form,'episodeCount',normalizedEpisodes.length || result.count || 0, false);
   const hidden=form.elements?.episodesJson;
-  if(hidden) hidden.value=JSON.stringify(result.episodes);
+  if(hidden) hidden.value=JSON.stringify(normalizedEpisodes);
   const pid=extractYoutubePlaylistId(playlistUrl);
   setField(form,'youtubePlaylistId',pid,false);
   const editId=String(form.elements?.gameId?.value||'').trim();
   if(editId){
-    saveEpisodes(editId, result.episodes);
-    updateGamePatch(editId,{episodes:result.episodes, episodeCount:result.count || result.episodes.length, youtubePlaylistUrl:playlistUrl, youtubePlaylistId:pid, episodeSyncSource:result.source, episodeSyncedAt:new Date().toISOString()});
+    saveEpisodes(editId, normalizedEpisodes);
+    updateGamePatch(editId,{episodes:normalizedEpisodes, episodeCount:normalizedEpisodes.length || result.count, youtubePlaylistUrl:playlistUrl, youtubePlaylistId:pid, episodeSyncSource:result.source, episodeSyncedAt:new Date().toISOString()});
   }
   const preview=form.querySelector('[data-youtube-preview]');
-  if(preview) preview.innerHTML=renderEpisodeList(result.episodes, Number(form.elements?.watchedEpisodeCount?.value||0));
-  if(box) box.innerHTML=`<b>${result.count || result.episodes.length} bölüm hazır.</b> ${esc(result.source)}`;
+  if(preview) preview.innerHTML=renderEpisodeList(normalizedEpisodes, Number(form.elements?.watchedEpisodeCount?.value||0));
+  if(box) box.innerHTML=`<b>${normalizedEpisodes.length || result.count || 0} bölüm hazır.</b> ${esc(result.source)}`;
   toast('Oynatma listesi bölümleri hazırlandı.');
 }
 async function syncPlaylistForGame(id){
@@ -1230,9 +1245,11 @@ async function syncPlaylistForGame(id){
   if(!game){ toast('Oyun bulunamadı.'); return; }
   if(!game.youtubePlaylistUrl){ toast('Bu oyunda playlist URL yok. Düzenle sayfasından ekle.'); return; }
   const result=await fetchPlaylistEpisodes(game.youtubePlaylistUrl, game.title);
-  saveEpisodes(game.id, result.episodes);
-  updateGamePatch(game.id,{episodes:result.episodes, episodeCount:result.count || result.episodes.length, youtubePlaylistUrl:game.youtubePlaylistUrl, youtubePlaylistId:extractYoutubePlaylistId(game.youtubePlaylistUrl), episodeSyncSource:result.source, episodeSyncedAt:new Date().toISOString()});
-  toast(`${game.title}: ${result.count || result.episodes.length} bölüm senkronize edildi.`);
+  const normalizedEpisodes=dedupeEpisodes((result.episodes||[]).map((ep,idx)=>normalizeEpisode(ep,idx)));
+  saveEpisodes(game.id, normalizedEpisodes);
+  updateGamePatch(game.id,{episodes:normalizedEpisodes, episodeCount:normalizedEpisodes.length || result.count || 0, youtubePlaylistUrl:game.youtubePlaylistUrl, youtubePlaylistId:extractYoutubePlaylistId(game.youtubePlaylistUrl), episodeSyncSource:result.source, episodeSyncedAt:new Date().toISOString()});
+  persistGameToSupabase({...game, episodes:normalizedEpisodes, episodeCount:normalizedEpisodes.length || result.count || 0}, game.id).catch(err=>console.warn('Playlist bölüm kaydı Supabase tarafında yerel kaldı:', err?.message || err));
+  toast(`${game.title}: ${normalizedEpisodes.length || result.count || 0} bölüm senkronize edildi.`);
   render();
 }
 function setWatchedForGame(id, value){
