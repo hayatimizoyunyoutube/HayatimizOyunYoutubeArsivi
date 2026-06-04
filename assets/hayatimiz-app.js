@@ -24,7 +24,7 @@ const NOTES_KEYS = [STORAGE.notes,'hayatimiz_update_notes_local_v204','hayatimiz
 const MAINTENANCE_KEYS = [STORAGE.maintenance,'hayatimiz_maintenance_cache_stable','hayatimiz_v254_maintenance','hayatimiz_site_runtime_config_maintenance'];
 
 const DEFAULT_GAMES = [
-  {id:'alan-wake-remastered',title:'Alan Wake Remastered',status:'Devam Eden',genre:'Korku',seriesName:'Alan Wake',cover:'/assets/alan-wake-night-springs.png',releaseDate:'2010',description:'Korku ve hikaye odaklı yayın arşivi. Bölüm bölüm takip için hazır kart yapısı.',episodeCount:8,tags:'Türkçe Altyazılı, Hikaye, Korku'},
+  {id:'alan-wake-remastered',title:'Alan Wake Remastered',status:'Devam Eden',genre:'Korku',seriesName:'Alan Wake',cover:'/assets/alan-wake-remastered-cover.png',releaseDate:'2010',description:'Korku ve hikaye odaklı yayın arşivi. Bölüm bölüm takip için hazır kart yapısı.',episodeCount:8,tags:'Türkçe Altyazılı, Hikaye, Korku'},
   {id:'assassins-creed-directors-cut',title:'Assassin’s Creed Director’s Cut',status:'Tamamlanan',genre:'Aksiyon',seriesName:'Assassin’s Creed',cover:'/assets/assassins-creed-directors-cut.png',releaseDate:'2008',description:'Tamamlanan seri arşivi, bölüm sayısı ve koleksiyon görünümü için örnek kayıt.',episodeCount:14,tags:'Türkçe, Seri, Tarihi'},
   {id:'hayatimiz-oyun-arsiv',title:'Hayatımız Oyun Arşivi',status:'Yakında',genre:'YouTube Arşivi',seriesName:'Genel Arşiv',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2026',description:'YouTube oynatma listesi, bölüm ve oyun koleksiyonu merkezi.',episodeCount:0,tags:'Arşiv, Plan, YouTube'},
   {id:'a-plague-tale-innocence',title:'A Plague Tale: Innocence',status:'Planlandı',genre:'Macera',seriesName:'A Plague Tale',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2019',description:'Hikaye odaklı seri için gelecek yayın planı ve kart/filtre örneği.',episodeCount:0,tags:'Türkçe Altyazılı, Hikaye, Macera'},
@@ -232,7 +232,7 @@ function normalizeGame(g,i){
 const LOCAL_META_CATALOG = [
   {rx:/007|first\s*light|james\s*bond/i,title:'007 First Light',seriesName:'James Bond',genre:'Aksiyon, Gizlilik, Macera',releaseDate:'27.03.2026',platforms:'PC, PlayStation 5, Xbox Series S/X, Nintendo Switch',tags:'Türkçe Altyazılı, Sinematik, Aksiyon',score:0,steamAppId:'',rawgSlug:'007-first-light',cover:'/assets/hayatimiz-kapak.png',banner:'/assets/hayatimiz-kapak.png',description:`James Bond'un MI6 içindeki ilk büyük operasyonunu, gizli yapılanmalar ve yüksek riskli ajanlık görevleri üzerinden takip eden sinematik aksiyon arşivi.`,storyText:`Görevin henüz başında, çiçeği burnunda bir ajan olan James Bond, MI6 tarafından küresel dengeleri tehdit eden gizli bir yapılanmayı çökertmekle görevlendirilir. First Light operasyonu, Bond'un sadece fiziksel sınırlarını değil, aynı zamanda bir ajan olarak ahlaki sınırlarını ve sadakatini de ilk kez ciddi şekilde test edeceği bir vaftiz törenine dönüşür.`},
   {rx:/plague.*innocence|innocence/i,title:'A Plague Tale: Innocence',seriesName:'A Plague Tale',genre:'Macera, Gizlilik, Hikaye',releaseDate:'14.05.2019',platforms:'PC, PlayStation, Xbox, Nintendo Switch',tags:'Türkçe Altyazılı, Hikaye, Macera',score:8.3,steamAppId:'752590',rawgSlug:'a-plague-tale-innocence',cover:'https://cdn.akamai.steamstatic.com/steam/apps/752590/header.jpg',banner:'https://cdn.akamai.steamstatic.com/steam/apps/752590/capsule_616x353.jpg'},
-  {rx:/alan\s*wake/i,title:'Alan Wake Remastered',seriesName:'Alan Wake',genre:'Korku, Gerilim, Hikaye',releaseDate:'05.10.2021',platforms:'PC, PlayStation, Xbox, Nintendo Switch',tags:'Türkçe Altyazılı, Korku, Hikaye',score:8.0,steamAppId:'108710',rawgSlug:'alan-wake-remastered',cover:'https://cdn.akamai.steamstatic.com/steam/apps/108710/header.jpg',banner:'https://cdn.akamai.steamstatic.com/steam/apps/108710/capsule_616x353.jpg'},
+  {rx:/alan\s*wake/i,title:'Alan Wake Remastered',seriesName:'Alan Wake',genre:'Psikolojik Korku, Gerilim, Hikaye Odaklı',releaseDate:'05.10.2021',platforms:'PC, PlayStation, Xbox, Nintendo Switch',tags:'Türkçe Altyazılı, Korku, Hikaye',score:8.0,steamAppId:'108710',rawgSlug:'alan-wake-remastered',cover:'/assets/alan-wake-remastered-cover.png',banner:'/assets/alan-wake-remastered-cover.png'},
   {rx:/cyberpunk\s*2077/i,title:'Cyberpunk 2077',seriesName:'Cyberpunk',genre:'Aksiyon RPG, Açık Dünya, Bilim Kurgu',releaseDate:'10.12.2020',platforms:'PC, PlayStation 5, Xbox Series S/X',tags:'Türkçe Altyazılı, RPG, Açık Dünya',score:9.1,steamAppId:'1091500',rawgSlug:'cyberpunk-2077',cover:'https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg',banner:'https://cdn.akamai.steamstatic.com/steam/apps/1091500/capsule_616x353.jpg'},
   {rx:/witcher\s*3|wild\s*hunt/i,title:'The Witcher 3: Wild Hunt',seriesName:'The Witcher',genre:'RPG, Açık Dünya, Fantastik',releaseDate:'19.05.2015',platforms:'PC, PlayStation, Xbox, Nintendo Switch',tags:'Türkçe Altyazılı, RPG, Açık Dünya',score:9.6,steamAppId:'292030',rawgSlug:'the-witcher-3-wild-hunt',cover:'https://cdn.akamai.steamstatic.com/steam/apps/292030/header.jpg',banner:'https://cdn.akamai.steamstatic.com/steam/apps/292030/capsule_616x353.jpg'},
   {rx:/red\s*dead|rdr\s*2/i,title:'Red Dead Redemption 2',seriesName:'Red Dead',genre:'Aksiyon, Macera, Açık Dünya, Western',releaseDate:'05.12.2019',platforms:'PC, PlayStation, Xbox',tags:'Türkçe Altyazılı, Açık Dünya, Hikaye',score:9.7,steamAppId:'1174180',rawgSlug:'red-dead-redemption-2',cover:'https://cdn.akamai.steamstatic.com/steam/apps/1174180/header.jpg',banner:'https://cdn.akamai.steamstatic.com/steam/apps/1174180/capsule_616x353.jpg'}
@@ -503,6 +503,18 @@ async function persistMaintenanceToSupabase(maintenance){
   saveSyncState({mode:'supabase', status:'Supabase bakım modu aktif', message:payload.enabled ? 'Bakım modu Supabase üzerinde açıldı.' : 'Bakım modu Supabase üzerinde kapatıldı.'});
   return data;
 }
+function isBadDlcCoverForTitle(title, url){
+  const t=normalizeText(title||'');
+  const u=normalizeText(url||'');
+  if(!u) return false;
+  if(t.includes('alan wake remastered') && (u.includes('night springs') || u.includes('springs') || u.includes('expansion') || u.includes('dlc'))) return true;
+  if((t.includes('remastered') || t.includes('ultimate') || t.includes('complete')) && (u.includes('dlc') || u.includes('expansion') || u.includes('season pass'))) return true;
+  return false;
+}
+function cleanCoverForTitle(title, cover, fallback){
+  if(!cover || isBadDlcCoverForTitle(title, cover)) return fallback || '/assets/hayatimiz-kapak.png';
+  return cover;
+}
 function mapMeta(raw, title){
   const m = raw?.meta || raw?.steam || raw || {};
   const local = localGameMetaCandidate(title) || {};
@@ -510,6 +522,10 @@ function mapMeta(raw, title){
   const steamId = m.steamAppId || m.steam_app_id || m.appid || m.appId || local.steamAppId || '';
   const incomingSeries = m.seriesName || m.series_name || m.series || m.franchise || m.franchise_name || m.collectionName || m.collection_name || '';
   const safeSeriesName = cleanSeriesName(local.seriesName || incomingSeries, finalTitle);
+  const rawCover = m.cover || m.cover_url || m.background_image || m.image || (steamId ? `https://cdn.akamai.steamstatic.com/steam/apps/${steamId}/header.jpg` : local.cover);
+  const rawBanner = m.banner || m.banner_url || m.background || (steamId ? `https://cdn.akamai.steamstatic.com/steam/apps/${steamId}/capsule_616x353.jpg` : local.banner);
+  const safeCover = cleanCoverForTitle(finalTitle, rawCover, local.cover || (steamId ? `https://cdn.akamai.steamstatic.com/steam/apps/${steamId}/header.jpg` : '/assets/hayatimiz-kapak.png'));
+  const safeBanner = cleanCoverForTitle(finalTitle, rawBanner, local.banner || safeCover);
   return {
     title: finalTitle,
     genre: m.genre || local.genre || '',
@@ -521,8 +537,8 @@ function mapMeta(raw, title){
     rawgId: m.rawgId || m.rawg_id || m.id || '',
     rawgSlug: m.rawgSlug || m.rawg_slug || m.slug || local.rawgSlug || '',
     steamAppId: steamId,
-    cover: m.cover || m.cover_url || m.background_image || m.image || (steamId ? `https://cdn.akamai.steamstatic.com/steam/apps/${steamId}/header.jpg` : local.cover),
-    banner: m.banner || m.banner_url || m.background || (steamId ? `https://cdn.akamai.steamstatic.com/steam/apps/${steamId}/capsule_616x353.jpg` : local.banner),
+    cover: safeCover,
+    banner: safeBanner,
     description: m.description || m.summary || local.description || `${m.title || title} için RAWG/Steam bilgi alanları hazırlandı. Tür, kapak, tarih, platform ve seri bilgileri kontrol edilerek kaydedilebilir.`,
     storyText: m.storyText || m.story_text || local.storyText || professionalStoryText({title:m.title || local.title || title, genre:m.genre || local.genre, seriesName:safeSeriesName || local.seriesName}),
     source: raw?.source || m.source || local.source || 'Bilgi paneli'
