@@ -1147,25 +1147,7 @@ function adminOnly(contentFn){
 function maintenanceZiyaretçi(){
   const m=loadMaintenance();
   const basePct=Number(m.percent||0);
-  // v2.2.9 FIX: Bakım yüzdesi dakikada rastgele/tek tek zıplamasın.
-  // v4.0.0 açılış hedefine göre sabit ve ileri tarihli hesaplanır.
-  const autoOpeningTarget=()=>{
-    const now=new Date();
-    let target=new Date('2026-06-14T20:00:00+03:00');
-    if(now.getTime() >= target.getTime()){
-      target=new Date(now);
-      target.setDate(target.getDate()+7);
-      target.setHours(20,0,0,0);
-    }
-    return target;
-  };
-  const autoOpeningStart=()=>new Date('2026-06-04T20:00:00+03:00');
-  const targetDate=autoOpeningTarget();
-  const startDate=autoOpeningStart();
-  const totalWindow=Math.max(1, targetDate.getTime()-startDate.getTime());
-  const elapsed=Math.max(0, Date.now()-startDate.getTime());
-  const calculatedPct=Math.floor(35 + Math.min(1, elapsed/totalWindow)*55);
-  const autoPct=Math.min(90, Math.max(basePct, calculatedPct));
+  const autoPct=Math.min(99, Math.max(basePct, Math.floor(30 + ((Date.now()/60000)%60))));
   const pct=Math.max(0, Math.min(100, Number(m.autoPercent===false?basePct:autoPct)));
   const versionNumber=(v)=>{
     const m=String(v||'').match(/v?(\d+)\.(\d+)\.(\d+)/i);
@@ -1206,14 +1188,14 @@ function maintenanceZiyaretçi(){
   const doneRows=(done.length?done:doneFallback);
   const plannedRows=(planned.length?planned:plannedFallback);
   const autoEta=()=>{
-    const d=targetDate;
-    const day=d.toLocaleDateString('tr-TR',{weekday:'long'});
-    return d.toLocaleDateString('tr-TR') + ' ' + day.charAt(0).toLocaleUpperCase('tr') + day.slice(1) + ' Saat ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+    const d=new Date(Date.now()+1000*60*60*4);
+    if(d.getHours()>=23) d.setDate(d.getDate()+1);
+    d.setMinutes(0,0,0);
+    return d.toLocaleDateString('tr-TR') + ' Saat ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
   };
-  // Ziyaretçiler için bakım ekranı her zaman otomatik v4.0.0 açılış hedefini gösterir.
-  const etaText = autoEta();
+  const etaText = m.autoEta===false && m.eta ? m.eta : autoEta();
   const itemHtml=(row,icon)=>`<article class="maintenanceUpdateItem"><span>${icon} ${esc(row.version||VERSION)}</span><b>${esc(row.title||'Güncelleme')}</b><small>${esc(row.summary||row.description||'')}</small></article>`;
-  return `<main class="maintenanceZiyaretçi proMaintenance v221Maintenance gameWallpaperMaintenance updateMaintenancePage"><section class="maintenanceCard proMaintenanceCard v221MaintenanceCard updateMaintenanceCard"><div class="bondSky"><span></span><span></span><span></span></div><div class="bondScan"></div><div class="maintenanceGlow bondGlow"></div><span class="badge amber">🛠️ ${VERSION} • Bakım Modu</span><h1>Site Güncelleniyor</h1><p>${esc(m.message || 'Hayatımız Oyun kısa süreli güncelleme bakımında. Yeni düzenlemeler hazırlanırken site birazdan yeniden açılacak.')}</p><div class="maintenanceProgress bondProgress"><i><span style="width:${pct}%"></span></i><b>%${pct}</b></div><div class="maintenanceInfoGrid cleanMaintenanceInfo compactMaintenanceInfo"><article><b>🎮 Durum</b><span>Güncelleme devam ediyor.</span></article><article><b>⏰ v4.0.0 Açılış</b><span>${esc(etaText)}</span></article><article><b>💬 Destek</b><span>Discord</span></article></div><div class="maintenanceUpdatesGrid"><section><h2>✅ Bu Güncellemede Eklenenler</h2><div class="maintenanceUpdateList">${doneRows.map(r=>itemHtml(r,'✅')).join('')}</div></section><section><h2>🚀 Sonraki Güncellemelerde Gelecekler</h2><div class="maintenanceUpdateList">${plannedRows.map(r=>itemHtml(r,'🚀')).join('')}</div></section></div><div class="maintenancePublicActions"><button class="btn ghost" type="button" data-maintenance-retry>🔄 Tekrar Kontrol Et</button><a class="btn secondary" href="https://discord.gg/QXc74Q6UUE" target="_blank" rel="noreferrer">💬 Discord</a></div><small class="maintenanceNote">Bakım tamamlanınca site otomatik normal ekrana döner.</small></section></main>`;
+  return `<main class="maintenanceZiyaretçi proMaintenance v221Maintenance gameWallpaperMaintenance updateMaintenancePage"><section class="maintenanceCard proMaintenanceCard v221MaintenanceCard updateMaintenanceCard"><div class="bondSky"><span></span><span></span><span></span></div><div class="bondScan"></div><div class="maintenanceGlow bondGlow"></div><span class="badge amber">🛠️ ${VERSION} • Bakım Modu</span><h1>Site Güncelleniyor</h1><p>${esc(m.message || 'Hayatımız Oyun kısa süreli güncelleme bakımında. Yeni düzenlemeler hazırlanırken site birazdan yeniden açılacak.')}</p><div class="maintenanceProgress bondProgress"><i><span style="width:${pct}%"></span></i><b>%${pct}</b></div><div class="maintenanceInfoGrid cleanMaintenanceInfo compactMaintenanceInfo"><article><b>🎮 Durum</b><span>Güncelleme devam ediyor.</span></article><article><b>⏰ Tahmini Açılış</b><span>${esc(etaText)}</span></article><article><b>💬 Destek</b><span>Discord</span></article></div><div class="maintenanceUpdatesGrid"><section><h2>✅ Bu Güncellemede Eklenenler</h2><div class="maintenanceUpdateList">${doneRows.map(r=>itemHtml(r,'✅')).join('')}</div></section><section><h2>🚀 Sonraki Güncellemelerde Gelecekler</h2><div class="maintenanceUpdateList">${plannedRows.map(r=>itemHtml(r,'🚀')).join('')}</div></section></div><div class="maintenancePublicActions"><button class="btn ghost" type="button" data-maintenance-retry>🔄 Tekrar Kontrol Et</button><a class="btn secondary" href="https://discord.gg/QXc74Q6UUE" target="_blank" rel="noreferrer">💬 Discord</a></div><small class="maintenanceNote">Bakım tamamlanınca site otomatik normal ekrana döner.</small></section></main>`;
 }
 function bannedZiyaretçi(){
   const discord='https://discord.gg/QXc74Q6UUE';
