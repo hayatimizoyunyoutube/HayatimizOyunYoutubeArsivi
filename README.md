@@ -1,13 +1,11 @@
-# Hayatımız Oyun v2.2.3
+# Hayatımız Oyun — v2.2.5
 
-🎮 Arşiv, Form ve Bakım Deneyimi sürümü.
+## 💾 Veri Sağlığı ve Otomatik Yedekleme
 
-- Arşiv kapakları kompakt hale getirildi.
-- Oyun ekle formunda etiket ve tür seçimleri butonlu yapıldı.
-- Bakım ekranı güncelleme notlarıyla daha anlaşılır hale getirildi.
-- Supabase kayıt koruması korunur; veri sıfırlanmaz.
+- Supabase veri sağlığı merkezi eklendi.
+- Eksik kapak/tarih/takvim kapak kontrolü eklendi.
+- Manuel JSON yedek alma aracı eklendi.
+- Mevcut oyunlar sen silmeden silinmeyecek koruma korunur.
+- Sürüm etiketi: v2.2.5
 
-
-## v2.2.3 FIX - Oyun Meta Tarih Çekme
-- 🗓️ Oyun ekleme formunda tarih çekme ve Supabase tarih kaydı düzeltildi.
-- ✅ Schema gerekli değildir.
+Schema: Gerekli. Veri silmez; güvenli tablo ve status/version kayıtları ekler.

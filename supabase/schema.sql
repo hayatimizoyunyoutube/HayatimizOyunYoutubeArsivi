@@ -1447,16 +1447,16 @@ select
   now() as "Çalışma Zamanı";
 
 
--- v2.2.1 Results / Sürüm senkronizasyonu
+-- v2.2.4 Results / Sürüm senkronizasyonu
 insert into site_runtime_config (key, value, updated_at)
 values
-  ('site_version', jsonb_build_object('version','v2.2.1','label','Premium Bakım Merkezi ve Sürüm Senkronizasyonu','updated_at',now()), now()),
-  ('schema_version', jsonb_build_object('version','v2.2.1','label','Premium Bakım Merkezi ve Sürüm Senkronizasyonu','updated_at',now()), now())
+  ('site_version', jsonb_build_object('version','v2.2.4','label','Premium Bakım Merkezi ve Sürüm Senkronizasyonu','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.4','label','Premium Bakım Merkezi ve Sürüm Senkronizasyonu','updated_at',now()), now())
 on conflict (key) do update set value = excluded.value, updated_at = excluded.updated_at;
 
 select
   '✅ Başarılı' as "Durum",
-  'v2.2.1' as "Sürüm",
+  'v2.2.4' as "Sürüm",
   'Premium Bakım Merkezi ve Sürüm Senkronizasyonu' as "İşlem",
   'Bakım/ban/Supabase kayıtları korunur; veriler silinmez.' as "Not";
 
@@ -1488,14 +1488,14 @@ where not exists (
 
 insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
 select
-  'v2.2.3',
+  'v2.2.4',
   '🛠️ Bakım Modu Premium Deneyim Geliştirme',
   'Bakım ekranı mesajları, güncelleme notları ve ziyaretçi deneyimi daha sade ve profesyonel hale getirilecek.',
   'Planlandı',
   now(),
   now()
 where not exists (
-  select 1 from public.site_update_notes where version='v2.2.3' and title='🛠️ Bakım Modu Premium Deneyim Geliştirme'
+  select 1 from public.site_update_notes where version='v2.2.4' and title='🛠️ Bakım Modu Premium Deneyim Geliştirme'
 );
 
 select
@@ -1508,29 +1508,29 @@ select
 
 
 -- =========================================================
--- v2.2.3 - Arşiv, Form ve Bakım Deneyimi
+-- v2.2.4 - Arşiv, Form ve Bakım Deneyimi
 -- Bu blok veri silmez. Sadece sürüm/status/results kayıtlarını günceller.
 -- =========================================================
 
 insert into public.site_runtime_config (key, value, updated_at)
 values
-  ('site_version', jsonb_build_object('version','v2.2.3','label','Arşiv, Form ve Bakım Deneyimi','updated_at',now()), now()),
-  ('schema_version', jsonb_build_object('version','v2.2.3','label','Arşiv, Form ve Bakım Deneyimi','updated_at',now()), now()),
-  ('vercel_label', jsonb_build_object('version','v2.2.3','label','v2.2.3-arsiv-form-bakim-deneyimi','updated_at',now()), now())
+  ('site_version', jsonb_build_object('version','v2.2.4','label','Arşiv, Form ve Bakım Deneyimi','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.4','label','Arşiv, Form ve Bakım Deneyimi','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.4','label','v2.2.4-arsiv-form-bakim-deneyimi','updated_at',now()), now())
 on conflict (key) do update
 set value = excluded.value,
     updated_at = now();
 
 insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
 select
-  'v2.2.3',
+  'v2.2.4',
   '🎮 Arşiv, Form ve Bakım Deneyimi',
   'Arşiv kapakları kompakt hale getirildi; oyun ekle formunda etiketler butonlu, türler profesyonel seçimli yapıldı. Bakım ekranı güncelleme notları daha okunabilir hale getirildi.',
   'Tamamlandı',
   now(),
   now()
 where not exists (
-  select 1 from public.site_update_notes where version='v2.2.3' and title='🎮 Arşiv, Form ve Bakım Deneyimi'
+  select 1 from public.site_update_notes where version='v2.2.4' and title='🎮 Arşiv, Form ve Bakım Deneyimi'
 );
 
 insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
@@ -1547,8 +1547,78 @@ where not exists (
 
 select
   '✅ Başarılı'::text as "Durum",
-  'v2.2.3'::text as "Sürüm",
+  'v2.2.4'::text as "Sürüm",
   'Arşiv, Form ve Bakım Deneyimi'::text as "İşlem",
   'Arşiv kapakları kompakt; oyun formu etiket/tür butonlu; bakım notları okunabilir.'::text as "Yapılanlar",
-  'Vercel/GitHub etiketi v2.2.3-arsiv-form-bakim-deneyimi olarak güncel.'::text as "Vercel Etiketi",
+  'Vercel/GitHub etiketi v2.2.4-arsiv-form-bakim-deneyimi olarak güncel.'::text as "Vercel Etiketi",
   'Veri silinmez, oyunlar ve bakım modu sıfırlanmaz.'::text as "Koruma";
+
+
+-- v2.2.4 yayın takvimi ve oyun kapakları sürüm kaydı.
+-- Mevcut verileri silmez; yalnızca status/version kayıtlarını güncellemek için güvenli upsert blokları kullanılır.
+
+
+-- =========================================================
+-- v2.2.5 - Veri Sağlığı ve Otomatik Yedekleme
+-- Bu blok veri silmez. Sadece güvenli tablolar ve sürüm/status kayıtları ekler.
+-- =========================================================
+
+create table if not exists public.site_data_backups (
+  id uuid primary key default gen_random_uuid(),
+  backup_type text default 'manual',
+  version text default 'v2.2.5',
+  summary text,
+  payload jsonb default '{}'::jsonb,
+  created_by text,
+  created_at timestamptz default now()
+);
+
+create table if not exists public.site_admin_activity_logs (
+  id uuid primary key default gen_random_uuid(),
+  actor_email text,
+  action text not null,
+  target_type text,
+  target_id text,
+  details jsonb default '{}'::jsonb,
+  created_at timestamptz default now()
+);
+
+insert into public.site_runtime_config (key, value, updated_at)
+values
+  ('site_version', jsonb_build_object('version','v2.2.5','label','Veri Sağlığı ve Otomatik Yedekleme','updated_at',now()), now()),
+  ('schema_version', jsonb_build_object('version','v2.2.5','label','Veri Sağlığı ve Otomatik Yedekleme','updated_at',now()), now()),
+  ('vercel_label', jsonb_build_object('version','v2.2.5','label','v2.2.5-veri-sagligi-otomatik-yedekleme','updated_at',now()), now())
+on conflict (key) do update
+set value = excluded.value, updated_at = now();
+
+insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
+select
+  'v2.2.5',
+  '💾 Veri Sağlığı ve Otomatik Yedekleme',
+  'Supabase veri sağlığı merkezi, eksik kapak/tarih uyarıları, takvim kapak kontrolü ve manuel JSON yedek alma aracı eklendi. Mevcut veriler silinmez.',
+  'Tamamlandı',
+  now(),
+  now()
+where not exists (
+  select 1 from public.site_update_notes where version='v2.2.5' and title='💾 Veri Sağlığı ve Otomatik Yedekleme'
+);
+
+insert into public.site_update_notes (version, title, summary, status, created_at, updated_at)
+select
+  'v2.2.6',
+  '📱 Mobil Menü ve Responsive Cila',
+  'Üst menü, yönetim menüsü, büyük kartlar ve public/admin sayfaları mobilde daha kompakt hale getirilecek.',
+  'Planlandı',
+  now(),
+  now()
+where not exists (
+  select 1 from public.site_update_notes where version='v2.2.6' and title='📱 Mobil Menü ve Responsive Cila'
+);
+
+select
+  '✅ Başarılı'::text as "Durum",
+  'v2.2.5'::text as "Sürüm",
+  'Veri Sağlığı ve Otomatik Yedekleme'::text as "İşlem",
+  'Veri Sağlığı Merkezi, eksik kapak/tarih kontrolü ve manuel yedek alma aracı eklendi.'::text as "Yapılanlar",
+  'v2.2.5-veri-sagligi-otomatik-yedekleme'::text as "Vercel Etiketi",
+  'Veri silinmez, mevcut oyunlar sen silmeden sıfırlanmaz.'::text as "Koruma";

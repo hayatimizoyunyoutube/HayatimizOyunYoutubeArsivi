@@ -1,5 +1,12 @@
 [
   {
+    "id": "v224-yayin-takvimi-oyun-kapaklari",
+    "version": "v2.2.4",
+    "title": "📅 Yayın Takvimi ve Oyun Kapakları",
+    "summary": "Public takvim gerçek ay görünümüyle güçlendirildi. Yayın planlarında oyun kapakları daha net gösterilir, bugün/saat göstergesi geliştirildi, yayın ekleme formu sade tutuldu ve takvim kayıtları Supabase üzerinde kalıcı korunur.",
+    "status": "Tamamlandı"
+  },
+  {
     "id": "v221-premium-bakim-surum-senkronizasyonu",
     "version": "v2.2.1",
     "title": "🎬 Premium Bakım Merkezi ve Sürüm Senkronizasyonu",

@@ -1,10 +1,10 @@
 {
-  "name": "hayatimiz-oyun-v223-arsiv-form-bakim-deneyimi",
+  "name": "hayatimiz-oyun-v225-veri-sagligi-otomatik-yedekleme",
   "private": true,
   "type": "module",
-  "version": "2.2.3",
+  "version": "2.2.5",
   "engines": {
     "node": ">=20"
   },
-  "description": "Hayatımız Oyun v2.2.3 Arşiv Form ve Bakım Deneyimi"
+  "description": "Hayatımız Oyun v2.2.5 Veri Sağlığı ve Otomatik Yedekleme"
 }
