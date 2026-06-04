@@ -31,6 +31,11 @@ const DEFAULT_GAMES = [
   {id:'control-ultimate-edition',title:'Control Ultimate Edition',status:'Ara Verildi',genre:'Aksiyon',seriesName:'Remedy Evreni',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2019',description:'Ara verilen seriler için durum rozeti ve koleksiyon sayacı örneği.',episodeCount:5,tags:'Aksiyon, Bilim Kurgu, Seri'}
 ];
 const DEFAULT_NOTES = [
+  {id:'fix-v228-bakim-guncelleme-notlari-guncel-cekim',version:'v2.2.8 FIX',title:'🛠️ Bakım Modu Güncelleme Notları Fix',summary:'Bakım ekranındaki eklenenler ve sonraki güncellemeler artık güncel notlardan çekilir; eski planlar üstte kalmaz.',status:'Tamamlandı'},
+  {id:'v228-3-0-acilis-plani-bakim-ilerleme',version:'v2.2.8',title:'🚀 3.0 Açılış Planı ve Bakım İlerleme Sistemi',summary:'Tüm planlar v3.0.0 ana açılış hedefine göre düzenlendi. Bakım modu ziyaretçilere otomatik ilerleme, güncel eklenenler ve gelecek planları gösterir.',status:'Tamamlandı'},
+  {id:'plan-v229-takvim-playlist-stabilite',version:'v2.2.9',title:'📅 Takvim ve Playlist Stabilite',summary:'Yayın takvimi ekleme/düzenleme, oyun kapak eşleşmesi ve playlist bölüm listeleri daha sağlam hale getirilecek.',status:'Planlandı'},
+  {id:'plan-v230-admin-dashboard-veri-sagligi',version:'v2.3.0',title:'📊 Admin Dashboard ve Veri Sağlığı Geliştirme',summary:'Veri sağlığı, yedekleme, eksik kapak/tarih kontrolü ve yönetim metrikleri geliştirilecek.',status:'Planlandı'},
+  {id:'plan-v300-ana-acilis',version:'v3.0.0',title:'🎉 Ana Açılış Sürümü',summary:'Public arşiv, yayın takvimi, seri merkezi, bakım/ban güvenliği ve yönetim paneli yayın için son hale getirilecek.',status:'Planlandı'},
   {id:'v225-3-0-acilis-plani-bakim-ilerleme-sistemi',version:'v2.2.8',title:'💾 3.0 Açılış Planı ve Bakım İlerleme Sistemi',summary:'Supabase veri sağlığı merkezi eklendi. Oyun, kullanıcı, takvim, not ve bakım kayıtları kontrol edilir; eksik kapak/tarih uyarıları gösterilir, manuel JSON yedek alma ve veri onarma araçları hazırlandı.',status:'Tamamlandı'},
   {id:'v224-yayin-takvimi-oyun-kapaklari',version:'v2.2.8',title:'📅 Yayın Takvimi ve Oyun Kapakları',summary:'Public takvim gerçek ay görünümüyle güçlendirildi. Yayın planlarında oyun kapakları daha net gösterilir, bugün/saat göstergesi geliştirildi, yayın ekleme formu sade tutuldu ve takvim kayıtları Supabase üzerinde kalıcı korunur.',status:'Tamamlandı'},
   {id:'v223-arsiv-form-bakim-deneyimi',version:'v2.2.3',title:'🎮 Arşiv, Form ve Bakım Deneyimi',summary:'Arşiv kapakları daha kompakt hale getirildi; oyun ekleme formunda etiketler butonlu, türler profesyonel seçimli yapıldı. Bakım ekranında güncelleme notları kullanıcıya daha düzenli gösterilir.',status:'Tamamlandı'},
@@ -1125,19 +1130,34 @@ function adminOnly(contentFn){
 }
 function maintenanceZiyaretçi(){
   const m=loadMaintenance();
-  const pct=Math.max(0, Math.min(100, Number(m.percent||0)));
-  const notes=loadNotes();
-  const done=notes.filter(n=>!String(n.status||'').toLocaleLowerCase('tr').includes('plan')).slice(0,2);
-  const planned=notes.filter(n=>String(n.status||'').toLocaleLowerCase('tr').includes('plan')).slice(0,2);
+  const basePct=Number(m.percent||0);
+  const autoPct=Math.min(99, Math.max(basePct, Math.floor(30 + ((Date.now()/60000)%60))));
+  const pct=Math.max(0, Math.min(100, Number(m.autoPercent===false?basePct:autoPct)));
+  const versionNumber=(v)=>{
+    const m=String(v||'').match(/v?(\d+)\.(\d+)\.(\d+)/i);
+    return m ? (Number(m[1])*1000000+Number(m[2])*1000+Number(m[3])) : 0;
+  };
+  const uniqueById=(rows)=>{
+    const map=new Map();
+    for(const row of rows||[]){
+      const key=String(row.id||`${row.version}-${row.title}`).toLocaleLowerCase('tr');
+      if(!map.has(key)) map.set(key,row);
+    }
+    return Array.from(map.values());
+  };
+  const allNotes=uniqueById([...DEFAULT_NOTES, ...loadNotes()]);
+  const isPlanned=(n)=>String(n.status||'').toLocaleLowerCase('tr').includes('plan') || n.planned===true;
+  const done=allNotes.filter(n=>!isPlanned(n) && !String(n.status||'').toLocaleLowerCase('tr').includes('sil')).sort((a,b)=>versionNumber(b.version)-versionNumber(a.version)).slice(0,3);
+  const planned=allNotes.filter(isPlanned).sort((a,b)=>versionNumber(a.version)-versionNumber(b.version)).slice(0,3);
   const doneFallback=[
-    {version:VERSION,title:'Bakım ekranı yenilendi',summary:'Site güncellenirken ziyaretçiler daha anlaşılır bakım ekranı görür.'},
-    {version:VERSION,title:'Takvim ve kapak sistemi geliştirildi',summary:'Yayın takviminde oyun kapakları otomatik eşleşir.'},
-    {version:VERSION,title:'Kullanıcı güvenliği korundu',summary:'Banlı kullanıcılar siteye erişemez; yetki sistemi korunur.'}
+    {version:VERSION,title:'3.0 Açılış Planı ve Bakım İlerleme',summary:'Planlar 3.0 açılış hedefine göre düzenlendi; bakım ekranı ziyaretçilere güncel ilerleme ve notlar gösterir.'},
+    {version:'v2.2.7',title:'Sürüm Senkronizasyonu',summary:'Site, Vercel, health/status ve güncelleme notları aynı sürüm çizgisine alındı.'},
+    {version:'v2.2.6',title:'Mobil Menü ve Responsive Cila',summary:'Üst menü taşmaları, mobil buton sıralaması ve büyük kart yerleşimleri iyileştirildi.'}
   ];
   const plannedFallback=[
-    {version:'v2.2.8',title:'Mobil menü ve responsive cila',summary:'Üst menü, yönetim menüsü ve kartlar mobilde daha kompakt çalışacak.'},
-    {version:'v2.2.8',title:'Playlist ve bölüm stabilitesi',summary:'Seri/bölüm listeleri daha güçlü senkron çalışacak.'},
-    {version:'v2.2.8',title:'Admin dashboard istatistikleri',summary:'Yönetim panelindeki arşiv metrikleri daha güçlü gösterilecek.'}
+    {version:'v2.2.9',title:'Takvim ve Playlist Stabilite',summary:'Yayın takvimi ekleme/düzenleme, oyun kapak eşleşmesi ve playlist bölüm listeleri daha sağlam hale getirilecek.'},
+    {version:'v2.3.0',title:'Admin Dashboard ve Veri Sağlığı Geliştirme',summary:'Veri sağlığı, yedekleme, eksik kapak/tarih kontrolü ve yönetim metrikleri geliştirilecek.'},
+    {version:'v3.0.0',title:'Ana Açılış Sürümü',summary:'Public arşiv, takvim, seri merkezi, bakım/ban güvenliği ve yönetim paneli yayın için son hale getirilecek.'}
   ];
   const doneRows=(done.length?done:doneFallback);
   const plannedRows=(planned.length?planned:plannedFallback);
