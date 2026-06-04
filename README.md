@@ -1,11 +1,3 @@
-# Hayatımız Oyun — v2.2.8
+# v2.2.8 FIX - Bakım Planları ve 4.0 Açılış
 
-## 💾 3.0 Açılış Planı ve Bakım İlerleme Sistemi
-
-- Supabase veri sağlığı merkezi eklendi.
-- Eksik kapak/tarih/takvim kapak kontrolü eklendi.
-- Manuel JSON yedek alma aracı eklendi.
-- Mevcut oyunlar sen silmeden silinmeyecek koruma korunur.
-- Sürüm etiketi: v2.2.8
-
-Schema: Gerekli. Veri silmez; güvenli tablo ve status/version kayıtları ekler.
+Bu paket yeni sürüm değildir. v2.2.8 üzerinde bakım ekranı plan sırası, 4.0.0 açılış hedefi ve tahmini açılış otomatik güncelleme düzeltmelerini içerir.
