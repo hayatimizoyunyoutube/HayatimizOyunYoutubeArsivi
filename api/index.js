@@ -76,6 +76,14 @@ function cleanUser(user){
     source:user.source || 'Supabase'
   };
 }
+
+function normalizeApiEpisode(ep={}, index=0){
+  const n=Number(ep.number || ep.episodeNumber || ep.episode_number || index+1);
+  const videoId=String(ep.videoId || ep.youtubeVideoId || ep.youtube_video_id || ep.contentDetails?.videoId || '').trim();
+  const thumb=ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || ep.image || ep.image_url || (videoId?`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`: '');
+  return { id:ep.id || (videoId?`yt-${videoId}`:`ep-${n}`), number:n, title:cleanYoutubeTitle(ep.title || ep.name || ep.snippet?.title || `${n}. Bölüm`), description:ep.description || ep.snippet?.description || '', thumbnail:thumb, videoId, videoUrl:ep.videoUrl || ep.video_url || (videoId?`https://www.youtube.com/watch?v=${videoId}`:''), watched:ep.watched === true || ep.is_watched === true };
+}
+
 function cleanGame(game){
   if(!game) return null;
   const tags = Array.isArray(game.tags) ? game.tags.join(', ') : (game.tags || '');
@@ -104,7 +112,7 @@ function cleanGame(game){
     youtube_playlist_url:game.youtube_playlist_url || game.playlist_url || '',
     youtube_playlist_id:game.youtube_playlist_id || '',
     video_url:game.video_url || '',
-    episodes:Array.isArray(game.episodes) ? game.episodes : [],
+    episodes:Array.isArray(game.episodes) ? game.episodes.map(normalizeApiEpisode) : [],
     watched_episode_count:Number(game.watched_episode_count ?? 0),
     series_order:Number(game.series_order ?? game.sort_order ?? 0),
     sort_order:Number(game.sort_order ?? game.series_order ?? 0),
@@ -197,7 +205,7 @@ function gamePayload(game={}, existing={}){
     cover_source:String(game.coverSource || game.cover_source || existing.cover_source || ''),
     playlist_url:playlistUrl, youtube_playlist_url:playlistUrl, youtube_playlist_id:String(game.youtubePlaylistId || game.youtube_playlist_id || existing.youtube_playlist_id || ''),
     video_url:String(game.videoUrl || game.video_url || existing.video_url || ''),
-    episodes:Array.isArray(game.episodes) ? game.episodes : (Array.isArray(existing.episodes) ? existing.episodes : []),
+    episodes:Array.isArray(game.episodes) && game.episodes.length ? game.episodes.map(normalizeApiEpisode) : (Array.isArray(existing.episodes) ? existing.episodes.map(normalizeApiEpisode) : []),
     series_order:Number(game.seriesOrder ?? game.series_order ?? game.sortOrder ?? game.sort_order ?? existing.series_order ?? 0),
     sort_order:Number(game.sortOrder ?? game.sort_order ?? game.seriesOrder ?? game.series_order ?? existing.sort_order ?? 0),
     status_bucket:String(game.statusBucket || game.status_bucket || existing.status_bucket || ''),
@@ -525,7 +533,7 @@ function uniqueEpisodes(rows){
       number:idx,
       title:cleanYoutubeTitle(row.title) || `${idx}. Bölüm`,
       description:'',
-      thumbnail:row.thumbnail || `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+      thumbnail:row.thumbnail || row.thumbnailUrl || row.thumbnail_url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
       videoId,
       videoUrl:`https://www.youtube.com/watch?v=${videoId}`,
       watched:false
@@ -575,7 +583,7 @@ async function fetchYoutubePlaylistItems(playlistUrl){
       rows.push({
         videoId,
         title:sn.title || '',
-        thumbnail:sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`
+        thumbnail:sn.thumbnails?.maxres?.url || sn.thumbnails?.standard?.url || sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
       });
     });
     pageToken = data.nextPageToken || '';
@@ -2925,7 +2933,7 @@ try{
         (data.items || []).forEach((item)=>{
           const sn = item.snippet || {};
           const videoId = item.contentDetails?.videoId || sn.resourceId?.videoId || '';
-          rows.push({ videoId, title:sn.title || '', thumbnail:sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg` });
+          rows.push({ videoId, title:sn.title || '', thumbnail:sn.thumbnails?.maxres?.url || sn.thumbnails?.standard?.url || sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` });
         });
         pageToken = data.nextPageToken || '';
         if(!pageToken) break;
