@@ -506,6 +506,21 @@ async function persistMaintenanceToSupabase(maintenance){
   saveSyncState({mode:'supabase', status:'Supabase bakım modu aktif', message:payload.enabled ? 'Bakım modu Supabase üzerinde açıldı.' : 'Bakım modu Supabase üzerinde kapatıldı.'});
   return data;
 }
+
+/* v2.2.9 FIX - Bilgi çekme kesin onarım
+   Önceki paketlerde eksik kalan normalizeText yardımcı fonksiyonu eklendi.
+   Bu eksik fonksiyon yüzünden RAWG/Steam/yerel meta eşleme aşamasında form hata veriyordu. */
+function normalizeText(value){
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[ıİ]/g,'i')
+    .replace(/[ğ]/g,'g').replace(/[ü]/g,'u').replace(/[ş]/g,'s').replace(/[ö]/g,'o').replace(/[ç]/g,'c')
+    .replace(/[^a-z0-9]+/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
 function isBadDlcCoverForTitle(title, url){
   const t=normalizeText(title||'');
   const u=normalizeText(url||'');
@@ -1732,7 +1747,7 @@ function bind(){
     if(e.target.closest('[data-refresh-notes]')){ e.preventDefault(); refreshNotesFromSupabase({force:true}).catch(()=>{}); return; }
     if(e.target.closest('[data-maintenance-retry]')){ e.preventDefault(); for(const key of MAINTENANCE_KEYS) localStorage.removeItem(key); refreshSiteRuntimeFromSupabase({force:true}).then(()=>setRoute('/ana-sayfa')).catch(()=>setRoute('/ana-sayfa')); return; }
     if(e.target.closest('[data-refresh-maintenance]')){ e.preventDefault(); refreshSiteRuntimeFromSupabase({force:true}).catch(()=>{}); return; }
-    const metaBtn=e.target.closest('[data-meta-action]'); if(metaBtn){ e.preventDefault(); const form=metaBtn.closest('[data-game-form]'); const action=metaBtn.getAttribute('data-meta-action'); (async()=>{ if(action==='local'){ const title=String(form?.elements?.title?.value||'').trim(); if(!title){ toast('Önce oyun adını yaz.'); return; } fillMetaToForm(form, mapMeta({meta:localGameMetaCandidate(title), source:'Yerel güvenli bilgi'}, title), 'safe'); toast('Yerel güvenli bilgi uygulandı.'); return; } await resolveMetaForForm(form, action); })().catch(err=>{ console.error(err); const title=String(form?.elements?.title?.value||'').trim(); if(title){ try{ fillMetaToForm(form, mapMeta({ok:true, meta:localGameMetaCandidate(title), source:'Yerel güvenli bilgi'}, title), 'safe'); toast('Bilgi servisi hata verdi; yerel güvenli bilgi uygulandı.'); }catch(localErr){ console.error(localErr); toast('Bilgi çekme düzeltildi: oyun adını kontrol edip tekrar dene.'); } } else { toast('Önce oyun adını yaz.'); } }); return; }
+    const metaBtn=e.target.closest('[data-meta-action]'); if(metaBtn){ e.preventDefault(); const form=metaBtn.closest('[data-game-form]'); const action=metaBtn.getAttribute('data-meta-action'); (async()=>{ if(action==='local'){ const title=String(form?.elements?.title?.value||'').trim(); if(!title){ toast('Önce oyun adını yaz.'); return; } fillMetaToForm(form, mapMeta({meta:localGameMetaCandidate(title), source:'Yerel güvenli bilgi'}, title), 'safe'); toast('Yerel güvenli bilgi uygulandı.'); return; } await resolveMetaForForm(form, action); })().catch(err=>{ console.error(err); const title=String(form?.elements?.title?.value||'').trim(); if(title){ try{ fillMetaToForm(form, mapMeta({ok:true, meta:localGameMetaCandidate(title), source:'Yerel güvenli bilgi'}, title), 'safe'); toast('Bilgi servisi hata verdi; yerel güvenli bilgi uygulandı.'); }catch(localErr){ console.error(localErr); toast('Oyun bilgisi yerel güvenli modla dolduruldu. Kapak/tarih/özeti kontrol edip kaydedebilirsin.'); } } else { toast('Önce oyun adını yaz.'); } }); return; }
     const ytBtn=e.target.closest('[data-youtube-action]'); if(ytBtn){ e.preventDefault(); const form=ytBtn.closest('[data-game-form]'); syncPlaylistForForm(form).catch(err=>{ console.error(err); toast(err.message || 'Oynatma listesi bölümleri çekilemedi.'); }); return; }
     const syncBtn=e.target.closest('[data-sync-game-playlist]'); if(syncBtn){ e.preventDefault(); syncPlaylistForGame(syncBtn.dataset.syncGamePlaylist).catch(err=>{ console.error(err); toast(err.message || 'Oynatma listesi çekilemedi.'); }); return; }
     const progressBtn=e.target.closest('[data-progress-game]'); if(progressBtn){ e.preventDefault(); const id=progressBtn.dataset.progressGame; const delta=Number(progressBtn.dataset.delta||0); const game=loadGames().find(g=>String(g.id)===String(id)); if(game){ const nextWatched=Number(game.watchedEpisodeCount||0)+delta; setWatchedForGame(id, nextWatched); const updated=loadGames().find(g=>String(g.id)===String(id)); addWatchHistory(updated||game, Math.max(0,nextWatched), 'Bölüm takip paneli'); toast('Bölüm ilerlemesi güncellendi.'); render(); } return; }
