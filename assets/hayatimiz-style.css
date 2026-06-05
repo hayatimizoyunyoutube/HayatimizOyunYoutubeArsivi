@@ -745,3 +745,129 @@ body{background:radial-gradient(circle at 8% 0%,rgba(239,51,64,.18),transparent 
 .statusTable,.resultsTable,.schemaTable{width:100%!important;border-collapse:separate!important;border-spacing:0!important;overflow:hidden!important;border-radius:18px!important;}
 .statusTable td,.statusTable th,.resultsTable td,.resultsTable th,.schemaTable td,.schemaTable th{padding:12px!important;border-bottom:1px solid rgba(148,163,184,.16)!important;}
 @media(max-width:760px){.topbar,.adminTop,.header,.siteHeader{margin:8px!important;border-radius:20px!important}.archiveGrid,.gamesGrid,.seriesGrid,.collectionGrid{grid-template-columns:1fr!important}.gameCard,.seriesCard{max-width:none!important}.adminDashboardHero,.hero,.pageHero,.profileHero{border-radius:22px!important;padding:18px!important}.nav a,.topNav a,.adminNav a,.menuRow a,.adminMenu a,.tabs a,.nav button,.topNav button,.adminNav button,.menuRow button,.adminMenu button,.tabs button{font-size:12px!important;padding:8px 11px!important}}
+
+/* =========================================================
+   v4.0.0 UI REVOLUTION FINAL FIX
+   Komple profesyonel arayüz yenileme - yeni sürüm değil
+   ========================================================= */
+:root{
+  --ui-bg:#050816;
+  --ui-bg2:#0a1024;
+  --ui-card:rgba(13,20,39,.78);
+  --ui-card2:rgba(21,29,55,.72);
+  --ui-line:rgba(148,163,184,.20);
+  --ui-line2:rgba(255,255,255,.10);
+  --ui-text:#f8fafc;
+  --ui-muted:#aebbd1;
+  --ui-red:#ff3158;
+  --ui-red2:#ff5a3d;
+  --ui-blue:#38bdf8;
+  --ui-purple:#8b5cf6;
+  --ui-green:#22c55e;
+  --ui-gold:#f59e0b;
+}
+html,body{
+  background:
+    radial-gradient(circle at 6% 6%,rgba(255,49,88,.24),transparent 28%),
+    radial-gradient(circle at 84% 2%,rgba(56,189,248,.18),transparent 30%),
+    radial-gradient(circle at 70% 85%,rgba(139,92,246,.16),transparent 34%),
+    linear-gradient(180deg,#050816 0%,#071022 45%,#030712 100%)!important;
+  color:var(--ui-text)!important;
+}
+body:before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.8),transparent 85%);
+}
+body:after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle at 50% -20%,rgba(255,255,255,.08),transparent 38%);
+}
+.noSideApp .fullMain,.main{max-width:1480px!important;margin:0 auto!important;padding:18px 22px 42px!important;}
+.proStickyTop.topOnlyBar,.topBar,.topbar,.siteHeader,.header{
+  max-width:1440px!important;margin:10px auto 18px!important;padding:12px 14px!important;
+  border:1px solid rgba(255,255,255,.13)!important;border-radius:30px!important;
+  background:linear-gradient(135deg,rgba(8,13,28,.92),rgba(23,20,63,.82),rgba(74,17,45,.72))!important;
+  box-shadow:0 24px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.08)!important;
+  backdrop-filter:blur(20px)!important;
+}
+.topIdentity,.brand,.topUser{min-width:0!important;}
+.topIdentity strong,.brand b{letter-spacing:-.03em!important;}
+.topQuickNav,.fullTopNav,.adminDock nav,.adminMenu,.menuRow,.tabs,.buttonRow,.nav{
+  display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:9px!important;
+  overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:thin!important;white-space:nowrap!important;
+}
+.topQuickNav::-webkit-scrollbar,.fullTopNav::-webkit-scrollbar,.adminDock nav::-webkit-scrollbar,.adminMenu::-webkit-scrollbar{height:6px}.topQuickNav::-webkit-scrollbar-thumb,.fullTopNav::-webkit-scrollbar-thumb,.adminDock nav::-webkit-scrollbar-thumb,.adminMenu::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:999px}
+.topQuickNav a,.fullTopNav a,.topAdminOpen,.topBtn,.adminDock a,.nav a,.menuRow a,.tabs a,.adminMenu a,.btn,button{
+  flex:0 0 auto!important;border-radius:999px!important;border:1px solid rgba(255,255,255,.13)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.045))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.16)!important;
+  transition:.18s ease!important;
+}
+.topQuickNav a:hover,.fullTopNav a:hover,.topAdminOpen:hover,.topBtn:hover,.adminDock a:hover,.nav a:hover,.btn:hover,button:hover{
+  transform:translateY(-1px)!important;border-color:rgba(255,49,88,.55)!important;background:linear-gradient(135deg,rgba(255,49,88,.22),rgba(139,92,246,.16))!important;
+}
+.topQuickNav a.active,.fullTopNav a.active,.adminDock a.active,.nav a.active{
+  background:linear-gradient(135deg,var(--ui-red),#b91c4b)!important;border-color:rgba(255,255,255,.12)!important;color:#fff!important;
+}
+.versionBadge,.bootBadge,.badge,.pill,.roleChip{
+  display:inline-flex!important;align-items:center!important;gap:7px!important;white-space:nowrap!important;
+  border-radius:999px!important;max-width:max-content!important;background:rgba(34,197,94,.13)!important;
+  border:1px solid rgba(34,197,94,.32)!important;color:#bbf7d0!important;
+}
+.hero,.dashboardHero,.adminDashboardHero,.archiveHero,.profileHero,.pageHero,.guideHero,.proMaintenanceCard,.oldHero{
+  position:relative!important;overflow:hidden!important;border-radius:34px!important;border:1px solid rgba(148,163,184,.24)!important;
+  background:
+    linear-gradient(135deg,rgba(3,7,18,.95),rgba(10,18,38,.84) 42%,rgba(49,17,59,.62)),
+    url('/assets/hayatimiz-kapak.png') center/cover!important;
+  box-shadow:0 36px 140px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+.hero:after,.dashboardHero:after,.adminDashboardHero:after,.archiveHero:after,.profileHero:after,.pageHero:after,.guideHero:after{
+  content:"";position:absolute;right:-140px;top:-120px;width:360px;height:360px;border-radius:50%;
+  background:radial-gradient(circle,rgba(56,189,248,.28),rgba(139,92,246,.18),transparent 66%);filter:blur(4px);pointer-events:none;
+}
+.heroContent h1,.hero h1,.adminDashboardHero h1,.profileHero h1,.pageHero h1,.boot h1{
+  letter-spacing:-.075em!important;line-height:.9!important;text-wrap:balance!important;
+  text-shadow:0 18px 60px rgba(0,0,0,.42)!important;
+}
+.heroContent p,.hero p,.adminDashboardHero p,.profileHero p,.pageHero p{color:#d9e7ff!important;max-width:880px!important;}
+.card,.panel,.stat,.statCard,.gameCard,.seriesCard,.collectionCard,.quickCard,.adminCard,.adminActionCard,.note,.event,.guideCard,.userRow,.adminMetric,.premiumSeriesCard,.oldHomeTile,.proGameCard{
+  border:1px solid var(--ui-line)!important;border-radius:24px!important;
+  background:linear-gradient(180deg,rgba(19,29,52,.82),rgba(8,13,28,.76))!important;
+  box-shadow:0 20px 70px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.055)!important;
+}
+.card:hover,.gameCard:hover,.seriesCard:hover,.collectionCard:hover,.quickCard:hover,.adminActionCard:hover,.premiumSeriesCard:hover,.proGameCard:hover{
+  transform:translateY(-3px)!important;border-color:rgba(56,189,248,.35)!important;box-shadow:0 28px 100px rgba(0,0,0,.42),0 0 0 1px rgba(56,189,248,.10)!important;
+}
+.stats,.adminMetricGrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;gap:14px!important;}
+.stat b,.adminMetric b{font-size:clamp(28px,3vw,42px)!important;letter-spacing:-.04em!important;}
+.quickGrid,.adminActionGrid,.grid,.archiveGrid,.gamesGrid,.seriesGrid,.collectionGrid,.alphabetCards,.homeV214Cards{
+  display:grid!important;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))!important;gap:18px!important;
+  justify-content:start!important;justify-items:stretch!important;align-items:start!important;
+}
+.gameCard,.seriesCard,.proGameCard,.oldHomeTile{max-width:360px!important;width:100%!important;justify-self:start!important;}
+.gameCard img,.seriesCard img,.proGameCard img,.oldHomeTile img,.collectionCard img,.premiumSeriesCard img{
+  border-radius:18px!important;object-fit:cover!important;max-height:190px!important;filter:saturate(1.06) contrast(1.04)!important;
+}
+.archiveGrid .gameCard,.gamesGrid .gameCard{min-height:0!important;}
+.gameCard p,.seriesCard p,.proGameCard p,.oldHomeTile p{display:-webkit-box!important;-webkit-line-clamp:4!important;-webkit-box-orient:vertical!important;overflow:hidden!important;}
+.sectionHead{align-items:center!important;border-bottom:1px solid rgba(148,163,184,.12)!important;padding-bottom:12px!important;}
+.sectionHead h2{letter-spacing:-.045em!important;}
+.toolbar,.filterBar,.searchBar,.formActions{
+  border:1px solid rgba(148,163,184,.18)!important;border-radius:26px!important;background:rgba(8,13,28,.62)!important;
+  padding:14px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important;
+}
+.input,select,textarea,input{
+  border-radius:18px!important;border:1px solid rgba(148,163,184,.22)!important;background:rgba(2,6,23,.76)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important;color:#fff!important;
+}
+.table,.statusTable,.resultsTable,.schemaTable{border-collapse:separate!important;border-spacing:0!important;overflow:hidden!important;border-radius:22px!important;border:1px solid rgba(148,163,184,.20)!important;background:rgba(8,13,28,.70)!important;}
+.table th,.statusTable th,.resultsTable th,.schemaTable th{background:rgba(255,255,255,.07)!important;color:#e2e8f0!important;}
+.table td,.table th,.statusTable td,.statusTable th,.resultsTable td,.resultsTable th,.schemaTable td,.schemaTable th{border-bottom:1px solid rgba(148,163,184,.13)!important;padding:13px!important;}
+.adminDock{max-width:1360px!important;margin:0 auto 18px!important;border-radius:24px!important;background:rgba(8,13,28,.72)!important;backdrop-filter:blur(18px)!important;}
+.proMaintenance{background:linear-gradient(135deg,#040816,#071225 55%,#10051b)!important;}
+.maintenanceProgress i span{background:linear-gradient(90deg,var(--ui-red),var(--ui-gold),var(--ui-blue))!important;}
+.safeError{border-radius:32px!important;background:linear-gradient(135deg,rgba(15,23,42,.92),rgba(50,16,55,.82))!important;}
+@media(max-width:1100px){.quickGrid,.adminActionGrid,.grid,.archiveGrid,.gamesGrid,.seriesGrid,.collectionGrid,.alphabetCards,.homeV214Cards{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important}.topQuickNav,.fullTopNav{justify-content:flex-start!important}.hero,.dashboardHero,.adminDashboardHero,.archiveHero,.profileHero,.pageHero{padding:22px!important}}
+@media(max-width:720px){.noSideApp .fullMain,.main{padding:10px 12px 28px!important}.proStickyTop.topOnlyBar,.topBar,.topbar,.siteHeader,.header{border-radius:0 0 24px 24px!important;margin:0 -2px 14px!important}.quickGrid,.adminActionGrid,.grid,.archiveGrid,.gamesGrid,.seriesGrid,.collectionGrid,.alphabetCards,.homeV214Cards{grid-template-columns:1fr!important}.gameCard,.seriesCard,.proGameCard,.oldHomeTile{max-width:none!important}.heroContent h1,.hero h1,.adminDashboardHero h1,.profileHero h1,.pageHero h1{font-size:clamp(38px,12vw,58px)!important}.topQuickNav a,.fullTopNav a,.topAdminOpen,.topBtn,.adminDock a,.nav a,.menuRow a,.tabs a,.adminMenu a,.btn,button{font-size:12px!important;padding:8px 11px!important}.stats,.adminMetricGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
