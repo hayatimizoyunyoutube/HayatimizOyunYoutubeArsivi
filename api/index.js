@@ -142,11 +142,18 @@ function pickDateTR(...values){ for(const v of values){ const d=normalizeDateTR(
 
 function toArray(value){ return Array.isArray(value) ? value.map(String).filter(Boolean) : String(value||'').split(',').map(x=>x.trim()).filter(Boolean); }
 function toCsv(value){ return Array.isArray(value) ? value.map(String).map(x=>x.trim()).filter(Boolean).join(', ') : String(value || '').trim(); }
+function isUuid(value){ return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value||'')); }
 function safeGameId(title, provided=''){
   const raw=String(provided || '').trim();
-  if(raw) return raw;
-  const slug=toSlug(title || 'oyun');
-  return `${slug}-${Date.now()}`;
+  if(isUuid(raw)) return raw;
+  // Supabase games.id UUID ise slug/id karışmasın. Yeni kayıtta gerçek UUID üret.
+  if(typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+function safeGameSlug(title, provided='', fallback=''){
+  const raw=String(provided || '').trim();
+  if(raw && !isUuid(raw)) return toSlug(raw);
+  return toSlug(fallback || title || 'oyun');
 }
 function parseBool(value){
   if(value === true) return true;
@@ -192,7 +199,7 @@ function gamePayload(game={}, existing={}){
   const playlistUrl=String(game.youtubePlaylistUrl || game.youtube_playlist_url || game.playlistUrl || game.playlist_url || existing.youtube_playlist_url || existing.playlist_url || '');
   const slug=String(existing.slug || game.slug || toSlug(title));
   return {
-    id:safeGameId(title, game.id || existing.id), slug, title, status, genre,
+    id:safeGameId(title, game.id || existing.id), slug:safeGameSlug(title, game.slug, slug), title, status, genre,
     status_slug:toSlug(status), genre_slug:toSlug(genre), series_slug:seriesName?toSlug(seriesName):null,
     series_name:seriesName, collection_name:collectionName,
     description:String(game.description || existing.description || ''), story_text:String(game.storyText || game.story_text || existing.story_text || ''),
@@ -1172,10 +1179,22 @@ export default async function handler(req, res){
       const title = String(game.title || '').trim();
       if(!title) throw new Error('Oyun adı gerekli.');
       const payload = gamePayload(game);
-      payload.id = safeGameId(title, game.id || payload.id);
-      payload.slug = payload.slug || toSlug(title);
+      payload.id = safeGameId(title, game.id || '');
+      payload.slug = safeGameSlug(title, game.slug || game.id || payload.slug, title);
       payload.updated_at = new Date().toISOString();
-      const rows = await supabase('games?on_conflict=id', { method:'POST', headers:{ Prefer:'resolution=merge-duplicates,return=representation' }, body: JSON.stringify([payload]) });
+      payload.created_at = payload.created_at || new Date().toISOString();
+      // UUID olmayan eski frontend id değerleri (örn: 007-first-light-...) asla games.id kolonuna yazılmaz.
+      // Önce slug ile mevcut kayıt var mı bak, varsa PATCH, yoksa gerçek UUID ile INSERT yap.
+      const existingRows = await supabase(`games?slug=eq.${encodeURIComponent(payload.slug)}&limit=1`, { method:'GET' }).catch(()=>[]);
+      if(Array.isArray(existingRows) && existingRows[0]){
+        const patch = {...payload};
+        delete patch.id;
+        Object.keys(patch).forEach(k => (patch[k] === undefined || patch[k] === null || Number.isNaN(patch[k])) && delete patch[k]);
+        const rows = await supabase(`games?id=eq.${encodeURIComponent(existingRows[0].id)}`, { method:'PATCH', body: JSON.stringify(patch) });
+        if(!Array.isArray(rows) || !rows[0]) throw new Error('Supabase oyun güncelleme boş döndü.');
+        return json(res, 200, { ok:true, game:cleanGame(rows[0]) });
+      }
+      const rows = await supabase('games', { method:'POST', headers:{ Prefer:'return=representation' }, body: JSON.stringify([payload]) });
       if(!Array.isArray(rows) || !rows[0]) throw new Error('Supabase oyun kaydı boş döndü. games tablosu ve service role key kontrol edilmeli.');
       return json(res, 200, { ok:true, game:cleanGame(rows[0]) });
     }
@@ -1183,15 +1202,27 @@ export default async function handler(req, res){
     if(action === 'games-update'){
       await requireStaff(body.adminToken);
       const gameId = String(body.gameId || '').trim();
-      if(!gameId) throw new Error('Oyun ID gerekli.');
       const game = body.game || {};
-      const existingRows = await supabase(`games?id=eq.${encodeURIComponent(gameId)}&limit=1`, { method:'GET' }).catch(()=>[]);
+      const title = String(game.title || '').trim();
+      if(!gameId && !title) throw new Error('Oyun ID veya oyun adı gerekli.');
+      let existingRows = [];
+      if(isUuid(gameId)) existingRows = await supabase(`games?id=eq.${encodeURIComponent(gameId)}&limit=1`, { method:'GET' }).catch(()=>[]);
+      if((!Array.isArray(existingRows) || !existingRows[0]) && gameId){
+        const slugCandidate=safeGameSlug(title || gameId, game.slug || gameId, title || gameId);
+        existingRows = await supabase(`games?slug=eq.${encodeURIComponent(slugCandidate)}&limit=1`, { method:'GET' }).catch(()=>[]);
+      }
       const existing = Array.isArray(existingRows) && existingRows[0] ? existingRows[0] : {};
       const patch = gamePayload(game, existing);
-      delete patch.slug;
+      patch.slug = safeGameSlug(title || patch.title, game.slug || gameId || patch.slug, title || patch.title);
       delete patch.id;
       Object.keys(patch).forEach(k => (patch[k] === undefined || patch[k] === null || Number.isNaN(patch[k])) && delete patch[k]);
-      const rows = await supabase(`games?id=eq.${encodeURIComponent(gameId)}`, { method:'PATCH', body: JSON.stringify(patch) });
+      if(existing && existing.id){
+        const rows = await supabase(`games?id=eq.${encodeURIComponent(existing.id)}`, { method:'PATCH', body: JSON.stringify(patch) });
+        return json(res, 200, { ok:true, game:cleanGame(rows?.[0]) });
+      }
+      // Eski id slug ise ve Supabase'te kayıt yoksa güncelleme yerine yeni kayıt aç.
+      const insertPayload={...patch, id:safeGameId(title || patch.title, ''), created_at:new Date().toISOString(), updated_at:new Date().toISOString()};
+      const rows = await supabase('games', { method:'POST', headers:{ Prefer:'return=representation' }, body: JSON.stringify([insertPayload]) });
       return json(res, 200, { ok:true, game:cleanGame(rows?.[0]) });
     }
 
