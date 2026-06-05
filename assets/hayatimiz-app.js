@@ -1,5 +1,5 @@
 const VERSION = 'v4.0.0';
-const FIX_NAME = 'v4.0.0 - Ana Açılış Sürümü';
+const FIX_NAME = 'v4.0.0 - Profesyonel Ana Sayfa / Arşiv / Seri / Yönetim Tasarım Finali';
 const ADMIN_EMAILS = ['mertdundaroyunda@gmail.com'];
 const BLOCKED_AUTO_EMAILS = ['mertdundar05@outlook.com'];
 const STORAGE = {
