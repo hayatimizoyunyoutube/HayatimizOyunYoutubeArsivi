@@ -1,1 +1,0 @@
-v2.1.9 FIX adminMetric ve deploy etiketi kontrol ok

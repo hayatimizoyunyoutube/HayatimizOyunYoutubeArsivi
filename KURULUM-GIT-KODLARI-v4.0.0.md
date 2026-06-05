@@ -1,8 +1,8 @@
-# v4.0.0 Git Kodları
+# Git Kodları — v4.0.0
 
 ```bash
 git add -A
-git commit --allow-empty -m "v4.0.0 ana acilis surumu"
+git commit --allow-empty -m "v4.0.0 temiz final tam paket"
 git push -f origin main
 ```
 

@@ -1,6 +1,6 @@
 # 👑 Supabase Üzerinden Yetki Verme Kodları
 
-Bu dosya v2.1.2 FIX içindir. `schema.sql` çalıştırıldıktan sonra Supabase üzerinden yetki verebilirsin.
+Bu dosya v4.0.0 içindir. `schema.sql` çalıştırıldıktan sonra Supabase üzerinden yetki verebilirsin.
 
 ## 1) Table Editor ile yetki verme
 Supabase > Table Editor > `site_authority_assignments` tablosuna gir.

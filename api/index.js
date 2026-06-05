@@ -612,14 +612,14 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v2.3.0', status:'Premium seri sayfası ve arşiv deneyimi aktif' });
+    if(action === 'health') return json(res, 200, { ok:true, version:'v4.0.0', status:'Ana açılış final aktif' });
 
     if(action === 'game-meta-lite'){
       const title = String(body.title || '').trim();
       if(!title) throw new Error('Oyun adı gerekli.');
       const fixed = await ho240f42BuildGameMeta(title).catch(()=>null);
       if(fixed?.meta){
-        return json(res, 200, { ok:true, meta:fixed.meta, candidates:fixed.candidates || [], source:fixed.source || 'v2.0.7 güvenli RAWG/meta' });
+        return json(res, 200, { ok:true, meta:fixed.meta, candidates:fixed.candidates || [], source:fixed.source || 'v4.0.0 güvenli RAWG/meta' });
       }
       const fallback = localGameMeta(title) || {title, genre:'Genel, Hikaye Odaklı', releaseDate:'', cover:'', banner:'', source:'Yerel güvenli meta'};
       if(fallback?.exact === true){ return json(res, 200, { ok:true, meta:fallback, candidates:[fallback], source:'Kesin yerel oyun eşleşmesi' }); }
@@ -638,7 +638,7 @@ export default async function handler(req, res){
         return json(res, 200, { ok:true, steam:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
       const steamDate = pickDateTR(steam.releaseDate, steam.released);
-      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v2.3.0' });
+      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.0' });
     }
 
     if(action === 'register'){
@@ -779,11 +779,11 @@ export default async function handler(req, res){
         await supabase('site_authority_assignments?on_conflict=email', {
           method:'POST',
           headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
-          body: JSON.stringify([{ email, display_name:displayName || rows?.[0]?.full_name || email.split('@')[0], role_code:role, is_active:role !== 'banned', note:'Yönetim panelinden yetki verildi', created_by:'v2.2.2-user-role-stability', updated_at:now }])
+          body: JSON.stringify([{ email, display_name:displayName || rows?.[0]?.full_name || email.split('@')[0], role_code:role, is_active:role !== 'banned', note:'Yönetim panelinden yetki verildi', created_by:'v4.0.0-final-role-stability', updated_at:now }])
         }).catch(()=>{});
         await supabase('site_user_role_audit', {
           method:'POST',
-          body: JSON.stringify([{ target_email:email, new_role:role, changed_by:'v2.2.2-user-role-stability', source:'yonetim-paneli', note:'Yönetim panelinden rol/yetki kaydedildi.', metadata:{ userId, displayName } }])
+          body: JSON.stringify([{ target_email:email, new_role:role, changed_by:'v4.0.0-final-role-stability', source:'yonetim-paneli', note:'Yönetim panelinden rol/yetki kaydedildi.', metadata:{ userId, displayName } }])
         }).catch(()=>{});
       }
       return json(res, 200, { ok:true, user:cleanUser(rows?.[0] || { id:userId || `authority-${email}`, email, role, is_active:role !== 'banned', full_name:displayName }) });
@@ -819,7 +819,7 @@ export default async function handler(req, res){
         await supabaseAuthDeleteUserByEmail(targetEmail).catch(()=>{});
         await supabase('site_user_role_audit', {
           method:'POST',
-          body: JSON.stringify([{ target_email:targetEmail, new_role:'deleted', changed_by:'v2.2.2-user-role-stability', source:'yonetim-paneli', note:'Kullanıcı Supabase Auth + site_users + yetki kayıtlarından temizlendi.', metadata:{ userId } }])
+          body: JSON.stringify([{ target_email:targetEmail, new_role:'deleted', changed_by:'v4.0.0-final-role-stability', source:'yonetim-paneli', note:'Kullanıcı Supabase Auth + site_users + yetki kayıtlarından temizlendi.', metadata:{ userId } }])
         }).catch(()=>{});
       }
       return json(res, 200, { ok:true, deleted:{ userId, email:targetEmail } });
@@ -844,7 +844,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.3.0', note:'v2.3.0 sürüm senkronizasyonu ve mobil deploy güvenliği', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v4.0.0', note:'v4.0.0 temiz final sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -861,7 +861,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v2.3.0', note:'v2.3.0 sürüm senkronizasyonu ve mobil deploy güvenliği', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v4.0.0', note:'v4.0.0 temiz final sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -1005,7 +1005,7 @@ export default async function handler(req, res){
       const games = await supabase('games?select=*&order=series_order.asc', { method:'GET' }).catch(()=>[]);
       const runtime = await supabase('site_runtime_config?select=key,value,updated_at', { method:'GET' }).catch(()=>[]);
       const snapshot = {
-        version:'v2.0.4',
+        version:'v4.0.0',
         source,
         created_at:now,
         counts:{
@@ -1100,14 +1100,14 @@ export default async function handler(req, res){
         schemaVersion: schemaRow?.value?.version || 'Bilinmiyor',
         checkedAt: new Date().toISOString()
       };
-      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v2.3.0 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
+      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v4.0.0 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
       return json(res, 200, { ok:true, health, message:'Supabase veri sağlığı kontrol edildi.' });
     }
 
     if(action === 'data-backup-save'){
       await requireStaff(body.adminToken);
       const payload = body.payload || {};
-      const row = { backup_type:String(body.backupType||'manual'), version:'v2.3.0', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
+      const row = { backup_type:String(body.backupType||'manual'), version:'v4.0.0', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
       const rows = await supabase('site_data_backups', { method:'POST', body: JSON.stringify([row]) }).catch(()=>[]);
       return json(res, 200, { ok:true, backup:Array.isArray(rows)?rows[0]:row, message:'Yedek kaydı oluşturuldu.' });
     }
@@ -1575,7 +1575,7 @@ export default async function handler(req, res){
     }
 
     if(action === 'auto-fix-request-add'){
-      const payload = { version:String(body.version || 'v2.4.0 FIX 11'), source:String(body.source || 'admin_panel'), error_text:String(body.errorText || body.error_text || ''), diagnosis:body.diagnosis || [], status:String(body.status || 'new'), fixed_files:String(body.fixedFiles || body.fixed_files || ''), created_at:new Date().toISOString(), updated_at:new Date().toISOString() };
+      const payload = { version:String(body.version || 'v4.0.0'), source:String(body.source || 'admin_panel'), error_text:String(body.errorText || body.error_text || ''), diagnosis:body.diagnosis || [], status:String(body.status || 'new'), fixed_files:String(body.fixedFiles || body.fixed_files || ''), created_at:new Date().toISOString(), updated_at:new Date().toISOString() };
       await supabase('site_auto_fix_requests', { method:'POST', body: JSON.stringify([payload]) }).catch(()=>{});
       return json(res, 200, { ok:true, request:payload });
     }
@@ -1615,9 +1615,9 @@ export default async function handler(req, res){
         storeScores.forEach(s=>sources.push(s));
       }catch{}
       const clean = sources.filter(s=>Number.isFinite(Number(s.score)) && Number(s.score)>0);
-      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v2.0.4' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
+      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v4.0.0' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
       const avg = clean.reduce((a,b)=>a+Number(b.score),0)/clean.length;
-      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v2.0.4' });
+      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v4.0.0' });
     }
 
 
@@ -1627,7 +1627,7 @@ export default async function handler(req, res){
       const source = String(body.source || 'epic').trim().toLowerCase();
       if(!title) throw new Error('Kaynak kontrolü için oyun adı gerekli.');
       const result = ho244ApiStoreSearch(title, source);
-      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v2.0.4' });
+      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v4.0.0' });
     }
 
     return json(res, 404, { ok:false, error:'Bilinmeyen API action.' });
@@ -1636,7 +1636,7 @@ export default async function handler(req, res){
   }
 }
 
-/* v2.2.1 14 - API tarafında çıkış tarihini gün.ay.yıl üret */
+/* v4.0.0 14 - API tarafında çıkış tarihini gün.ay.yıl üret */
 const FIX14_RELEASE_DATE_MAP_API = [
   [/a\s*plague\s*tale.*innocence|innocence/i, '14.05.2019'],
   [/a\s*plague\s*tale.*requiem|requiem/i, '18.10.2022'],
@@ -1681,7 +1681,7 @@ localGameMeta = function(title){
 };
 
 
-/* v2.4.0 FIX 7 - API doğru oyun tanıma, gün.ay.yıl tarih ve doğru kapak önceliği */
+/* v4.0.0 - API doğru oyun tanıma, gün.ay.yıl tarih ve doğru kapak önceliği */
 const HO240_FIX7_API_META = [
   {rx:/a\s*way\s*out|way\s*out|away\s*out/i,title:'A Way Out',seriesName:'A Way Out',genre:'Aksiyon-macera, co-op, hikaye odaklı, sinematik, kaçış',released:'23.03.2018',releaseDate:'23.03.2018',score:8.2,cover:'https://media.rawg.io/media/games/fc2/fc2277ac5e7f7e31a8d5f9a12efc44f1.jpg',slug:'a-way-out',exact:true},
   {rx:/alan\s*wake.*remaster|alan\s*wake/i,title:'Alan Wake Remastered',seriesName:'Alan Wake',genre:'Aksiyon-macera, psikolojik korku, hikaye odaklı, tek oyunculu',released:'05.10.2021',releaseDate:'05.10.2021',score:8.0,cover:'https://media.rawg.io/media/games/053/0531fbe64d90d7a97acb88ba8f340cb9.jpg',slug:'alan-wake-remastered',exact:true},
@@ -1705,8 +1705,8 @@ localTurkishStory = function(title, genre=''){
   return ho240Fix7OldStoryApi(title, genre);
 };
 
-/* v2.4.0 FIX 14 - API kapak/meta kesin eşleşme genişletmesi */
-const HO240F14_API_VERSION = 'v2.4.0 FIX 14';
+/* v4.0.0 - API kapak/meta kesin eşleşme genişletmesi */
+const HO240F14_API_VERSION = 'v4.0.0';
 const HO240F14_API_CATALOG = [
   {rx:/alan\s*wake\s*'?s?\s*american\s*nightmare|american\s*nightmare/i,title:"Alan Wake's American Nightmare",seriesName:'Alan Wake',genre:'Aksiyon, Psikolojik Korku, Gerilim, Hikaye Odaklı',released:'22.02.2012',releaseDate:'22.02.2012',score:7.8,cover:'https://cdn.akamai.steamstatic.com/steam/apps/202750/header.jpg',slug:'alan-wakes-american-nightmare',covers:['https://cdn.akamai.steamstatic.com/steam/apps/202750/header.jpg','https://cdn.akamai.steamstatic.com/steam/apps/202750/capsule_616x353.jpg','https://cdn.cloudflare.steamstatic.com/steam/apps/202750/header.jpg','https://cdn.cloudflare.steamstatic.com/steam/apps/202750/capsule_616x353.jpg'],exact:true},
   {rx:/alan\s*wake\s*2/i,title:'Alan Wake 2',seriesName:'Alan Wake',genre:'Hayatta Kalma Korku, Psikolojik Gerilim, Hikaye Odaklı',released:'27.10.2023',releaseDate:'27.10.2023',score:9.1,cover:'https://media.rawg.io/media/games/599/5999f254b9a7facb3147a28d956a163e.jpg',slug:'alan-wake-2',covers:['https://media.rawg.io/media/games/599/5999f254b9a7facb3147a28d956a163e.jpg'],exact:true},
@@ -1752,7 +1752,7 @@ fetchRawgMeta = async function(title){
 };
 
 
-/* v2.4.0 FIX 33 - API tarafında oyun adı kesin eşleşme kilidi */
+/* v4.0.0 - API tarafında oyun adı kesin eşleşme kilidi */
 function ho240f33ApiNorm(value=''){
   return String(value || '')
     .toLocaleLowerCase('tr-TR')
@@ -1848,7 +1848,7 @@ fetchRawgMeta = async function(title){
   return { ...best, title:best.title || query, releaseDate:best.releaseDate || best.released || '', released:best.released || best.releaseDate || '', exact:best.matchScore >= 92, candidates };
 };
 
-/* v2.4.0 FIX 34 - API meta/kapak kesin başlık güvenliği
+/* v4.0.0 - API meta/kapak kesin başlık güvenliği
    Eski geniş regexler (özellikle Alan Wake) farklı oyunu döndürmesin. */
 function ho240f34ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’`´]/g,' ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
@@ -1895,7 +1895,7 @@ fetchRawgMeta = async function(title){
   return { ...best, title:best.title || query, exact:Number(best.matchScore||0) >= 92, candidates };
 };
 
-/* v2.4.0 FIX 35 - API kapak arama için Steam yedek kaynağı
+/* v4.0.0 - API kapak arama için Steam yedek kaynağı
    RAWG key yoksa veya sonuç dönmezse Steam store aramasıyla header/capsule kapak adayları üretilir. */
 function ho240f35ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’`´]/g,' ').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
@@ -1960,7 +1960,7 @@ fetchRawgMeta = async function(title){
 };
 
 
-/* v2.4.0 FIX 36 - API tüm Alan Wake kapakları + çıkış tarihi adayları
+/* v4.0.0 - API tüm Alan Wake kapakları + çıkış tarihi adayları
    Kapak aramasında sadece ilk eşleşmeyi değil, aynı seri ailesindeki tüm güvenli adayları döndürür. */
 const HO240F36_API_ALAN_WAKE_FAMILY = [
   {title:'Alan Wake Remastered DLC: The Writer',seriesName:'Alan Wake',releaseDate:'12.10.2010',released:'12.10.2010',genre:'Psikolojik gerilim, hikaye odaklı DLC, aksiyon-macera',score:8.1,match:['alan wake remastered dlc the writer','alan wake the writer','the writer'],covers:[['https://cdn.akamai.steamstatic.com/steam/apps/108710/header.jpg','The Writer / Alan Wake geniş kapak'],['https://cdn.akamai.steamstatic.com/steam/apps/108710/capsule_616x353.jpg','The Writer / Steam capsule'],['https://cdn.cloudflare.steamstatic.com/steam/apps/108710/header.jpg','The Writer / Cloudflare header'],['https://cdn.cloudflare.steamstatic.com/steam/apps/108710/capsule_616x353.jpg','The Writer / Cloudflare capsule']]},
@@ -2054,8 +2054,8 @@ fetchRawgMeta = async function(title){
   return prev;
 };
 
-/* v2.4.0 FIX 37 - API Google/Internet geniş DLC kapak havuzu */
-const HO240F37_API_VERSION = 'v2.4.0 FIX 37';
+/* v4.0.0 - API Google/Internet geniş DLC kapak havuzu */
+const HO240F37_API_VERSION = 'v4.0.0';
 function ho240f37ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’`´]/g,' ').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
 }
@@ -2167,9 +2167,9 @@ try{
   };
 }catch(error){ console.warn('FIX37 API kapak havuzu kurulamadı:', error); }
 
-/* v2.4.0 FIX 41 - API kapak/tarih/tür kaynaklarını genişletme
+/* v4.0.0 - API kapak/tarih/tür kaynaklarını genişletme
    Steam Store + RAWG + internet görsel havuzu + yerel DLC katalog adayları birlikte döner. */
-const HO240F41_API_VERSION = 'v2.4.0 FIX 41';
+const HO240F41_API_VERSION = 'v4.0.0';
 function ho240f41ApiMonthToTr(value=''){
   const map = {jan:'01',january:'01',feb:'02',february:'02',mar:'03',march:'03',apr:'04',april:'04',may:'05',jun:'06',june:'06',jul:'07',july:'07',aug:'08',august:'08',sep:'09',sept:'09',september:'09',oct:'10',october:'10',nov:'11',november:'11',dec:'12',december:'12'};
   return map[String(value||'').toLowerCase()] || '';
@@ -2274,9 +2274,9 @@ try{
   };
 }catch(error){ console.warn('FIX41 API fetchRawgMeta genişletilemedi:', error); }
 
-/* v2.4.0 FIX 42 - Profesyonel temizlik + çıkış tarihi kesinleştirme motoru
+/* v4.0.0 - Profesyonel temizlik + çıkış tarihi kesinleştirme motoru
    Oyun adı kilitli kalır. Kapak/tarih/tür/açıklama çekimleri öneri üretir, ana adı değiştirmez. */
-const HO240F42_API_VERSION = 'v2.4.0 FIX 42';
+const HO240F42_API_VERSION = 'v4.0.0';
 function ho240f42Norm(value=''){
   return String(value || '')
     .toLocaleLowerCase('tr-TR')
@@ -2472,8 +2472,8 @@ try{
   };
 }catch(error){ console.warn('FIX42 API fetchRawgMeta override kurulamadı:', error); }
 
-/* FIX55 API: v2.4.1 kesin tarih kataloğu, Avatar DLC tarih düzeltmesi */
-const HO240F55_API_VERSION = 'v2.4.1 FIX 55';
+/* FIX55 API: v4.0.0 kesin tarih kataloğu, Avatar DLC tarih düzeltmesi */
+const HO240F55_API_VERSION = 'v4.0.0';
 function ho240f55ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’'`]/g,'').replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ]+/gi,' ').replace(/\s+/g,' ').trim();
 }
@@ -2529,7 +2529,7 @@ try{
 }catch(error){ console.warn('FIX55 API meta override kurulamadı:', error); }
 
 /* FIX57 API: Assassin's Creed kesin tarih/kapak kataloğu + Google tarzı web görsel yedeği */
-const HO240F57_API_VERSION = 'v2.4.1 FIX 57';
+const HO240F57_API_VERSION = 'v4.0.0';
 function ho240f57ApiNorm(value=''){
   return String(value || '')
     .toLocaleLowerCase('tr-TR')
@@ -2651,7 +2651,7 @@ try{
 }catch(error){ console.warn('FIX57 API build meta kurulamadı:', error); }
 
 /* FIX58 API: Steam tarih/kapak kontrolü + güçlü playlist video çekme */
-const HO240F58_API_VERSION = 'v2.4.1 FIX 58';
+const HO240F58_API_VERSION = 'v4.0.0';
 function ho240f58ApiNorm(value=''){
   return String(value || '')
     .toLocaleLowerCase('tr-TR')
@@ -2878,7 +2878,7 @@ try{
   };
 }catch(error){ console.warn('FIX58 meta override kurulamadı:', error); }
 
-/* v2.4.1 FIX63 - Playlist çekme sadece formdaki gerçek playlist listesine kilitlendi */
+/* v4.0.0 - Playlist çekme sadece formdaki gerçek playlist listesine kilitlendi */
 function ho240f63StrictPlaylistId(playlistUrl=''){
   const id = extractYoutubePlaylistId(String(playlistUrl || ''));
   if(!id) return '';
@@ -2947,7 +2947,7 @@ try{
 }catch(error){ console.warn('FIX63 playlist kaynak kilidi kurulamadı:', error); }
 
 
-/* v2.4.3 - API hikaye açıklaması iyileştirmesi */
+/* v4.0.0 - API hikaye açıklaması iyileştirmesi */
 function ho243ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ]+/gi,' ').replace(/\s+/g,' ').trim();
 }
@@ -2971,7 +2971,7 @@ try{ localTurkishStory = ho243ApiStory; }catch{}
 try{ ho240f57ApiStory = ho243ApiStory; }catch{}
 
 
-/* v2.4.4 - Epic Games / Ubisoft kaynak kontrol yardımcıları */
+/* v4.0.0 - Epic Games / Ubisoft kaynak kontrol yardımcıları */
 function ho244ApiStoreSearch(title, source='epic'){
   const q = encodeURIComponent(String(title || '').trim());
   const store = String(source || '').toLowerCase();
@@ -2981,8 +2981,8 @@ function ho244ApiStoreSearch(title, source='epic'){
 }
 
 
-/* v2.4.6 FIX2 API - Steam kullanıcı puanı / metacritic puanı otomatik hesaplama */
-const HO246F2_API_VERSION = 'v2.4.6 FIX2';
+/* v4.0.0 API - Steam kullanıcı puanı / metacritic puanı otomatik hesaplama */
+const HO246F2_API_VERSION = 'v4.0.0';
 async function ho246f2SteamReviewScore(appid){
   const id = String(appid || '').trim();
   if(!id || typeof fetch !== 'function') return null;
@@ -3015,8 +3015,8 @@ try{
 }catch(error){ console.warn('FIX2 Steam puan API override atlandı:', error); }
 
 
-/* v2.4.6 FIX9 API - Steam puanı yoksa varsayılan/eski puan yok */
-const HO246F9_API_VERSION = 'v2.4.6 FIX9';
+/* v4.0.0 API - Steam puanı yoksa varsayılan/eski puan yok */
+const HO246F9_API_VERSION = 'v4.0.0';
 try{
   const prevHo246F9SteamDetailsApi = ho240f58SteamDetails;
   ho240f58SteamDetails = async function(appid){
@@ -3032,7 +3032,7 @@ try{
 }catch(error){ console.warn('FIX9 Steam puan API override atlandı:', error); }
 
 
-/* v2.4.7 API - Google puanlarını yakala ve ortalama için hazırla */
+/* v4.0.0 API - Google puanlarını yakala ve ortalama için hazırla */
 async function ho247ApiGoogleScores(title=''){
   const out = [];
   if(typeof fetch !== 'function') return out;
@@ -3064,7 +3064,7 @@ async function ho247ApiGoogleScores(title=''){
 }
 
 
-/* v2.4.7 FIX6 API - Epic Games / Ubisoft puanlarını Google üzerinden ortalamaya dahil et */
+/* v4.0.0 API - Epic Games / Ubisoft puanlarını Google üzerinden ortalamaya dahil et */
 async function ho247f6ApiSearchScores(title='', label='Kaynak'){
   const out = [];
   if(typeof fetch !== 'function') return out;
@@ -3107,7 +3107,7 @@ async function ho247f6ApiStoreScores(title=''){
 }
 
 
-// v2.4.7 FIX9 - score-check güvenli fallback katalogu
+// v4.0.0 - score-check güvenli fallback katalogu
 function ho247f8ApiKnownScore(title=''){
   const q = String(title || '').toLowerCase();
   const rows = [
@@ -3133,7 +3133,7 @@ function ho247f8ApiKnownScore(title=''){
 
 
 
-/* v2.4.9 FIX9 - API tarafı başlık benzerliği yardımcıları */
+/* v4.0.0 - API tarafı başlık benzerliği yardımcıları */
 function ho249f9ApiNorm(value){
   return String(value || '').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9\s:.-]/g,' ').replace(/\s+/g,' ').trim();
 }

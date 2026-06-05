@@ -1,33 +1,36 @@
-# Hayatımız Oyun — v4.0.0 Ana Açılış Sürümü
+# Hayatımız Oyun — v4.0.0 Ana Açılış Final
 
-Bu paket ana açılış için hazırlanmış tam deploy paketidir.
+Bu paket temiz final pakettir. Eski aktif sürüm yazıları, gereksiz fix notları ve tekrar dosyaları temizlenmiştir.
 
 ## İçerik
-
-- 🎮 Public oyun arşivi
-- 🎬 Seri merkezi
-- 📁 Koleksiyonlar / kategoriler
+- 🎨 Profesyonel ana sayfa ve genel arayüz
+- 🎮 Oyun arşivi ve kompakt kart yapısı
+- 🗂️ Kategori / koleksiyon sistemi
+- 🎬 Seri merkezi ve bölüm takibi
+- 📺 YouTube playlist bölüm adı + thumbnail koruma
 - 📅 Yayın takvimi
 - 👤 Profil merkezi
 - ⭐ Favoriler ve takip sistemi
-- 🏆 Başarım ve rozet sistemi
-- 🛡️ Yönetim paneli
-- 💾 Veri sağlığı ve yedekleme ekranları
-- 🛠️ Bakım modu / ban güvenliği
-- 🖼️ Kapak, banner ve YouTube bölüm thumbnail koruması
+- 🏆 Başarım / rozet sistemi
+- 🛡️ Yönetim paneli ve veri sağlığı
+- 🔐 Kurucu/yetki/ban sistemi
+- 🛠️ Bakım modu kapalı açılış ayarı
+- 🏷️ v4.0.0 site, Vercel, schema, status ve health senkronu
 
-## Aktif Sürüm
-
-**v4.0.0**
+## Schema
+`schema.sql` gereklidir. Veri silmez; sadece eksik kolonları güvenli ekler ve aktif sürüm/status kayıtlarını v4.0.0 yapar.
 
 ## Git
-
 ```bash
 git add -A
-git commit --allow-empty -m "v4.0.0 ana acilis surumu"
+git commit --allow-empty -m "v4.0.0 temiz final tam paket"
 git push -f origin main
 ```
 
-## Vercel
+Vercel: Deployments > Redeploy > Clear Build Cache > Redeploy
 
-Deployments > Redeploy > Clear Build Cache > Redeploy
+
+## v4.0.0 Schema Kolon Fix
+- site_users.role_code schema fix eklendi.
+- Eski Supabase tablolarında eksik kolon varsa güvenli ALTER TABLE ile eklenir.
+- Veri silmez.

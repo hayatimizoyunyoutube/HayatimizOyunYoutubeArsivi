@@ -1,6 +1,6 @@
 # Kullanıcı ve Yetki Tablolarını Temiz Sıfırlama
 
-Bu dosya v2.1.8 FIX paketindeki `supabase/schema.sql` için açıklamadır.
+Bu dosya v4.0.0 paketindeki `supabase/schema.sql` için açıklamadır.
 
 ## Ne silinir?
 - `site_users`

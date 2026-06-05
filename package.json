@@ -1,10 +1,15 @@
 {
-  "name": "hayatimiz-oyun-v230-premium-seri-sayfasi",
+  "name": "hayatimiz-oyun-v400-temiz-final-tam-paket",
   "private": true,
   "type": "module",
-  "version": "3.5.0",
+  "version": "4.0.0",
   "engines": {
     "node": ">=20"
   },
-  "description": "Hayatımız Oyun v2.3.0 Premium Seri Sayfası ve Arşiv Deneyimi"
+  "description": "Hayatımız Oyun v4.0.0 temiz final tam paket - tüm sürüm, Vercel, schema, status ve tasarım senkronu",
+  "scripts": {
+    "build": "vite --host 0.0.0.0",
+    "dev": "vite --host 0.0.0.0",
+    "preview": "vite preview --host 0.0.0.0"
+  }
 }
