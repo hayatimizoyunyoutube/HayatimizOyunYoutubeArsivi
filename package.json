@@ -1,12 +1,12 @@
 {
-  "name": "hayatimiz-oyun-v400-deploy-hizli-final",
+  "name": "hayatimiz-oyun-v400-supabase-insert-final",
   "private": true,
   "type": "module",
   "version": "4.0.0",
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   },
-  "description": "Hayatımız Oyun v4.0.0 hızlı Vercel deploy final paket",
+  "description": "Hayatımız Oyun v4.0.0 Supabase oyun kaydetme kesin fix",
   "scripts": {
     "build": "node scripts/build-static.mjs",
     "dev": "node scripts/dev-server.mjs",

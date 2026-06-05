@@ -234,3 +234,41 @@ insert into public.site_status_logs(status,scope,message,details) values
 
 insert into public.site_status_logs(status,scope,message,details) values
 ('ok','schema','v4.0.0 site_users.role_code kolon fix uygulandı. Eksik kolonlar güvenli eklendi.', jsonb_build_object('version','v4.0.0','fix','site_users_role_code','drop_tables',false));
+
+-- v4.0.0 Supabase oyun kaydetme kesin kolon/policy fix
+alter table public.games add column if not exists slug text;
+alter table public.games add column if not exists genre_slug text;
+alter table public.games add column if not exists status_slug text;
+alter table public.games add column if not exists series_slug text;
+alter table public.games add column if not exists rawg_id text;
+alter table public.games add column if not exists rawg_slug text;
+alter table public.games add column if not exists steam_app_id text;
+alter table public.games add column if not exists meta_source text;
+alter table public.games add column if not exists meta_checked_at timestamptz;
+alter table public.games add column if not exists cover_source text;
+alter table public.games add column if not exists playlist_url text;
+alter table public.games add column if not exists youtube_playlist_url text;
+alter table public.games add column if not exists youtube_playlist_id text;
+alter table public.games add column if not exists video_url text;
+alter table public.games add column if not exists series_order integer not null default 0;
+alter table public.games add column if not exists status_bucket text;
+alter table public.games add column if not exists is_featured boolean not null default false;
+alter table public.games add column if not exists created_at timestamptz not null default now();
+
+create index if not exists games_slug_idx on public.games(slug);
+create index if not exists games_series_name_idx on public.games(series_name);
+create index if not exists games_sort_order_idx on public.games(sort_order);
+
+alter table public.games enable row level security;
+drop policy if exists games_select_all on public.games;
+drop policy if exists games_insert_all on public.games;
+drop policy if exists games_update_all on public.games;
+drop policy if exists games_delete_all on public.games;
+create policy games_select_all on public.games for select using (true);
+create policy games_insert_all on public.games for insert with check (true);
+create policy games_update_all on public.games for update using (true) with check (true);
+create policy games_delete_all on public.games for delete using (true);
+
+insert into public.site_status_logs(status, scope, message, details)
+values ('ok','v4.0.0-games-save-fix','v4.0.0 oyun kaydetme Supabase kolon/policy fix uygulandı.', jsonb_build_object('version','v4.0.0','games_insert','enabled','node','20.x'))
+on conflict do nothing;

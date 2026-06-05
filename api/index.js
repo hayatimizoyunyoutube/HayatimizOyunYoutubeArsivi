@@ -141,6 +141,13 @@ function normalizeDateTR(value){
 function pickDateTR(...values){ for(const v of values){ const d=normalizeDateTR(v); if(d) return d; } return ''; }
 
 function toArray(value){ return Array.isArray(value) ? value.map(String).filter(Boolean) : String(value||'').split(',').map(x=>x.trim()).filter(Boolean); }
+function toCsv(value){ return Array.isArray(value) ? value.map(String).map(x=>x.trim()).filter(Boolean).join(', ') : String(value || '').trim(); }
+function safeGameId(title, provided=''){
+  const raw=String(provided || '').trim();
+  if(raw) return raw;
+  const slug=toSlug(title || 'oyun');
+  return `${slug}-${Date.now()}`;
+}
 function parseBool(value){
   if(value === true) return true;
   if(value === false || value == null) return false;
@@ -185,7 +192,7 @@ function gamePayload(game={}, existing={}){
   const playlistUrl=String(game.youtubePlaylistUrl || game.youtube_playlist_url || game.playlistUrl || game.playlist_url || existing.youtube_playlist_url || existing.playlist_url || '');
   const slug=String(existing.slug || game.slug || toSlug(title));
   return {
-    slug, title, status, genre,
+    id:safeGameId(title, game.id || existing.id), slug, title, status, genre,
     status_slug:toSlug(status), genre_slug:toSlug(genre), series_slug:seriesName?toSlug(seriesName):null,
     series_name:seriesName, collection_name:collectionName,
     description:String(game.description || existing.description || ''), story_text:String(game.storyText || game.story_text || existing.story_text || ''),
@@ -194,9 +201,9 @@ function gamePayload(game={}, existing={}){
     score:Number(game.score ?? existing.score ?? 0),
     cover_url:String(game.cover || game.cover_url || existing.cover_url || ''),
     banner_url:String(game.banner || game.banner_url || existing.banner_url || ''),
-    tags:toArray(game.tags ?? existing.tags),
+    tags:toCsv(game.tags ?? existing.tags),
     release_date:pickDateTR(game.releaseDate, game.release_date, game.released, existing.release_date),
-    platforms:toArray(game.platforms ?? existing.platforms),
+    platforms:toCsv(game.platforms ?? existing.platforms),
     rawg_id:game.rawgId || game.rawg_id || existing.rawg_id || null,
     rawg_slug:String(game.rawgSlug || game.rawg_slug || existing.rawg_slug || ''),
     steam_app_id:String(game.steamAppId || game.steam_app_id || existing.steam_app_id || ''),
@@ -1165,9 +1172,12 @@ export default async function handler(req, res){
       const title = String(game.title || '').trim();
       if(!title) throw new Error('Oyun adı gerekli.');
       const payload = gamePayload(game);
-      if(game.id) payload.id = String(game.id);
+      payload.id = safeGameId(title, game.id || payload.id);
+      payload.slug = payload.slug || toSlug(title);
+      payload.updated_at = new Date().toISOString();
       const rows = await supabase('games?on_conflict=id', { method:'POST', headers:{ Prefer:'resolution=merge-duplicates,return=representation' }, body: JSON.stringify([payload]) });
-      return json(res, 200, { ok:true, game:cleanGame(rows?.[0]) });
+      if(!Array.isArray(rows) || !rows[0]) throw new Error('Supabase oyun kaydı boş döndü. games tablosu ve service role key kontrol edilmeli.');
+      return json(res, 200, { ok:true, game:cleanGame(rows[0]) });
     }
 
     if(action === 'games-update'){
@@ -1179,6 +1189,7 @@ export default async function handler(req, res){
       const existing = Array.isArray(existingRows) && existingRows[0] ? existingRows[0] : {};
       const patch = gamePayload(game, existing);
       delete patch.slug;
+      delete patch.id;
       Object.keys(patch).forEach(k => (patch[k] === undefined || patch[k] === null || Number.isNaN(patch[k])) && delete patch[k]);
       const rows = await supabase(`games?id=eq.${encodeURIComponent(gameId)}`, { method:'PATCH', body: JSON.stringify(patch) });
       return json(res, 200, { ok:true, game:cleanGame(rows?.[0]) });
