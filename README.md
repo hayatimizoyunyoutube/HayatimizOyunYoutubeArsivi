@@ -1,14 +1,13 @@
-# Hayatımız Oyun — v2.3.1
+# Hayatımız Oyun — v2.3.2
 
-## Premium Seri Sayfası ve Arşiv Deneyimi
+Bu paket v2.3.2 Favoriler ve Takip Sistemi tam paketidir.
 
-Bu paket tam proje paketidir. v4.0.0 ana açılışına hazırlık için seri merkezi, arşiv görünümü, bölüm/sıradaki bölüm bilgisi, bakım notları ve sürüm etiketleri güncellenmiştir.
+## Eklenenler
+- ⭐ Favori oyun sistemi
+- 🎬 Seri takip sistemi
+- ⏭️ Sıradaki bölüm kartları
+- 👤 Profil içinde favoriler özeti
+- 📱 Mobil uyumlu favoriler sayfası
 
-- Sürüm etiketi: v2.3.0
-- Açılış hedefi: v4.0.0
-- Veri koruma: Mevcut oyunlar, kullanıcılar, takvim ve bakım kayıtları silinmez.
-- Schema: gerekli değil. Yeni tablo/kolon eklenmedi.
-
-
-## v2.3.1 Kullanıcı Profil Sistemi
-Profil merkezi, izleme özeti, devam et kartları ve son izlenenler güçlendirildi.
+## Schema
+Schema gerekli değil.

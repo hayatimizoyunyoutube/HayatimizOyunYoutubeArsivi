@@ -1,10 +1,5 @@
 # 🚀 Gelecek Güncellemeler
 
-## v2.3.2 — Favoriler ve Takip Sistemi
-- ⭐ Favori oyun/seri ekleme
-- 🔔 Takip edilen seriler
-- ⏭️ Sıradaki bölüm bildirimi
-
 ## v2.3.3 — Başarım ve Rozet Sistemi
 - 🏆 Başarımlar
 - 🎖️ Rozetler
@@ -14,6 +9,11 @@
 - 🤖 Gelişmiş oyun bilgisi çekme
 - 🖼️ Akıllı kapak doğrulama
 - 🎬 YouTube playlist veri koruma
+
+## v2.4.1 — Gelişmiş Yayın Takvimi
+- 📅 Takvim kartları
+- 🔔 Yaklaşan yayın uyarıları
+- 🎮 Oyun kapağı otomatik doğrulama
 
 ## v4.0.0 — Ana Açılış Sürümü
 - 🌟 Public arşiv final
