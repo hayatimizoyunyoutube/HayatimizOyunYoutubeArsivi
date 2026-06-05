@@ -1,5 +1,5 @@
-const VERSION = 'v2.3.0';
-const FIX_NAME = 'v2.3.0 - Premium Seri Sayfası ve Arşiv Deneyimi';
+const VERSION = 'v2.4.0';
+const FIX_NAME = 'v2.4.0 - Tam Otomatik İçerik Motoru';
 const ADMIN_EMAILS = ['mertdundaroyunda@gmail.com'];
 const BLOCKED_AUTO_EMAILS = ['mertdundar05@outlook.com'];
 const STORAGE = {
@@ -38,7 +38,9 @@ const DEFAULT_NOTES = [
   {id:'plan-v231',version:'v2.3.1',title:'👤 Kullanıcı Profil Sistemi',summary:'Profil sayfası, avatar, favoriler, son izlenenler ve kullanıcı izleme istatistikleri geliştirilecek.',status:'Planlandı'},
   {id:'plan-v232',version:'v2.3.2',title:'⭐ Favoriler ve Takip Sistemi',summary:'Seri favorileme, izleme listesi, takip edilen seriler ve kişisel arşiv alanları eklenecek.',status:'Planlandı'},
   {id:'plan-v233',version:'v2.3.3',title:'🏆 Başarım ve Rozet Sistemi',summary:'Tamamlanan seri, devam eden seri, bölüm izleme ve arşiv katkısı rozetleri hazırlanacak.',status:'Planlandı'},
-  {id:'plan-v240',version:'v2.4.0',title:'🤖 Tam Otomatik İçerik Motoru',summary:'RAWG, Steam, YouTube ve yerel güvenli katalog daha akıllı kapak, hikaye ve bölüm bilgisi üretecek.',status:'Planlandı'},
+  {id:'v240-auto-content-engine',version:'v2.4.0',title:'🤖 Tam Otomatik İçerik Motoru',summary:'RAWG, Steam, YouTube ve yerel güvenli katalog sıralı çalışır; kapak/banner, hikaye, karakter, mekan, atmosfer ve bölüm bilgisi güvenli biçimde doldurulur.',status:'Tamamlandı'},
+  {id:'plan-v241',version:'v2.4.1',title:'🖼️ Kapak Galerisi ve Manuel Doğrulama',summary:'Oyun ekleme ekranında kapak/banner önerileri galeri halinde seçilebilir olacak.',status:'Planlandı'},
+  {id:'plan-v242',version:'v2.4.2',title:'📺 Playlist Bölüm Kalıcılığı V2',summary:'YouTube bölüm adları, video linkleri ve thumbnail kayıtları Supabase tarafında daha net doğrulanacak.',status:'Planlandı'},
   {id:'plan-v400',version:'v4.0.0',title:'🚀 Ana Açılış Sürümü',summary:'Hayatımız Oyun public arşiv sitesi ana açılışa hazır hale gelecek.',status:'Planlandı'}
 ];
 

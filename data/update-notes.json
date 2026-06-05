@@ -1,5 +1,26 @@
 [
   {
+    "id": "v240-auto-content-engine",
+    "version": "v2.4.0",
+    "title": "🤖 Tam Otomatik İçerik Motoru",
+    "summary": "Oyun adıyla bilgi çekme, kapak/banner doğrulama, DLC/Expansion filtreleme, hikaye/karakter/mekan/atmosfer üretimi ve YouTube playlist bölüm bilgisi işleme motoru güçlendirildi.",
+    "status": "Tamamlandı"
+  },
+  {
+    "id": "plan-v242",
+    "version": "v2.4.2",
+    "title": "📺 Playlist Bölüm Kalıcılığı V2",
+    "summary": "YouTube bölüm adı, video linki ve thumbnail kayıtları Supabase tarafında daha sağlam doğrulanacak.",
+    "status": "Planlandı"
+  },
+  {
+    "id": "plan-v241",
+    "version": "v2.4.1",
+    "title": "🖼️ Kapak Galerisi ve Manuel Doğrulama",
+    "summary": "Kapak/banner önerileri galeri halinde seçilecek; yanlış görseli engellemek için manuel doğrulama eklenecek.",
+    "status": "Planlandı"
+  },
+  {
     "id": "v231-kullanici-profil-sistemi",
     "version": "v2.3.1",
     "title": "👤 Kullanıcı Profil Sistemi",

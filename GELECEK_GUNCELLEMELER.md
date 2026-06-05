@@ -1,16 +1,11 @@
 # Gelecek Güncellemeler
 
-## v2.3.4 — Bildirim ve Duyuru Merkezi
-- 🔔 Site içi bildirimler
-- 📢 Duyuru kartları
-- 🛠️ Bakım duyurularının daha net gösterimi
+## v2.4.1 — Kapak Galerisi ve Manuel Doğrulama
+- Kapak/banner önerileri galeri halinde gösterilecek.
+- Yanlış görseli tek tıkla değiştirme eklenecek.
 
-## v2.4.0 — Tam Otomatik İçerik Motoru
-- 🤖 Gelişmiş oyun bilgisi çekme
-- 🖼️ Akıllı kapak eşleştirme
-- 🎬 Playlist bölüm doğrulama
+## v2.4.2 — Playlist Bölüm Kalıcılığı V2
+- Bölüm adları, video linkleri ve thumbnail kayıtları daha net doğrulanacak.
 
 ## v4.0.0 — Ana Açılış Sürümü
-- 🌟 Public arşiv deneyimi final
-- 🎮 Oyun/seri/yayın merkezi final
-- 👥 Kullanıcı deneyimi final
+- Public arşiv, seri merkezi, yayın takvimi ve yönetim güvenliği yayın için son hale getirilecek.

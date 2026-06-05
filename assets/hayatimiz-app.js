@@ -1,5 +1,5 @@
-const VERSION = 'v2.3.2';
-const FIX_NAME = 'v2.3.2 - Favoriler ve Takip Sistemi';
+const VERSION = 'v2.4.0';
+const FIX_NAME = 'v2.4.0 - Tam Otomatik İçerik Motoru';
 const ADMIN_EMAILS = ['mertdundaroyunda@gmail.com'];
 const BLOCKED_AUTO_EMAILS = ['mertdundar05@outlook.com'];
 const STORAGE = {

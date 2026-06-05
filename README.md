@@ -1,15 +1,16 @@
-# Hayatımız Oyun — v2.3.3 Başarım ve Rozet Sistemi
+# Hayatımız Oyun — v2.4.0 Tam Otomatik İçerik Motoru
 
-Bu paket v2.3.3 Başarım ve Rozet Sistemi tam paketidir.
+Bu paket v2.4.0 tam paketidir.
 
 ## Eklenenler
-- 🏆 Başarım sistemi eklendi.
-- 🎖️ Rozet sistemi eklendi.
-- 📈 İzleme istatistikleri başarımlarla bağlandı.
-- 👤 Profil kartına başarımlar özeti eklendi.
-- 🎮 Seri ve bölüm ilerlemesine göre rozet mantığı hazırlandı.
-- 📱 Mobil rozet/başarım görünümü kompakt yapıldı.
-- 🏷️ Sürüm etiketleri v2.3.3 yapıldı.
+
+- 🤖 Oyun adıyla otomatik içerik çekme motoru güçlendirildi.
+- 🖼️ Kapak/banner doğrulama mantığı geliştirildi.
+- 🚫 DLC/Expansion görselinin ana kapak yerine geçmesi engellendi.
+- 📝 Hikaye, karakter, mekan ve atmosfer üretimi düzenlendi.
+- 📺 Playlist bölüm adı/thumbnail koruma mantığı korundu.
+- 🏷️ Sürüm etiketleri v2.4.0 yapıldı.
 
 ## Schema
-Schema gerekli değil. Yeni tablo/kolon eklenmedi; mevcut kullanıcı, profil, izleme ve seri verileri üzerinden rozet/başarım görünümü hazırlanır.
+
+Schema gerekli değil.
