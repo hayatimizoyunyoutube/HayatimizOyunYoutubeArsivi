@@ -8,3 +8,9 @@ Sebep:
 - Bakım modu açılış için kapalı ayarlanır.
 - Eksik kolonlar güvenli eklenir.
 - Veri silmez.
+
+
+## v4.0.0 FIX - Oyun Kaydetme
+- Oyun ekleme/güncelleme sonrası mevcut oyunların kaybolması engellendi.
+- Supabase boş veriyle yerel listeyi ezmez.
+- Schema gerekli değil.

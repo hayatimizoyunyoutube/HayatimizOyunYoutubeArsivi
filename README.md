@@ -24,3 +24,9 @@ Framework Preset: Other
 Build Command: node scripts/build-static.mjs  
 Output Directory: dist  
 Install Command: npm install
+
+
+## v4.0.0 FIX - Oyun Kaydetme
+- Oyun ekleme/güncelleme sonrası mevcut oyunların kaybolması engellendi.
+- Supabase boş veriyle yerel listeyi ezmez.
+- Schema gerekli değil.

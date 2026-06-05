@@ -299,6 +299,10 @@ async function refreshGamesFromSupabase({force=false}={}){
 }
 async function persistGameToSupabase(game, editId=''){
   const token=sessionToken();
+  if(!token){
+    saveSyncState({mode:'supabase-required', status:'Supabase oturumu gerekli', message:'Oyun yerel kaydedilmedi. Supabase kaydı için kurucu hesabıyla giriş yap.'});
+    throw new Error('Supabase kaydı için kurucu/yetkili hesabıyla giriş yapmalısın. Yerel kayıt kapalı.');
+  }
   const targetId=String(editId || game.id || '').trim();
   const localRowsBefore=loadGames();
   const localBefore=localRowsBefore.find(g=>String(g.id)===targetId || String(g.id)===String(game.id));
@@ -308,11 +312,12 @@ async function persistGameToSupabase(game, editId=''){
   );
   if(localEpisodes.length){
     game={...game, episodes:localEpisodes, episodeCount:Math.max(Number(game.episodeCount||0), localEpisodes.length)};
-    if(targetId || game.id) saveEpisodes(targetId || game.id, localEpisodes, {skipGamePatch:true});
   }
-  if(!token){ saveSyncState({mode:'local', status:'Yetkili Supabase oturumu yok', message:'Oyun yerel kaydedildi. Supabase için kurucu hesabıyla tekrar giriş yap.'}); return null; }
   const action=editId?'games-update':'games-add';
   const data=await apiJson(action,{adminToken:token, gameId:editId, game:gameToRemotePayload(game)});
+  if(!data || data.ok === false){
+    throw new Error(data?.error || data?.message || 'Supabase oyun kaydı başarısız oldu.');
+  }
   if(data?.game){
     let remote=normalizeRemoteGame(data.game);
     const remoteEpisodes=Array.isArray(remote.episodes) ? remote.episodes : [];
@@ -330,9 +335,11 @@ async function persistGameToSupabase(game, editId=''){
         return {...g, ...remote, id:g.id, episodes:preserved, episodeCount:Math.max(Number(remote.episodeCount||0), preserved.length)};
       }
       return g;
-    }) : [{...remote, episodes:mergedEpisodes}, ...rows]);
+    }) : [{...remote, episodes:mergedEpisodes}, ...rows], {source:'supabase-save', allowDecrease:false});
+  }else{
+    await refreshGamesFromSupabase({force:false});
   }
-  saveSyncState({mode:'supabase', status:'Supabase kayıt aktif', message:editId?'Oyun Supabase üzerinde güncellendi; bölüm adı/kapakları korundu.':'Oyun Supabase üzerine kaydedildi; bölüm adı/kapakları korundu.', lastGameSync:game.title || game.id});
+  saveSyncState({mode:'supabase', status:'Supabase kayıt aktif', message:editId?'Oyun sadece Supabase üzerinde güncellendi.':'Oyun sadece Supabase üzerine kaydedildi.', lastGameSync:game.title || game.id});
   return data;
 }
 async function deleteGameRemote(id, options={}){ const token=sessionToken(); if(!token || options.explicitDelete !== true) return null; await apiJson('games-delete',{adminToken:token, gameId:id, confirmPhrase:'OYUNU SIL'}); saveSyncState({mode:'supabase', status:'Supabase silme aktif', message:'Oyun Supabase üzerinden manuel onayla silindi.'}); }
@@ -574,30 +581,46 @@ function loadGames(){
   writeJson(STORAGE.games, []);
   return [];
 }
+function mergeGameRowsPreserveCurrent(currentRows=[], incomingRows=[]){
+  const map=new Map();
+  (Array.isArray(currentRows)?currentRows:[]).map(normalizeGame).forEach(g=>{ if(g && g.id) map.set(String(g.id), g); });
+  (Array.isArray(incomingRows)?incomingRows:[]).map(normalizeGame).forEach(g=>{
+    if(!g || !g.id) return;
+    const old=map.get(String(g.id));
+    const oldEpisodes=Array.isArray(old?.episodes) ? old.episodes : loadEpisodes(g.id);
+    const nextEpisodes=Array.isArray(g.episodes) && g.episodes.length ? g.episodes : oldEpisodes;
+    map.set(String(g.id), {...(old||{}), ...g, episodes:nextEpisodes, episodeCount:Math.max(Number(g.episodeCount||0), Number(old?.episodeCount||0), nextEpisodes.length)});
+  });
+  return [...map.values()];
+}
 function saveGames(rows, options={}){
   const incoming = Array.isArray(rows)?rows:[];
-  const normalized = incoming.map(normalizeGame);
-  const current = firstStoredArray(GAME_KEYS) || [];
+  let normalized = incoming.map(normalizeGame);
+  const current = (firstStoredArray(GAME_KEYS) || []).map(normalizeGame);
   const allowEmpty = options && options.allowEmpty === true;
   const allowDecrease = options && options.allowDecrease === true;
   const explicitDelete = options && options.explicitDelete === true;
-  // v4.0.0: Ben silmeden mevcut oyunlar silinmesin.
-  // Boş liste veya daha az kayıt, yalnızca açık/manuel silme onayıyla yazılabilir.
+  const mergeOnDecrease = options && options.mergeOnDecrease !== false;
+  // v4.0.0 kesin kayıt fix: Oyun ekle/güncelle sırasında az kayıt gelirse arşivi sıfırlama.
+  // Bunun yerine gelen oyunları mevcut listenin üstüne merge et. Sadece açık silme onayı azalabilir.
   if(current.length > 0 && normalized.length === 0 && !allowEmpty && !explicitDelete){
     saveSyncState({mode:'protected', status:'Arşiv korundu', message:`Boş oyun listesi yazma engellendi. ${current.length} kayıt korunuyor.`});
-    return;
+    return false;
   }
   if(current.length > 0 && normalized.length < current.length && !allowDecrease && !explicitDelete){
-    saveSyncState({mode:'protected', status:'Arşiv korundu', message:`Kayıt sayısı ${current.length} → ${normalized.length} düşecekti; manuel silme onayı olmadığı için engellendi.`});
-    return;
+    normalized = mergeOnDecrease ? mergeGameRowsPreserveCurrent(current, normalized) : current;
+    saveSyncState({mode:'protected-merge', status:'Arşiv merge edildi', message:`Kayıt sayısı düşürülmedi; ${normalized.length} oyun korundu ve gelen değişiklikler işlendi.`});
   }
   try{
     localStorage.setItem('hayatimiz_games_last_backup', JSON.stringify(current));
     localStorage.setItem('hayatimiz_games_last_backup_at', new Date().toISOString());
   }catch{}
-  for(const key of GAME_KEYS) writeJson(key, normalized);
+  let ok=true;
+  for(const key of GAME_KEYS){ if(writeJson(key, normalized) === false) ok=false; }
   localStorage.setItem(STORAGE.gamesInitialized,'1');
   localStorage.setItem('hayatimiz_games_last_saved_at', new Date().toISOString());
+  saveSyncState({mode:'local-save', status:'Yerel oyun kaydı aktif', message:`${normalized.length} oyun tarayıcıya güvenli kaydedildi.`});
+  return ok;
 }
 function deleteGame(id, options={}){
   if(!options.explicitDelete){
@@ -1765,7 +1788,40 @@ function bind(){
     const login=e.target.closest('[data-login-form]'); if(login){ e.preventDefault(); (async()=>{ const fd=new FormData(login); const email=String(fd.get('email')||'').trim().toLowerCase(); const password=String(fd.get('password')||''); try{ const data=await apiJson('login',{email,password}); const u=data.user||{}; localStorage.setItem(STORAGE.session, JSON.stringify({email:u.email||email,displayName:u.full_name||u.displayName||'Hayatımız Oyun',role:isYönetimEmail(email)?'owner':(u.role||'user'),adminToken:data.adminToken||''})); toast('Supabase giriş başarılı.'); await refreshGamesFromSupabase({force:false}); setRoute(isYönetimEmail(email)?'/yonetim':'/ana-sayfa'); return; }catch(err){ console.warn('Supabase login yok, yerel deneniyor:', err.message); } let users=loadUsers(); let user=users.find(u=>String(u.email).toLowerCase()===email); if(!user && isYönetimEmail(email)){ user={id:'user-'+Date.now(),email,displayName:'Hayatımız Oyun Yönetim',password,role:'owner',createdAt:new Date().toISOString()}; users.push(user); saveUsers(users); } if(!user || String(user.password||'')!==password){ toast('E-posta veya şifre hatalı. Kayıt olmayı dene.'); return; } localStorage.setItem(STORAGE.session, JSON.stringify({email:user.email,displayName:user.displayName,role:isYönetimEmail(user.email)?'owner':(user.role||'user'),adminToken:user.adminToken||''})); toast('Yerel giriş başarılı. Supabase için şema ve kayıt gerekebilir.'); setRoute(isYönetimEmail(user.email)?'/yonetim':'/ana-sayfa'); })(); return; }
     const register=e.target.closest('[data-register-form]'); if(register){ e.preventDefault(); (async()=>{ const fd=new FormData(register); const email=String(fd.get('email')||'').trim().toLowerCase(); const displayName=String(fd.get('displayName')||'').trim(); const password=String(fd.get('password')||''); if(password.length<3){ toast('Şifre en az 3 karakter olsun.'); return; } let adminToken=''; let remoteUser=null; try{ const data=await apiJson('register',{email,password,fullName:displayName}); adminToken=data.adminToken||''; remoteUser=data.user||null; toast('Supabase kayıt oluşturuldu.'); }catch(err){ console.warn('Supabase kayıt yok, yerel kayıt:', err.message); toast('Yerel kayıt oluşturuldu. Supabase daha sonra bağlanabilir.'); } let users=loadUsers().filter(u=>String(u.email).toLowerCase()!==email); const role=isYönetimEmail(email)?'owner':(remoteUser?.role||'user'); const user={id:remoteUser?.id || 'user-'+Date.now(),email:remoteUser?.email || email,displayName:remoteUser?.full_name || displayName || email, password, role, adminToken, is_active:remoteUser?.is_active !== false, source:remoteUser?'Supabase':'Yerel',createdAt:remoteUser?.created_at || new Date().toISOString()}; users.push(user); saveUsers(users); localStorage.setItem(STORAGE.session, JSON.stringify({email:user.email,displayName:user.displayName,role:user.role,adminToken})); setRoute(isYönetimEmail(user.email)?'/yonetim':'/ana-sayfa'); })(); return; }
     const pf=e.target.closest('[data-profile-form]'); if(pf){ e.preventDefault(); const fd=new FormData(pf); const u=currentUser(); if(!u){ setRoute('/giris-yap'); return; } const displayName=String(fd.get('displayName')||'').trim() || u.displayName || u.email; const next={...u, displayName, updatedAt:new Date().toISOString()}; localStorage.setItem(STORAGE.session, JSON.stringify(next)); const users=loadUsers().map(row=>String(row.email).toLowerCase()===String(u.email).toLowerCase()?{...row, displayName, updatedAt:next.updatedAt}:row); saveUsers(users.length?users:[next]); toast('Profil bilgileri kaydedildi.'); render(); return; }
-    const gf=e.target.closest('[data-game-form]'); if(gf){ e.preventDefault(); const fd=new FormData(gf); const rows=loadGames(); const editId=String(fd.get('gameId')||'').trim(); const title=String(fd.get('title')||'').trim(); if(!title){ toast('Oyun adı boş olamaz.'); return; } const episodeCount=Math.max(0, Number(fd.get('episodeCount')||0)); const watchedEpisodeCount=Math.max(0, Math.min(episodeCount || 9999, Number(fd.get('watchedEpisodeCount')||0))); const payload=normalizeGame({id:editId || slugify(title)+'-'+Date.now(),title,status:fd.get('status'),genre:Array.from(new Set([...(splitText(fd.get('genre'))), ...fd.getAll('genreCheck').map(x=>String(x))])).join(', '),seriesName:fd.get('seriesName'),cover:fd.get('cover')||'/assets/hayatimiz-kapak.png',banner:fd.get('banner'),releaseDate:bestReleaseDate(fd.get('releaseDate')),platforms:fd.get('platforms'),description:fd.get('description'),storyText:String(fd.get('storyText')||'').trim() || professionalStoryText({title, genre:fd.get('genre'), seriesName:fd.get('seriesName')}),youtubePlaylistUrl:fd.get('youtubePlaylistUrl'),youtubePlaylistId:fd.get('youtubePlaylistId') || extractYoutubePlaylistId(fd.get('youtubePlaylistUrl')),tags:Array.from(new Set([...(splitText(fd.get('tags'))), ...fd.getAll('tagsCheck').map(x=>String(x))])).join(', '),rawgId:fd.get('rawgId'),rawgSlug:fd.get('rawgSlug'),steamAppId:fd.get('steamAppId'),score:fd.get('score'),metaSource:fd.get('metaSource'),metaCheckedAt:fd.get('metaCheckedAt'),coverSource:fd.get('metaSource'),episodeCount,watchedEpisodeCount},0); let embeddedEpisodes=[]; try{ const eps=JSON.parse(String(fd.get('episodesJson')||'[]')); if(Array.isArray(eps) && eps.length) embeddedEpisodes=eps.map(ep=>normalizeEpisode({...ep, watched:Number(ep.number)<=Number(payload.watchedEpisodeCount||0)})); }catch{} const existingGame=editId ? rows.find(g=>String(g.id)===editId) : null; const preservedEpisodes=embeddedEpisodes.length ? embeddedEpisodes : (Array.isArray(existingGame?.episodes) && existingGame.episodes.length ? existingGame.episodes.map(normalizeEpisode) : loadEpisodes(editId || payload.id)); payload.episodes=preservedEpisodes; if(preservedEpisodes.length) payload.episodeCount=Math.max(Number(payload.episodeCount||0), preservedEpisodes.length); const next=editId ? rows.map(g=>String(g.id)===editId ? {...g,...payload,id:g.id,episodes:preservedEpisodes} : g) : [payload, ...rows]; saveGames(next); if(preservedEpisodes.length) saveEpisodes(payload.id, preservedEpisodes); persistGameToSupabase(payload, editId).then(()=>{ render(); }).catch(err=>{ console.warn('Supabase kayıt yerel modda kaldı:', err.message); saveSyncState({mode:'local', status:'Yerel kayıt aktif', message:err.message}); }); toast(editId?'Oyun güncellendi.':'Oyun kaydedildi.'); setRoute('/yonetim/mevcut-oyunlar'); return; }
+    const gf=e.target.closest('[data-game-form]'); if(gf){
+      e.preventDefault();
+      const fd=new FormData(gf);
+      const rows=loadGames();
+      const editId=String(fd.get('gameId')||'').trim();
+      const title=String(fd.get('title')||'').trim();
+      if(!title){ toast('Oyun adı boş olamaz.'); return; }
+      const episodeCount=Math.max(0, Number(fd.get('episodeCount')||0));
+      const watchedEpisodeCount=Math.max(0, Math.min(episodeCount || 9999, Number(fd.get('watchedEpisodeCount')||0)));
+      const payload=normalizeGame({
+        id:editId || slugify(title)+'-'+Date.now(), title, status:fd.get('status'),
+        genre:Array.from(new Set([...(splitText(fd.get('genre'))), ...fd.getAll('genreCheck').map(x=>String(x))])).join(', '),
+        seriesName:fd.get('seriesName'), cover:fd.get('cover')||'/assets/hayatimiz-kapak.png', banner:fd.get('banner'),
+        releaseDate:bestReleaseDate(fd.get('releaseDate')), platforms:fd.get('platforms'), description:fd.get('description'),
+        storyText:String(fd.get('storyText')||'').trim() || professionalStoryText({title, genre:fd.get('genre'), seriesName:fd.get('seriesName')}),
+        youtubePlaylistUrl:fd.get('youtubePlaylistUrl'), youtubePlaylistId:fd.get('youtubePlaylistId') || extractYoutubePlaylistId(fd.get('youtubePlaylistUrl')),
+        tags:Array.from(new Set([...(splitText(fd.get('tags'))), ...fd.getAll('tagsCheck').map(x=>String(x))])).join(', '),
+        rawgId:fd.get('rawgId'), rawgSlug:fd.get('rawgSlug'), steamAppId:fd.get('steamAppId'), score:fd.get('score'),
+        metaSource:fd.get('metaSource'), metaCheckedAt:fd.get('metaCheckedAt'), coverSource:fd.get('metaSource'),
+        episodeCount, watchedEpisodeCount
+      },0);
+      let embeddedEpisodes=[];
+      try{ const eps=JSON.parse(String(fd.get('episodesJson')||'[]')); if(Array.isArray(eps) && eps.length) embeddedEpisodes=eps.map(ep=>normalizeEpisode({...ep, watched:Number(ep.number)<=Number(payload.watchedEpisodeCount||0)})); }catch{}
+      const existingGame=editId ? rows.find(g=>String(g.id)===editId) : null;
+      const preservedEpisodes=embeddedEpisodes.length ? embeddedEpisodes : (Array.isArray(existingGame?.episodes) && existingGame.episodes.length ? existingGame.episodes.map(normalizeEpisode) : loadEpisodes(editId || payload.id));
+      payload.episodes=preservedEpisodes;
+      if(preservedEpisodes.length) payload.episodeCount=Math.max(Number(payload.episodeCount||0), preservedEpisodes.length);
+      toast(editId?'Oyun Supabase üzerinde güncelleniyor...':'Oyun Supabase üzerine kaydediliyor...');
+      persistGameToSupabase(payload, editId)
+        .then(()=>refreshGamesFromSupabase({force:false}))
+        .then(()=>{ toast(editId?'Oyun Supabase’e güncellendi.':'Oyun Supabase’e kaydedildi.'); setRoute('/yonetim/mevcut-oyunlar'); render(); })
+        .catch(err=>{ console.error('Supabase oyun kaydı başarısız:', err); saveSyncState({mode:'supabase-error', status:'Supabase kayıt hatası', message:err.message || 'Oyun Supabase’e kaydedilemedi.'}); toast('Oyun kaydedilmedi: '+(err.message||'Supabase hatası')); render(); });
+      return;
+    }
     const ef=e.target.closest('[data-event-form]'); if(ef){ e.preventDefault(); const fd=new FormData(ef); const rows=loadEvents(); const gameTitle=String(fd.get('gameTitle')||'').trim(); const episodeNumber=String(fd.get('episodeNumber')||'').trim(); const foundGame=findGameForCalendarEvent({gameTitle}); const cover=(foundGame?.cover || foundGame?.banner || eventGameCover({gameTitle})); const event={id:'event-'+Date.now(),title:gameTitle+(episodeNumber?' • '+episodeNumber:''),date:fd.get('date'),time:fd.get('time'),type:fd.get('type'),gameTitle,gameId:foundGame?.id||'',seriesName:foundGame?.seriesName||'',episodeNumber,videoUrl:fd.get('videoUrl'),note:'',cover,source:foundGame?'game-match':'local'}; rows.unshift(event); saveEvents(rows); persistEventToSupabase(event).then(()=>render()).catch(err=>{ console.warn('Supabase takvim kayıt yerel modda kaldı:', err.message); saveSyncState({mode:'local', status:'Takvim yerel kayıt aktif', message:err.message}); }); toast(foundGame?'Yayın kaydedildi, oyun kapağı otomatik eşleşti.':'Yayın kaydedildi. Oyun kapağı bulunamazsa varsayılan kapak kullanılır.'); render(); return; }
     const nf=e.target.closest('[data-note-form]'); if(nf){ e.preventDefault(); const fd=new FormData(nf); const rows=loadNotes(); const note={id:'note-'+Date.now(),version:fd.get('version'),status:fd.get('status'),title:fd.get('title'),summary:fd.get('summary'),source:'local'}; rows.unshift(note); saveNotes(rows); persistNoteToSupabase(note).then(()=>render()).catch(err=>{ console.warn('Supabase not kayıt yerel modda kaldı:', err.message); saveSyncState({mode:'local', status:'Not yerel kayıt aktif', message:err.message}); }); toast('Güncelleme notu kaydedildi.'); render(); return; }
     const mf=e.target.closest('[data-maint-form]'); if(mf){ e.preventDefault(); const fd=new FormData(mf); const maintenance={enabled:fd.get('enabled')==='true',percent:Number(fd.get('percent')||0),message:fd.get('message'),eta:fd.get('eta'),adminBypass:true,source:'admin-form',updatedAt:new Date().toISOString()}; saveMaintenance(maintenance); persistMaintenanceToSupabase(maintenance).catch(err=>{ console.warn('Supabase bakım kayıt yerel modda kaldı:', err.message); saveSyncState({mode:'local', status:'Bakım yerel kayıt aktif', message:err.message}); }); toast('Bakım modu kaydedildi.'); render(); return; }
