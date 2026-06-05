@@ -221,6 +221,7 @@ function normalizeGame(g,i){
     coverSource: src.coverSource || src.cover_source || '',
     episodeCount,
     watchedEpisodeCount,
+    episodes: Array.isArray(src.episodes) ? dedupeEpisodes(src.episodes) : [],
     collectionName: src.collectionName || src.collection_name || src.collection || seriesName || '',
     seriesOrder: Number(src.seriesOrder ?? src.series_order ?? src.sortOrder ?? src.sort_order ?? i ?? 0),
     sortOrder: Number(src.sortOrder ?? src.sort_order ?? src.seriesOrder ?? src.series_order ?? i ?? 0),
@@ -286,6 +287,7 @@ function normalizeRemoteGame(g,i=0){
     platforms:Array.isArray(g.platforms) ? g.platforms.join(', ') : (g.platforms || ''), description:g.description || g.summary, storyText:g.story_text || g.storyText || g.story || g.hikaye,
     youtubePlaylistUrl:g.youtube_playlist_url || g.playlist_url || g.youtubePlaylistUrl, youtubePlaylistId:g.youtube_playlist_id || g.youtubePlaylistId,
     episodeCount:g.episode_count ?? g.episodeCount, watchedEpisodeCount:g.watched_episode_count ?? g.watchedEpisodeCount,
+    episodes:Array.isArray(g.episodes) ? g.episodes : [],
     rawgId:g.rawg_id || g.rawgId, rawgSlug:g.rawg_slug || g.rawgSlug, steamAppId:g.steam_app_id || g.steamAppId, score:g.score,
     metaSource:g.meta_source || g.metaSource, metaCheckedAt:g.meta_checked_at || g.metaCheckedAt, coverSource:g.cover_source || g.coverSource,
     sortOrder:g.sort_order ?? g.series_order ?? i, seriesOrder:g.series_order ?? g.sort_order ?? i, statusBucket:g.status_bucket || g.statusBucket, isFeatured:g.is_featured === true || g.isFeatured === true
@@ -1105,6 +1107,48 @@ function extractYoutubePlaylistId(raw){
   return m ? decodeURIComponent(m[1] || m[0]) : '';
 }
 function episodeStoreKey(gameId){ return `${STORAGE.episodes}:${String(gameId||'global')}`; }
+
+function pendingEpisodeStoreKey(gameId){ return `${STORAGE.episodes}:pending:${String(gameId||'global')}`; }
+function episodeRealScore(ep={}){
+  let score=0;
+  const title=String(ep.title||'').trim();
+  const thumb=String(ep.thumbnail||'').trim();
+  if(ep.videoId) score+=5;
+  if(ep.videoUrl && /youtu/i.test(String(ep.videoUrl))) score+=3;
+  if(title && !isGenericEpisodeTitle(title)) score+=4;
+  if(thumb && !isBadEpisodeThumbnail(thumb)) score+=5;
+  if(/ytimg\.com|i\.ytimg\.com/i.test(thumb)) score+=2;
+  return score;
+}
+function isGeneratedEpisode(ep={}){
+  return isGenericEpisodeTitle(ep.title) || isBadEpisodeThumbnail(ep.thumbnail) || /^local-/i.test(String(ep.id||''));
+}
+function mergeExactYoutubeEpisodes(existingList=[], fetchedList=[]){
+  const existing=dedupeEpisodes(existingList||[]);
+  const fetched=dedupeEpisodes(fetchedList||[]);
+  if(!fetched.length) return existing;
+  if(!existing.length) return fetched;
+  const byKey=new Map();
+  existing.forEach(ep=>byKey.set(ep.videoId?`video:${ep.videoId}`:`num:${ep.number}`, ep));
+  fetched.forEach(ep=>{
+    const key=ep.videoId?`video:${ep.videoId}`:`num:${ep.number}`;
+    const old=byKey.get(key);
+    if(!old){ byKey.set(key, ep); return; }
+    const oldScore=episodeRealScore(old);
+    const newScore=episodeRealScore(ep);
+    const keepOld = oldScore>newScore && !isGeneratedEpisode(old);
+    byKey.set(key, keepOld ? {...ep, ...old, number:old.number || ep.number} : {
+      ...old,
+      ...ep,
+      title: ep.title && !isGenericEpisodeTitle(ep.title) ? ep.title : old.title,
+      thumbnail: !isBadEpisodeThumbnail(ep.thumbnail) ? ep.thumbnail : old.thumbnail,
+      videoId: ep.videoId || old.videoId,
+      videoUrl: ep.videoUrl || old.videoUrl,
+      description: ep.description || old.description
+    });
+  });
+  return [...byKey.values()].sort((a,b)=>Number(a.number||0)-Number(b.number||0));
+}
 function pickEpisodeThumbnail(ep={}, videoId=''){
   const direct = ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || ep.image || ep.image_url || ep.cover || ep.cover_url || ep.snippet?.thumbnails?.maxres?.url || ep.snippet?.thumbnails?.standard?.url || ep.snippet?.thumbnails?.high?.url || ep.snippet?.thumbnails?.medium?.url || ep.snippet?.thumbnails?.default?.url || '';
   if(direct && !/hayatimiz-kapak|hayatimiz-logo|site-logo|logo\.png/i.test(String(direct))) return String(direct);
@@ -1150,30 +1194,9 @@ function hasRealYoutubeEpisodeData(ep={}){
   return Boolean(ep.videoId || /ytimg\.com|i\.ytimg\.com|youtube/i.test(String(ep.thumbnail||'')) || (ep.videoUrl && /youtu/i.test(String(ep.videoUrl))));
 }
 function mergeEpisodeListsForSave(localList=[], remoteList=[]){
-  const local=dedupeEpisodes(localList || []);
-  const remote=dedupeEpisodes(remoteList || []);
-  if(!remote.length) return local;
-  if(!local.length) return remote;
-  const byKey=new Map();
-  local.forEach(ep=>byKey.set(ep.videoId?`video:${ep.videoId}`:`num:${ep.number}`, ep));
-  remote.forEach(ep=>{
-    const key=ep.videoId?`video:${ep.videoId}`:`num:${ep.number}`;
-    const old=byKey.get(key);
-    if(!old){ byKey.set(key, ep); return; }
-    const oldReal=hasRealYoutubeEpisodeData(old);
-    const newReal=hasRealYoutubeEpisodeData(ep);
-    const keepOldReal = oldReal && !newReal;
-    byKey.set(key, {
-      ...old,
-      ...ep,
-      title: keepOldReal ? old.title : (ep.title && !isGenericEpisodeTitle(ep.title) ? ep.title : old.title),
-      thumbnail: keepOldReal ? old.thumbnail : (!isBadEpisodeThumbnail(ep.thumbnail) ? ep.thumbnail : old.thumbnail),
-      videoId: ep.videoId || old.videoId,
-      videoUrl: ep.videoUrl || old.videoUrl,
-      description: ep.description || old.description
-    });
-  });
-  return [...byKey.values()].sort((a,b)=>Number(a.number||0)-Number(b.number||0));
+  // v2.3.0 FIX: YouTube'dan çekilen gerçek başlık/thumbnail her zaman korunur.
+  // Genel öneri listesi (007 First Light 1. Bölüm + site kapağı) gerçek YouTube datasının üstüne yazamaz.
+  return mergeExactYoutubeEpisodes(localList, remoteList);
 }
 function loadEpisodes(gameId){
   const id=String(gameId||'');
@@ -1228,8 +1251,17 @@ function renderEpisodeList(episodes, watched=0){
 }
 function updateGamePatch(id, patch){
   const safePatch={...patch};
-  if(Array.isArray(safePatch.episodes)){ safePatch.episodeCount=safePatch.episodes.length || Number(safePatch.episodeCount||0); }
-  const next=loadGames().map((g,i)=>String(g.id)===String(id)?normalizeGame({...g,...safePatch,updatedAt:new Date().toISOString()},i):g);
+  if(Array.isArray(safePatch.episodes)){
+    const current=loadEpisodes(id);
+    safePatch.episodes=mergeExactYoutubeEpisodes(current, safePatch.episodes);
+    safePatch.episodeCount=safePatch.episodes.length || Number(safePatch.episodeCount||0);
+    writeJson(pendingEpisodeStoreKey(id), safePatch.episodes);
+  }
+  const next=loadGames().map((g,i)=>{
+    if(String(g.id)!==String(id)) return g;
+    const preserved=Array.isArray(safePatch.episodes) && safePatch.episodes.length ? safePatch.episodes : (Array.isArray(g.episodes)?g.episodes:loadEpisodes(id));
+    return normalizeGame({...g,...safePatch,episodes:preserved,episodeCount:preserved.length || safePatch.episodeCount || g.episodeCount,updatedAt:new Date().toISOString()},i);
+  });
   saveGames(next);
   return next.find(g=>String(g.id)===String(id));
 }
@@ -1241,6 +1273,8 @@ async function syncPlaylistForForm(form){
   if(box) box.textContent='Oynatma listesi bölümleri çekiliyor...';
   const result=await fetchPlaylistEpisodes(playlistUrl, title || 'Oyun');
   const normalizedEpisodes=dedupeEpisodes((result.episodes||[]).map((ep,idx)=>normalizeEpisode(ep,idx)));
+  const titleSlug=slugify(title || 'playlist');
+  writeJson(pendingEpisodeStoreKey(titleSlug), normalizedEpisodes);
   setField(form,'episodeCount',normalizedEpisodes.length || result.count || 0, false);
   const hidden=form.elements?.episodesJson;
   if(hidden) hidden.value=JSON.stringify(normalizedEpisodes);
@@ -1248,6 +1282,7 @@ async function syncPlaylistForForm(form){
   setField(form,'youtubePlaylistId',pid,false);
   const editId=String(form.elements?.gameId?.value||'').trim();
   if(editId){
+    writeJson(pendingEpisodeStoreKey(editId), normalizedEpisodes);
     saveEpisodes(editId, normalizedEpisodes);
     updateGamePatch(editId,{episodes:normalizedEpisodes, episodeCount:normalizedEpisodes.length || result.count, youtubePlaylistUrl:playlistUrl, youtubePlaylistId:pid, episodeSyncSource:result.source, episodeSyncedAt:new Date().toISOString()});
   }
@@ -1262,6 +1297,7 @@ async function syncPlaylistForGame(id){
   if(!game.youtubePlaylistUrl){ toast('Bu oyunda playlist URL yok. Düzenle sayfasından ekle.'); return; }
   const result=await fetchPlaylistEpisodes(game.youtubePlaylistUrl, game.title);
   const normalizedEpisodes=dedupeEpisodes((result.episodes||[]).map((ep,idx)=>normalizeEpisode(ep,idx)));
+  writeJson(pendingEpisodeStoreKey(game.id), normalizedEpisodes);
   saveEpisodes(game.id, normalizedEpisodes);
   updateGamePatch(game.id,{episodes:normalizedEpisodes, episodeCount:normalizedEpisodes.length || result.count || 0, youtubePlaylistUrl:game.youtubePlaylistUrl, youtubePlaylistId:extractYoutubePlaylistId(game.youtubePlaylistUrl), episodeSyncSource:result.source, episodeSyncedAt:new Date().toISOString()});
   persistGameToSupabase({...game, episodes:normalizedEpisodes, episodeCount:normalizedEpisodes.length || result.count || 0}, game.id).catch(err=>console.warn('Playlist bölüm kaydı Supabase tarafında yerel kaldı:', err?.message || err));
@@ -1892,9 +1928,13 @@ function bind(){
     const pf=e.target.closest('[data-profile-form]'); if(pf){ e.preventDefault(); const fd=new FormData(pf); const u=currentUser(); if(!u){ setRoute('/giris-yap'); return; } const displayName=String(fd.get('displayName')||'').trim() || u.displayName || u.email; const next={...u, displayName, updatedAt:new Date().toISOString()}; localStorage.setItem(STORAGE.session, JSON.stringify(next)); const users=loadUsers().map(row=>String(row.email).toLowerCase()===String(u.email).toLowerCase()?{...row, displayName, updatedAt:next.updatedAt}:row); saveUsers(users.length?users:[next]); toast('Profil bilgileri kaydedildi.'); render(); return; }
     const gf=e.target.closest('[data-game-form]'); if(gf){ e.preventDefault(); const fd=new FormData(gf); const rows=loadGames(); const editId=String(fd.get('gameId')||'').trim(); const title=String(fd.get('title')||'').trim(); if(!title){ toast('Oyun adı boş olamaz.'); return; } const episodeCount=Math.max(0, Number(fd.get('episodeCount')||0)); const watchedEpisodeCount=Math.max(0, Math.min(episodeCount || 9999, Number(fd.get('watchedEpisodeCount')||0))); const payload=normalizeGame({id:editId || slugify(title)+'-'+Date.now(),title,status:fd.get('status'),genre:Array.from(new Set([...(splitText(fd.get('genre'))), ...fd.getAll('genreCheck').map(x=>String(x))])).join(', '),seriesName:fd.get('seriesName'),cover:fd.get('cover')||'/assets/hayatimiz-kapak.png',banner:fd.get('banner'),releaseDate:bestReleaseDate(fd.get('releaseDate')),platforms:fd.get('platforms'),description:fd.get('description'),storyText:String(fd.get('storyText')||'').trim() || professionalStoryText({title, genre:fd.get('genre'), seriesName:fd.get('seriesName')}),youtubePlaylistUrl:fd.get('youtubePlaylistUrl'),youtubePlaylistId:fd.get('youtubePlaylistId') || extractYoutubePlaylistId(fd.get('youtubePlaylistUrl')),tags:Array.from(new Set([...(splitText(fd.get('tags'))), ...fd.getAll('tagsCheck').map(x=>String(x))])).join(', '),rawgId:fd.get('rawgId'),rawgSlug:fd.get('rawgSlug'),steamAppId:fd.get('steamAppId'),score:fd.get('score'),metaSource:fd.get('metaSource'),metaCheckedAt:fd.get('metaCheckedAt'),coverSource:fd.get('metaSource'),episodeCount,watchedEpisodeCount},0); let embeddedEpisodes=[]; try{ const eps=JSON.parse(String(fd.get('episodesJson')||'[]')); if(Array.isArray(eps) && eps.length) embeddedEpisodes=eps.map(ep=>normalizeEpisode({...ep, watched:Number(ep.number)<=Number(payload.watchedEpisodeCount||0)})); }catch{}
     const existingGame=editId ? rows.find(g=>String(g.id)===String(editId)) : null;
+    const pendingById=readJson(pendingEpisodeStoreKey(editId || payload.id), null);
+    const pendingByTitle=readJson(pendingEpisodeStoreKey(slugify(title || 'playlist')), null);
+    const fetchedEpisodes=Array.isArray(pendingById) && pendingById.length ? pendingById : (Array.isArray(pendingByTitle) && pendingByTitle.length ? pendingByTitle : []);
     const existingEpisodes=editId ? (Array.isArray(existingGame?.episodes) && existingGame.episodes.length ? existingGame.episodes : loadEpisodes(editId)) : [];
-    const mergedForUpdate=editId ? mergeEpisodeListsForSave(existingEpisodes, embeddedEpisodes) : embeddedEpisodes;
-    if(mergedForUpdate.length){ payload.episodes=mergedForUpdate; payload.episodeCount=mergedForUpdate.length; }
+    const candidateEpisodes=fetchedEpisodes.length ? fetchedEpisodes : embeddedEpisodes;
+    const mergedForUpdate=editId ? mergeExactYoutubeEpisodes(existingEpisodes, candidateEpisodes) : mergeExactYoutubeEpisodes([], candidateEpisodes);
+    if(mergedForUpdate.length){ payload.episodes=mergedForUpdate; payload.episodeCount=mergedForUpdate.length; writeJson(pendingEpisodeStoreKey(payload.id), mergedForUpdate); }
     const next=editId ? rows.map(g=>String(g.id)===editId ? {...g,...payload,id:g.id,episodes:mergedForUpdate.length?mergedForUpdate:(g.episodes||[]),episodeCount:mergedForUpdate.length || payload.episodeCount || g.episodeCount} : g) : [payload, ...rows];
     saveGames(next);
     if(mergedForUpdate.length) saveEpisodes(payload.id, mergedForUpdate, {skipGamePatch:true});
