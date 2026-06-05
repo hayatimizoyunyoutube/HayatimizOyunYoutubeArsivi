@@ -889,35 +889,6 @@ function clearCurrentWatchHistory(){
   saveWatchHistory(loadWatchHistory().filter(h=>String(h.email||'ziyaretci').toLowerCase()!==email));
 }
 
-function favoriteOwner(){ return String(currentUser()?.email || 'ziyaretci').toLowerCase(); }
-function loadFavorites(){ return readJson(STORAGE.favorites, []); }
-function saveFavorites(rows){ writeJson(STORAGE.favorites, Array.isArray(rows)?rows.slice(0,300):[]); }
-function favoriteRows(){ const owner=favoriteOwner(); return loadFavorites().filter(x=>String(x.owner||'ziyaretci').toLowerCase()===owner); }
-function isFavoriteGame(id){ const owner=favoriteOwner(); return loadFavorites().some(x=>String(x.owner||'ziyaretci').toLowerCase()===owner && x.type==='game' && String(x.id)===String(id)); }
-function isFavoriteSeries(name){ const owner=favoriteOwner(); return loadFavorites().some(x=>String(x.owner||'ziyaretci').toLowerCase()===owner && x.type==='series' && String(x.name||'').toLowerCase()===String(name||'').toLowerCase()); }
-function toggleFavoriteGame(id){
-  const game=loadGames().find(g=>String(g.id)===String(id)); if(!game) return false;
-  const owner=favoriteOwner(); let rows=loadFavorites();
-  const exists=rows.some(x=>String(x.owner||'ziyaretci').toLowerCase()===owner && x.type==='game' && String(x.id)===String(id));
-  if(exists) rows=rows.filter(x=>!(String(x.owner||'ziyaretci').toLowerCase()===owner && x.type==='game' && String(x.id)===String(id)));
-  else rows.unshift({owner,type:'game',id:game.id,title:game.title,cover:game.cover||'',seriesName:game.seriesName||'',createdAt:new Date().toISOString()});
-  saveFavorites(rows); return !exists;
-}
-function toggleFavoriteSeries(name){
-  const clean=String(name||'').trim(); if(!clean) return false;
-  const owner=favoriteOwner(); let rows=loadFavorites();
-  const exists=rows.some(x=>String(x.owner||'ziyaretci').toLowerCase()===owner && x.type==='series' && String(x.name||'').toLowerCase()===clean.toLowerCase());
-  if(exists) rows=rows.filter(x=>!(String(x.owner||'ziyaretci').toLowerCase()===owner && x.type==='series' && String(x.name||'').toLowerCase()===clean.toLowerCase()));
-  else rows.unshift({owner,type:'series',name:clean,title:clean,createdAt:new Date().toISOString()});
-  saveFavorites(rows); return !exists;
-}
-function favoritesPage(){
-  const favs=favoriteRows(); const games=loadGames(); const favGames=favs.filter(f=>f.type==='game').map(f=>games.find(g=>String(g.id)===String(f.id)) || f);
-  const favSeries=favs.filter(f=>f.type==='series');
-  const tracked=games.filter(g=>g.seriesName && (isFavoriteSeries(g.seriesName) || isFavoriteGame(g.id)));
-  return layout(`<section class="archiveHero"><div><span class="badge green">⭐ ${VERSION} • Favoriler ve Takip</span><h1>⭐ Favorilerim</h1><p>Favori oyunların, takip edilen serilerin ve sıradaki bölüm kartların tek merkezde tutulur.</p></div><div class="actions"><a class="btn primary" href="/oyun-arsivi">🎮 Arşiv</a><a class="btn secondary" href="/seriler">🎬 Seriler</a><a class="btn secondary" href="/hesabim">👤 Profil</a></div></section><section class="archiveStats"><article><b>${favGames.length}</b><span>⭐ Favori Oyun</span></article><article><b>${favSeries.length}</b><span>🎬 Takip Edilen Seri</span></article><article><b>${tracked.length}</b><span>⏭️ Takip Kartı</span></article></section><section class="panel"><h2>⭐ Favori Oyunlar</h2>${favGames.length?`<div class="homeV214Cards">${favGames.map(g=>oldHomeTile(g)).join('')}</div>`:'<div class="empty">Henüz favori oyun yok. Arşivdeki yıldız butonunu kullan.</div>'}</section><section class="panel"><h2>🎬 Takip Edilen Seriler</h2>${favSeries.length?favSeries.map(f=>`<article class="note"><span class="pill green">Takip ediliyor</span><h3>${esc(f.name||f.title)}</h3><p>Bu serinin sıradaki bölümleri profil ve favoriler merkezinde öne çıkarılır.</p><button class="miniBtn danger" data-favorite-series="${esc(f.name||f.title)}">Takipten Çıkar</button></article>`).join(''):'<div class="empty">Henüz takip edilen seri yok.</div>'}</section><section class="panel"><h2>⏭️ Sıradaki Bölümler</h2>${tracked.length?tracked.map(oldContinueCard).join(''):'<div class="empty">Takip edilen seri veya devam eden favori oyun yok.</div>'}</section>`);
-}
-
 function videoIdFromUrl(raw){
   const value=String(raw||'').trim();
   if(!value) return '';

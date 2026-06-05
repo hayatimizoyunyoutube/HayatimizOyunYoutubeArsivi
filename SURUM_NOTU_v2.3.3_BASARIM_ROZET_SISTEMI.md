@@ -1,8 +1,6 @@
-# Hayatımız Oyun — v2.3.3 Başarım ve Rozet Sistemi
+# ✅ v2.3.3 — Başarım ve Rozet Sistemi
 
-Bu paket v2.3.3 Başarım ve Rozet Sistemi tam paketidir.
-
-## Eklenenler
+## Yapılanlar
 - 🏆 Başarım sistemi eklendi.
 - 🎖️ Rozet sistemi eklendi.
 - 📈 İzleme istatistikleri başarımlarla bağlandı.
@@ -11,5 +9,5 @@ Bu paket v2.3.3 Başarım ve Rozet Sistemi tam paketidir.
 - 📱 Mobil rozet/başarım görünümü kompakt yapıldı.
 - 🏷️ Sürüm etiketleri v2.3.3 yapıldı.
 
-## Schema
-Schema gerekli değil. Yeni tablo/kolon eklenmedi; mevcut kullanıcı, profil, izleme ve seri verileri üzerinden rozet/başarım görünümü hazırlanır.
+## Schema Durumu
+Schema gerekli değil.
