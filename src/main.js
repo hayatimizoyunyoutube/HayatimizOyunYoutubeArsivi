@@ -1082,6 +1082,21 @@ function pickBetterEpisodeThumb(oldThumb, newThumb){
   if(isYoutubeThumb(oldThumb) && !isYoutubeThumb(newThumb)) return oldThumb;
   return oldThumb || newThumb || '';
 }
+
+function dedupeEpisodes(items=[]){
+  const seen=new Set();
+  const safe=Array.isArray(items)?items:[];
+  return safe
+    .map((ep,i)=>normalizeEpisode(ep,i))
+    .filter((ep)=>{
+      const key=ep.videoId?`video:${ep.videoId}`:(ep.videoUrl?`url:${ep.videoUrl}`:`num:${ep.number}:${ep.title}`);
+      if(seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a,b)=>Number(a.number||0)-Number(b.number||0));
+}
+
 function mergeEpisodeListsForSave(localList=[], remoteList=[]){
   const local=dedupeEpisodes(localList || []);
   const remote=dedupeEpisodes(remoteList || []);

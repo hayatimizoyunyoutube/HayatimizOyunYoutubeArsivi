@@ -30,3 +30,9 @@ Install Command: npm install
 - Oyun ekleme/güncelleme sonrası mevcut oyunların kaybolması engellendi.
 - Supabase boş veriyle yerel listeyi ezmez.
 - Schema gerekli değil.
+
+
+## v4.0.0 FIX - Oyun Kaydetme Kesin Onarım
+- dedupeEpisodes kayıt hatası düzeltildi.
+- Supabase kaydetme akışı çökmeden devam eder.
+- Bölüm thumbnail ve gerçek YouTube başlıkları korunur.
