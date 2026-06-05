@@ -1,5 +1,12 @@
 [
   {
+    "id": "v231-kullanici-profil-sistemi",
+    "version": "v2.3.1",
+    "title": "👤 Kullanıcı Profil Sistemi",
+    "summary": "Profil sayfası, görünen ad, rol kartı, izleme özeti, devam et kartları ve son izlenen bölümler güçlendirildi.",
+    "status": "Tamamlandı"
+  },
+  {
     "id": "fix-v230-guncelleme-isleme-senkron",
     "version": "v2.3.0 FIX",
     "title": "🧾 Güncelleme İşleme ve Sürüm Senkron Fix",
@@ -12,13 +19,6 @@
     "title": "🎬 Premium Seri Sayfası ve Arşiv Deneyimi",
     "summary": "Premium seri merkezi, devam eden/tamamlanan/yakında seriler ayrımı, sıradaki bölüm gösterimi, kompakt seri kartları ve bölüm kapak/ad kayıt koruması eklendi.",
     "status": "Tamamlandı"
-  },
-  {
-    "id": "plan-v231-kullanici-profil-sistemi",
-    "version": "v2.3.1",
-    "title": "👤 Kullanıcı Profil Sistemi",
-    "summary": "Profil sayfası, avatar, favori seriler, son izlenen bölümler ve kullanıcı izleme istatistikleri geliştirilecek.",
-    "status": "Planlandı"
   },
   {
     "id": "plan-v232-favoriler-takip-sistemi",

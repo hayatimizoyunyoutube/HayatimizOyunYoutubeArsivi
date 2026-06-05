@@ -1,4 +1,4 @@
-# Hayatımız Oyun — v2.3.0
+# Hayatımız Oyun — v2.3.1
 
 ## Premium Seri Sayfası ve Arşiv Deneyimi
 
@@ -8,3 +8,7 @@ Bu paket tam proje paketidir. v4.0.0 ana açılışına hazırlık için seri me
 - Açılış hedefi: v4.0.0
 - Veri koruma: Mevcut oyunlar, kullanıcılar, takvim ve bakım kayıtları silinmez.
 - Schema: gerekli değil. Yeni tablo/kolon eklenmedi.
+
+
+## v2.3.1 Kullanıcı Profil Sistemi
+Profil merkezi, izleme özeti, devam et kartları ve son izlenenler güçlendirildi.

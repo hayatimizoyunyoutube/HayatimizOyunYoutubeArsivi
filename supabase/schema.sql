@@ -1,3 +1,6 @@
+-- Hayatımız Oyun v2.3.1 - Kullanıcı Profil Sistemi
+-- Bu sürümde yeni tablo/kolon gerekmez; mevcut schema güvenli şekilde korunur.
+
 -- Hayatımız Oyun v2.3.0 - Premium Seri Sayfası ve Arşiv Deneyimi
 -- Bu sürümde yeni tablo/kolon gerekmez; mevcut schema güvenli şekilde korunur.
 

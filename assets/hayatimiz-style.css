@@ -889,3 +889,10 @@
   .alphaGroup .grid.archiveGrid,.grid.archiveGrid,.archiveGrid{grid-template-columns:1fr!important;}
   .archiveGrid .gameCard img,.alphaGroup .gameCard img{height:150px!important;max-height:150px!important;}
 }
+
+/* v2.3.1 Kullanıcı Profil Sistemi */
+.profileHeroV231{background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(30,41,59,.82));border-color:rgba(56,189,248,.24)}
+.profileHeroV231 aside{border:1px solid rgba(56,189,248,.22);background:rgba(15,23,42,.72);border-radius:22px;padding:18px}
+.profileStatsV217 article{min-height:96px}
+.profileContinue img{object-fit:cover}
+@media (max-width:720px){.profileHeroV231{padding:18px}.profileStatsV217{grid-template-columns:1fr 1fr}.profileGridV217{grid-template-columns:1fr}.profileContinue{grid-template-columns:62px 1fr}}
