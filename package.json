@@ -1,15 +1,17 @@
 {
-  "name": "hayatimiz-oyun-v400-temiz-final-tam-paket",
+  "name": "hayatimiz-oyun-v400-deploy-hizli-final",
   "private": true,
   "type": "module",
   "version": "4.0.0",
   "engines": {
     "node": ">=20"
   },
-  "description": "Hayatımız Oyun v4.0.0 temiz final tam paket - tüm sürüm, Vercel, schema, status ve tasarım senkronu",
+  "description": "Hayatımız Oyun v4.0.0 hızlı Vercel deploy final paket",
   "scripts": {
-    "build": "vite --host 0.0.0.0",
-    "dev": "vite --host 0.0.0.0",
-    "preview": "vite preview --host 0.0.0.0"
-  }
+    "build": "node scripts/build-static.mjs",
+    "dev": "node scripts/dev-server.mjs",
+    "preview": "node scripts/dev-server.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }

@@ -1,6 +1,8 @@
 {
   "version": 2,
   "framework": null,
+  "buildCommand": "node scripts/build-static.mjs",
+  "outputDirectory": "dist",
   "cleanUrls": false,
   "trailingSlash": false,
   "functions": {
@@ -17,15 +19,11 @@
   ],
   "headers": [
     {
-      "source": "/index.html",
+      "source": "/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
         { "key": "X-Hayatimiz-Oyun-Version", "value": "v4.0.0-ANA-ACILIS-FINAL" }
       ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [ { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" } ]
     }
   ]
 }
