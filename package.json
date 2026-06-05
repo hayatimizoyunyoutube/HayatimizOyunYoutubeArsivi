@@ -2,7 +2,7 @@
   "name": "hayatimiz-oyun-v230-premium-seri-sayfasi",
   "private": true,
   "type": "module",
-  "version": "2.4.0",
+  "version": "3.5.0",
   "engines": {
     "node": ">=20"
   },

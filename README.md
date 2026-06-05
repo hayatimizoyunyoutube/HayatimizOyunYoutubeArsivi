@@ -1,16 +1,34 @@
-# Hayatımız Oyun — v2.4.0 Tam Otomatik İçerik Motoru
+# Hayatımız Oyun — v3.5.0
 
-Bu paket v2.4.0 tam paketidir.
+Bu paket v2.4.0 sonrası özellikleri v3.5.0 hedefine kadar sürüm notlarıyla toparlar.
 
-## Eklenenler
+## Paket İçeriği
 
-- 🤖 Oyun adıyla otomatik içerik çekme motoru güçlendirildi.
-- 🖼️ Kapak/banner doğrulama mantığı geliştirildi.
-- 🚫 DLC/Expansion görselinin ana kapak yerine geçmesi engellendi.
-- 📝 Hikaye, karakter, mekan ve atmosfer üretimi düzenlendi.
-- 📺 Playlist bölüm adı/thumbnail koruma mantığı korundu.
-- 🏷️ Sürüm etiketleri v2.4.0 yapıldı.
+- 🎮 Otomatik oyun bilgi çekme motoru
+- 🖼️ Akıllı kapak/banner doğrulama
+- 📺 YouTube playlist bölüm adı ve thumbnail koruma
+- 📚 Premium seri merkezi
+- ⭐ Favoriler ve takip sistemi
+- 🏆 Başarım/rozet sistemi
+- 👤 Profil merkezi
+- 📅 Yayın takvimi geliştirmeleri
+- 🛠️ Bakım modu + v4.0.0 hedef sistemi
+- 💾 Supabase veri koruma akışı
 
-## Schema
+## Aktif Sürüm
 
-Schema gerekli değil.
+**v3.5.0**
+
+## Schema Durumu
+
+**schema.sql gerekli değil** ✅
+
+Mevcut verileri silmez. Yeni tablo/kolon eklenmedi.
+
+## Git
+
+```bash
+git add -A
+git commit --allow-empty -m "v3.5.0 genis hazirlik paketi"
+git push -f origin main
+```
