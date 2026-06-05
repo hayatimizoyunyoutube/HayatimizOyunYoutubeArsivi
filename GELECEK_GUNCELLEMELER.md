@@ -1,19 +1,16 @@
-# 🚀 GELECEK GÜNCELLEMELER
+# Gelecek Güncellemeler
 
-## Aktif Sürüm
+## v4.0.1 — Açılış Sonrası Stabilite
+- Küçük mobil görünüm fixleri
+- Kullanıcı geri bildirimlerine göre arayüz düzeltmeleri
+- Veri sağlık kontrollerinde küçük iyileştirmeler
 
-- ✅ v3.5.0 — v4.0.0 Öncesi Geniş Hazırlık Paketi
+## v4.1.0 — Topluluk ve Bildirim Merkezi
+- Favori seri bildirimleri
+- Yeni bölüm duyuruları
+- Kullanıcı duyuru alanı
 
-## Sıradaki Hedefler
-
-### v3.5.1 — Son Hata Temizliği
-- 🛠️ Bildirilen küçük hatalar temizlenecek.
-- 🧪 Public/admin sayfaları son kez kontrol edilecek.
-
-### v3.6.0 — Açılış Öncesi Stabilite
-- 📊 Veri sağlığı ve public akış son testleri yapılacak.
-- 🎮 Oyun/seri/bölüm ilişkileri kontrol edilecek.
-
-### v4.0.0 — ANA AÇILIŞ SÜRÜMÜ
-- 🌟 Site public açılışa hazır hale getirilecek.
-- 🎬 Arşiv, seri merkezi, yayın takvimi, profil ve bakım sistemi son halini alacak.
+## v4.2.0 — Gelişmiş Analitik ve Yayın Planı
+- Seri izleme istatistikleri
+- Yayın takvimi analizleri
+- Popüler arşiv kartları

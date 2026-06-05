@@ -1,34 +1,33 @@
-# Hayatımız Oyun — v3.5.0
+# Hayatımız Oyun — v4.0.0 Ana Açılış Sürümü
 
-Bu paket v2.4.0 sonrası özellikleri v3.5.0 hedefine kadar sürüm notlarıyla toparlar.
+Bu paket ana açılış için hazırlanmış tam deploy paketidir.
 
-## Paket İçeriği
+## İçerik
 
-- 🎮 Otomatik oyun bilgi çekme motoru
-- 🖼️ Akıllı kapak/banner doğrulama
-- 📺 YouTube playlist bölüm adı ve thumbnail koruma
-- 📚 Premium seri merkezi
-- ⭐ Favoriler ve takip sistemi
-- 🏆 Başarım/rozet sistemi
+- 🎮 Public oyun arşivi
+- 🎬 Seri merkezi
+- 📁 Koleksiyonlar / kategoriler
+- 📅 Yayın takvimi
 - 👤 Profil merkezi
-- 📅 Yayın takvimi geliştirmeleri
-- 🛠️ Bakım modu + v4.0.0 hedef sistemi
-- 💾 Supabase veri koruma akışı
+- ⭐ Favoriler ve takip sistemi
+- 🏆 Başarım ve rozet sistemi
+- 🛡️ Yönetim paneli
+- 💾 Veri sağlığı ve yedekleme ekranları
+- 🛠️ Bakım modu / ban güvenliği
+- 🖼️ Kapak, banner ve YouTube bölüm thumbnail koruması
 
 ## Aktif Sürüm
 
-**v3.5.0**
-
-## Schema Durumu
-
-**schema.sql gerekli değil** ✅
-
-Mevcut verileri silmez. Yeni tablo/kolon eklenmedi.
+**v4.0.0**
 
 ## Git
 
 ```bash
 git add -A
-git commit --allow-empty -m "v3.5.0 genis hazirlik paketi"
+git commit --allow-empty -m "v4.0.0 ana acilis surumu"
 git push -f origin main
 ```
+
+## Vercel
+
+Deployments > Redeploy > Clear Build Cache > Redeploy

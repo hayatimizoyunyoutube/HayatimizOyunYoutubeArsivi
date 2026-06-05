@@ -1,5 +1,5 @@
-const VERSION = 'v2.4.0';
-const FIX_NAME = 'v2.4.0 - Tam Otomatik İçerik Motoru';
+const VERSION = 'v4.0.0';
+const FIX_NAME = 'v4.0.0 - Ana Açılış Sürümü';
 const ADMIN_EMAILS = ['mertdundaroyunda@gmail.com'];
 const BLOCKED_AUTO_EMAILS = ['mertdundar05@outlook.com'];
 const STORAGE = {
@@ -32,7 +32,11 @@ const DEFAULT_GAMES = [
   {id:'control-ultimate-edition',title:'Control Ultimate Edition',status:'Ara Verildi',genre:'Aksiyon',seriesName:'Remedy Evreni',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2019',description:'Ara verilen seriler için durum rozeti ve koleksiyon sayacı örneği.',episodeCount:5,tags:'Aksiyon, Bilim Kurgu, Seri'}
 ];
 const DEFAULT_NOTES = [
-  {id:'fix-v230-guncelleme-isleme-senkron',version:'v2.3.0 FIX',title:'🧾 Güncelleme İşleme ve Sürüm Senkron Fix',summary:'Deploy sonrası eski notların görünmesi engellendi. Aktif sürüm, bakım ekranı, status, yönetim paneli ve güncelleme notları v2.3.2 olarak senkron çalışır.',status:'Tamamlandı'},
+  {id:'v400-ana-acilis-surumu',version:'v4.0.0',title:'🎉 Ana Açılış Sürümü',summary:'Hayatımız Oyun artık public arşiv, seri merkezi, yayın takvimi, favoriler, profil, başarımlar, bakım/ban güvenliği ve profesyonel yönetim paneliyle açılışa hazır.',status:'Tamamlandı'},
+  {id:'v350-genis-ozellik-paketi',version:'v3.5.0',title:'📦 v4.0.0 Öncesi Geniş Özellik Paketi',summary:'v2.4.1’den v3.5.0’a kadar planlanan arşiv, profil, favori, takip, rozet, veri sağlığı, kapak ve bakım özellikleri toparlandı.',status:'Tamamlandı'},
+  {id:'plan-v401-acilis-sonrasi-fix',version:'v4.0.1',title:'🛠️ Açılış Sonrası Stabilite Fixleri',summary:'Canlı yayına çıktıktan sonra kullanıcı geri bildirimleriyle küçük görünüm ve veri düzeltmeleri yapılacak.',status:'Planlandı'},
+  {id:'plan-v410-topluluk-ve-bildirim',version:'v4.1.0',title:'🔔 Topluluk ve Bildirim Merkezi',summary:'Favori seriler, yeni bölüm bildirimleri, duyuru alanları ve kullanıcı etkileşimi geliştirilecek.',status:'Planlandı'},
+  {id:'fix-v230-guncelleme-isleme-senkron',version:'v4.0.0 FIX',title:'🧾 Güncelleme İşleme ve Sürüm Senkron Fix',summary:'Deploy sonrası eski notların görünmesi engellendi. Aktif sürüm, bakım ekranı, status, yönetim paneli ve güncelleme notları v4.0.0 olarak senkron çalışır.',status:'Tamamlandı'},
   {id:'v230-premium-seri-sayfasi-arsiv-deneyimi',version:'v2.3.0',title:'🎬 Premium Seri Sayfası ve Arşiv Deneyimi',summary:'Premium seri merkezi, devam eden/tamamlanan/yakında seriler ayrımı, sıradaki bölüm gösterimi, kompakt seri kartları ve bölüm kapak/ad kayıt koruması eklendi.',status:'Tamamlandı'},
   {id:'v232-favoriler-takip-sistemi',version:'v2.3.2',title:'⭐ Favoriler ve Takip Sistemi',summary:'Favori oyun ve seri takibi, takip edilen seriler, sıradaki bölüm kartları ve profil içi favoriler alanı eklendi.',status:'Tamamlandı'},
   {id:'v231-kullanici-profil-sistemi',version:'v2.3.1',title:'👤 Kullanıcı Profil Sistemi',summary:'Profil sayfası, avatar/görünen ad, izleme geçmişi, devam et kartları, rol bilgisi ve profil istatistikleri güçlendirildi.',status:'Tamamlandı'},
@@ -296,7 +300,7 @@ function normalizeRemoteGame(g,i=0){
 }
 function gameToRemotePayload(g){
   const game=normalizeGame(g,0);
-  // v2.3.0 FIX: Playlistten çekilen gerçek YouTube bölüm adları ve thumbnail
+  // v4.0.0 FIX: Playlistten çekilen gerçek YouTube bölüm adları ve thumbnail
   // görselleri Supabase'e doğrudan gönderilir. Önceki paket sadece bölüm
   // sayısını yolladığı için Supabase dönüşünde seriler ekranı oyun/site kapağına
   // düşüyordu.
@@ -357,7 +361,7 @@ async function persistGameToSupabase(game, editId=''){
   const localRowsBefore=loadGames();
   const localBefore=localRowsBefore.find(g=>String(g.id)===targetId || String(g.id)===String(game.id));
   const savedEpisodes = Array.isArray(localBefore?.episodes) && localBefore.episodes.length ? localBefore.episodes : loadEpisodes(targetId || game.id);
-  // v2.3.0 FIX: Oyunu Güncelle butonu, playlistten çekilmiş gerçek bölüm
+  // v4.0.0 FIX: Oyunu Güncelle butonu, playlistten çekilmiş gerçek bölüm
   // adlarını ve YouTube thumbnail'lerini resetleyemez. Yeni payload sadece
   // bölüm sayısı veya oyun kapağı taşıyorsa eski gerçek bölüm listesi korunur.
   const localEpisodes=mergeEpisodeListsForSave(savedEpisodes, Array.isArray(game.episodes) && game.episodes.length ? game.episodes : []);
@@ -1195,7 +1199,7 @@ function hasRealYoutubeEpisodeData(ep={}){
   return Boolean(ep.videoId || /ytimg\.com|i\.ytimg\.com|youtube/i.test(String(ep.thumbnail||'')) || (ep.videoUrl && /youtu/i.test(String(ep.videoUrl))));
 }
 function mergeEpisodeListsForSave(localList=[], remoteList=[]){
-  // v2.3.0 FIX: YouTube'dan çekilen gerçek başlık/thumbnail her zaman korunur.
+  // v4.0.0 FIX: YouTube'dan çekilen gerçek başlık/thumbnail her zaman korunur.
   // Genel öneri listesi (007 First Light 1. Bölüm + site kapağı) gerçek YouTube datasının üstüne yazamaz.
   return mergeExactYoutubeEpisodes(localList, remoteList);
 }
@@ -1319,7 +1323,7 @@ function nav(){ return ''; }
 
 function emergencySafeHtml(message='Site güvenli moda alındı.'){
   const safeMsg = esc(message || 'Beklenmeyen hata yakalandı.');
-  return `<main class="emergencyApp"><section class="emergencyCard"><span class="badge green">🛡️ v2.3.0 FIX • Güvenli Açılış</span><h1>🎮 Hayatımız Oyun</h1><p>${safeMsg}</p><p class="muted">Bu ekran siteyi boş/hatalı bırakmamak için devreye girer. Menüden sayfaları açabilirsin.</p><div class="emergencyLinks"><a href="/ana-sayfa">🏠 Ana Sayfa</a><a href="/oyun-arsivi">🎮 Arşiv</a><a href="/seriler">🎬 Seriler</a><a href="/yayin-takvimi">📅 Yayın Takvimi</a><a href="/giris-yap">🔐 Giriş Yap</a></div></section></main>`;
+  return `<main class="emergencyApp"><section class="emergencyCard"><span class="badge green">🛡️ v4.0.0 • Güvenli Açılış</span><h1>🎮 Hayatımız Oyun</h1><p>${safeMsg}</p><p class="muted">Bu ekran siteyi boş/hatalı bırakmamak için devreye girer. Menüden sayfaları açabilirsin.</p><div class="emergencyLinks"><a href="/ana-sayfa">🏠 Ana Sayfa</a><a href="/oyun-arsivi">🎮 Arşiv</a><a href="/seriler">🎬 Seriler</a><a href="/yayin-takvimi">📅 Yayın Takvimi</a><a href="/giris-yap">🔐 Giriş Yap</a></div></section></main>`;
 }
 function appBootRepair(){
   try{
@@ -1365,21 +1369,21 @@ function maintenanceZiyaretçi(){
   const isPlanned=(n)=>String(n.status||'').toLocaleLowerCase('tr').includes('plan') || n.planned===true;
   const isDeleted=(n)=>String(n.status||'').toLocaleLowerCase('tr').includes('sil');
   const doneFallback=[
-    {version:'v2.2.9',title:'Public Açılış Cilası',summary:'Ana sayfa, arşiv, seri kartları, bakım ekranı ve mobil görünüm v4.0.0 açılış hedefine göre cilalandı.'},
-    {version:'v2.2.8',title:'4.0 Açılış Planı ve Bakım İlerleme Sistemi',summary:'Bakım ekranı ziyaretçilere otomatik ilerleme, güncel eklenenler ve gelecek planları gösterecek şekilde düzenlendi.'},
-    {version:'v2.2.7',title:'Sürüm Senkronizasyonu ve Mobil Deploy Güvenliği',summary:'Site, Vercel, health/status, güncelleme notları ve paket etiketleri aynı sürüm çizgisine alındı.'}
+    {version:'v4.0.0',title:'Ana Açılış Sürümü',summary:'Public arşiv, seri merkezi, yayın takvimi, profil, favoriler, başarımlar, bakım/ban güvenliği ve yönetim paneli açılışa hazırlandı.'},
+    {version:'v3.5.0',title:'Geniş Özellik Paketi',summary:'v4.0.0 öncesindeki tüm arşiv, kapak, playlist, profil, takip, rozet ve veri güvenliği özellikleri toparlandı.'},
+    {version:'v2.4.0',title:'Tam Otomatik İçerik Motoru',summary:'Oyun bilgi çekme, kapak/banner doğrulama, hikaye üretimi ve YouTube playlist bölüm koruması güçlendirildi.'}
   ];
   const plannedFallback=[
-    {version:'v2.3.0',title:'Admin Dashboard ve Veri Sağlığı Geliştirme',summary:'Veri sağlığı, yedekleme, eksik kapak/tarih kontrolü, yönetim metrikleri ve güvenli onarım araçları geliştirilecek.'},
-    {version:'v2.3.2',title:'Favoriler ve Takip Sistemi',summary:'Kullanıcılar favori oyun/seri ekleyebilecek, takip ettiği serilerin sıradaki bölümlerini görebilecek.'},
-    {version:'v4.0.0',title:'Ana Açılış Sürümü',summary:'Public arşiv, seri merkezi, yayın takvimi, bakım/ban güvenliği ve yönetim paneli yayın için son hale getirilecek.'}
+    {version:'v4.0.1',title:'Açılış Sonrası Stabilite',summary:'Canlı kullanım sonrası küçük tasarım, mobil görünüm, veri ve bildirim düzeltmeleri yapılacak.'},
+    {version:'v4.1.0',title:'Topluluk ve Bildirim Merkezi',summary:'Favori seriler için bildirimler, duyuru akışı ve kullanıcı etkileşimi geliştirilecek.'},
+    {version:'v4.2.0',title:'Gelişmiş Analitik ve Yayın Planı',summary:'İzlenme ilerlemesi, seri takibi ve yayın takvimi istatistikleri daha ayrıntılı hale getirilecek.'}
   ];
   const done=allNotes
     .filter(n=>!isPlanned(n) && !isDeleted(n) && versionNumber(n.version) >= versionNumber('v2.2.7') && versionNumber(n.version) <= currentNo)
     .sort((a,b)=>versionNumber(b.version)-versionNumber(a.version))
     .slice(0,3);
   const planned=allNotes
-    .filter(n=>isPlanned(n) && !isDeleted(n) && (versionNumber(n.version) > currentNo || String(n.version||'').includes('4.0.0')))
+    .filter(n=>isPlanned(n) && !isDeleted(n) && versionNumber(n.version) > currentNo)
     .sort((a,b)=>versionNumber(a.version)-versionNumber(b.version))
     .slice(0,3);
   const doneRows=(done.length?done:doneFallback);
@@ -1575,7 +1579,7 @@ function archive(){
 }
 
 
-// v2.4.0 FIX: Favoriler / Profil / Kategoriler güvenli yardımcıları
+// v4.0.0 FIX: Favoriler / Profil / Kategoriler güvenli yardımcıları
 function loadFavorites(){
   const raw = readJson(STORAGE.favorites, null);
   const safe = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
@@ -1906,7 +1910,7 @@ function publicStatusPage(){
     ['💾 Veri Durumu', sync.status||sync.mode, sync.message||'Supabase yoksa local güvenli mod çalışır.'],
     ['🛡️ Boş Ekran Koruması','Aktif','JS hata verse bile güvenli hata ekranı ve HTML açılışı devrede.']
   ];
-  return layout(`<section class="archiveHero statusHero"><div><span class="badge green">🛠️ ${VERSION} • Profesyonel Ana Sayfa</span><h1>📡 Site Durumu</h1><p>Bu sayfa Supabase veri sağlığı, admin yetkileri, oyun kayıtları, seri yönetimi, bakım modu ve güvenli yerel mod durumunu tek ekranda takip eder.</p></div><div class="actions"><a class="btn primary" href="/ana-sayfa">🏠 Ana Sayfa</a><a class="btn secondary" href="/oyun-arsivi">🎮 Arşiv</a><a class="btn secondary" href="/site-rehberi">📘 Rehber</a></div></section><section class="archiveStats"><article><b>${games.length}</b><span>🎮 Oyun</span></article><article><b>${model.series.size}</b><span>🎬 Seri</span></article><article><b>${model.episodeTotal}</b><span>▶️ Bölüm</span></article><article><b>${notes.length}</b><span>📝 Not</span></article></section><section class="publicStatusGrid">${checks.map(([title,status,text])=>`<article class="statusCheckCard"><span class="pill ${String(status).includes('Hazır')||String(status).includes('Aktif')||String(status).includes('Kapalı')?'green':'amber'}">${esc(status)}</span><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join('')}</section><section class="panel publishChecklist"><h2>✅ Yayın Öncesi Kontrol Listesi</h2><div class="roadList"><span class="done">Ana sayfa boş ekrana düşmez</span><span class="done">Mobil/tablet/masaüstü buton taşmaları azaltıldı</span><span class="done">Kayıt ol / giriş yap / profil / çıkış bağlantıları korunuyor</span><span class="done">Yönetim bağlantıları yetkisiz kullanıcıya gizli</span><span class="done">Bakım modu açıkken yetkili giriş bypass korunuyor</span><span class="done">Güncelleme notları, status ve sürüm etiketi v2.3.2 olarak güncel</span></div></section><section class="panel"><h2>📝 Son Güncellemeler</h2><div class="miniList">${notes.slice(0,6).map(n=>`<article class="note"><span class="pill ${String(n.status).includes('Plan')?'amber':'green'}">${esc(n.version||VERSION)} • ${esc(n.status||'Tamamlandı')}</span><h3>${esc(n.title)}</h3><p>${esc(n.summary||n.description||'')}</p></article>`).join('')}</div></section><section class="panel"><h2>📅 Takvim Özeti</h2>${events.length?events.slice(0,4).map(e=>`<p class="activityItem">📅 ${esc(e.title||'Yayın')} • ${esc(e.date||'Tarih yok')} ${esc(e.time||'')}</p>`).join(''):'<p class="muted">Henüz yayın kaydı yok. Yönetimden takvim eklenebilir.</p>'}</section>`);
+  return layout(`<section class="archiveHero statusHero"><div><span class="badge green">🛠️ ${VERSION} • Profesyonel Ana Sayfa</span><h1>📡 Site Durumu</h1><p>Bu sayfa Supabase veri sağlığı, admin yetkileri, oyun kayıtları, seri yönetimi, bakım modu ve güvenli yerel mod durumunu tek ekranda takip eder.</p></div><div class="actions"><a class="btn primary" href="/ana-sayfa">🏠 Ana Sayfa</a><a class="btn secondary" href="/oyun-arsivi">🎮 Arşiv</a><a class="btn secondary" href="/site-rehberi">📘 Rehber</a></div></section><section class="archiveStats"><article><b>${games.length}</b><span>🎮 Oyun</span></article><article><b>${model.series.size}</b><span>🎬 Seri</span></article><article><b>${model.episodeTotal}</b><span>▶️ Bölüm</span></article><article><b>${notes.length}</b><span>📝 Not</span></article></section><section class="publicStatusGrid">${checks.map(([title,status,text])=>`<article class="statusCheckCard"><span class="pill ${String(status).includes('Hazır')||String(status).includes('Aktif')||String(status).includes('Kapalı')?'green':'amber'}">${esc(status)}</span><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join('')}</section><section class="panel publishChecklist"><h2>✅ Yayın Öncesi Kontrol Listesi</h2><div class="roadList"><span class="done">Ana sayfa boş ekrana düşmez</span><span class="done">Mobil/tablet/masaüstü buton taşmaları azaltıldı</span><span class="done">Kayıt ol / giriş yap / profil / çıkış bağlantıları korunuyor</span><span class="done">Yönetim bağlantıları yetkisiz kullanıcıya gizli</span><span class="done">Bakım modu açıkken yetkili giriş bypass korunuyor</span><span class="done">Güncelleme notları, status ve sürüm etiketi v4.0.0 olarak güncel</span></div></section><section class="panel"><h2>📝 Son Güncellemeler</h2><div class="miniList">${notes.slice(0,6).map(n=>`<article class="note"><span class="pill ${String(n.status).includes('Plan')?'amber':'green'}">${esc(n.version||VERSION)} • ${esc(n.status||'Tamamlandı')}</span><h3>${esc(n.title)}</h3><p>${esc(n.summary||n.description||'')}</p></article>`).join('')}</div></section><section class="panel"><h2>📅 Takvim Özeti</h2>${events.length?events.slice(0,4).map(e=>`<p class="activityItem">📅 ${esc(e.title||'Yayın')} • ${esc(e.date||'Tarih yok')} ${esc(e.time||'')}</p>`).join(''):'<p class="muted">Henüz yayın kaydı yok. Yönetimden takvim eklenebilir.</p>'}</section>`);
 }
 
 function dataHealthPage(){ return adminOnly(()=>{
@@ -1921,7 +1925,7 @@ function dataHealthPage(){ return adminOnly(()=>{
   const eventMissingCover=events.filter(e=>!String(e.cover||e.coverUrl||'').trim()).slice(0,8);
   const backup={version:VERSION,createdAt:new Date().toISOString(),games,events,notes,users,maintenance:loadMaintenance(),sync:syncState()};
   const backupSize=Math.round(JSON.stringify(backup).length/1024);
-  return layout(`<section class="adminRepairHero dataHealthHero"><div><span class="badge green">💾 ${VERSION} • Veri Sağlığı Merkezi</span><h1>💾 Supabase Veri Sağlığı ve Yedekleme</h1><p>Oyunlar, kullanıcılar, takvim, güncelleme notları ve bakım kaydı tek ekranda kontrol edilir. Mevcut oyunlar sen silmeden silinmez; yedek alma aracı canlı veriyi korumak için hazırdır.</p><small class="muted">Son kontrol: ${esc(health.checkedAt||'Henüz kontrol edilmedi')} • ${esc(health.message||'Kontrol için butona bas.')}</small></div><div class="actions"><button class="btn primary" type="button" data-admin-health>Supabase Sağlık Kontrolü</button><button class="btn secondary" type="button" data-backup-export>JSON Yedek İndir</button><a class="btn secondary" href="/status">Public Durum</a></div></section><section class="archiveStats"><article><b>${games.length}</b><span>🎮 Oyun</span><small>Silinme korumalı</small></article><article><b>${model.series.size}</b><span>🎬 Seri</span><small>Otomatik gruplama</small></article><article><b>${events.length}</b><span>📅 Takvim</span><small>Kapak eşleşmeli</small></article><article><b>${users.length}</b><span>👥 Kullanıcı</span><small>Tek kurucu kilidi</small></article><article><b>${backupSize} KB</b><span>☁️ Yedek</span><small>Manuel dışa aktarım</small></article></section><section class="panels dataHealthGrid"><article class="panel"><h2>🛡️ Koruma Durumu</h2><div class="roadList"><span class="done">Mevcut oyunlar manuel onay olmadan silinmez</span><span class="done">Boş/daha az liste gerçek listenin üstüne yazılamaz</span><span class="done">Toplu oyun silme kapalı</span><span class="done">Bakım modu ve kullanıcı/yetki kayıtları güncellemede korunur</span><span class="done">Sürüm etiketi v2.3.2 olarak eşitlendi</span></div></article><article class="panel"><h2>🚨 Eksik Kapak Kontrolü</h2>${missingCover.length?missingCover.map(g=>`<p class="activityItem">🖼️ ${esc(g.title)} • Kapak kontrol edilmeli</p>`).join(''):'<p class="muted">Kapak sorunu görünmüyor.</p>'}</article><article class="panel"><h2>🗓️ Eksik Tarih Kontrolü</h2>${missingDate.length?missingDate.map(g=>`<p class="activityItem">🗓️ ${esc(g.title)} • Çıkış tarihi eksik</p>`).join(''):'<p class="muted">Tarih sorunu görünmüyor.</p>'}</article><article class="panel"><h2>📅 Takvim Kapak Kontrolü</h2>${eventMissingCover.length?eventMissingCover.map(e=>`<p class="activityItem">📅 ${esc(eventDisplayTitle(e))} • Oyun kapağı eşleştirilecek</p>`).join(''):'<p class="muted">Takvim kapakları hazır görünüyor.</p>'}</article></section><section class="panel"><h2>🔧 Tek Tuş Kontrol Araçları</h2><p class="muted">Bu sayfa veri silmez. Sadece sağlık kontrolü yapar, eksikleri gösterir ve manuel yedek indirir.</p><div class="actions"><button class="btn primary" type="button" data-admin-health>Sağlık Kontrolünü Yenile</button><button class="btn secondary" type="button" data-supabase-refresh>Supabase Verilerini Yenile</button><button class="btn secondary" type="button" data-backup-export>Yedek İndir</button></div></section>`);
+  return layout(`<section class="adminRepairHero dataHealthHero"><div><span class="badge green">💾 ${VERSION} • Veri Sağlığı Merkezi</span><h1>💾 Supabase Veri Sağlığı ve Yedekleme</h1><p>Oyunlar, kullanıcılar, takvim, güncelleme notları ve bakım kaydı tek ekranda kontrol edilir. Mevcut oyunlar sen silmeden silinmez; yedek alma aracı canlı veriyi korumak için hazırdır.</p><small class="muted">Son kontrol: ${esc(health.checkedAt||'Henüz kontrol edilmedi')} • ${esc(health.message||'Kontrol için butona bas.')}</small></div><div class="actions"><button class="btn primary" type="button" data-admin-health>Supabase Sağlık Kontrolü</button><button class="btn secondary" type="button" data-backup-export>JSON Yedek İndir</button><a class="btn secondary" href="/status">Public Durum</a></div></section><section class="archiveStats"><article><b>${games.length}</b><span>🎮 Oyun</span><small>Silinme korumalı</small></article><article><b>${model.series.size}</b><span>🎬 Seri</span><small>Otomatik gruplama</small></article><article><b>${events.length}</b><span>📅 Takvim</span><small>Kapak eşleşmeli</small></article><article><b>${users.length}</b><span>👥 Kullanıcı</span><small>Tek kurucu kilidi</small></article><article><b>${backupSize} KB</b><span>☁️ Yedek</span><small>Manuel dışa aktarım</small></article></section><section class="panels dataHealthGrid"><article class="panel"><h2>🛡️ Koruma Durumu</h2><div class="roadList"><span class="done">Mevcut oyunlar manuel onay olmadan silinmez</span><span class="done">Boş/daha az liste gerçek listenin üstüne yazılamaz</span><span class="done">Toplu oyun silme kapalı</span><span class="done">Bakım modu ve kullanıcı/yetki kayıtları güncellemede korunur</span><span class="done">Sürüm etiketi v4.0.0 olarak eşitlendi</span></div></article><article class="panel"><h2>🚨 Eksik Kapak Kontrolü</h2>${missingCover.length?missingCover.map(g=>`<p class="activityItem">🖼️ ${esc(g.title)} • Kapak kontrol edilmeli</p>`).join(''):'<p class="muted">Kapak sorunu görünmüyor.</p>'}</article><article class="panel"><h2>🗓️ Eksik Tarih Kontrolü</h2>${missingDate.length?missingDate.map(g=>`<p class="activityItem">🗓️ ${esc(g.title)} • Çıkış tarihi eksik</p>`).join(''):'<p class="muted">Tarih sorunu görünmüyor.</p>'}</article><article class="panel"><h2>📅 Takvim Kapak Kontrolü</h2>${eventMissingCover.length?eventMissingCover.map(e=>`<p class="activityItem">📅 ${esc(eventDisplayTitle(e))} • Oyun kapağı eşleştirilecek</p>`).join(''):'<p class="muted">Takvim kapakları hazır görünüyor.</p>'}</article></section><section class="panel"><h2>🔧 Tek Tuş Kontrol Araçları</h2><p class="muted">Bu sayfa veri silmez. Sadece sağlık kontrolü yapar, eksikleri gösterir ve manuel yedek indirir.</p><div class="actions"><button class="btn primary" type="button" data-admin-health>Sağlık Kontrolünü Yenile</button><button class="btn secondary" type="button" data-supabase-refresh>Supabase Verilerini Yenile</button><button class="btn secondary" type="button" data-backup-export>Yedek İndir</button></div></section>`);
 }); }
 
 
