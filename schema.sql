@@ -272,3 +272,41 @@ create policy games_delete_all on public.games for delete using (true);
 insert into public.site_status_logs(status, scope, message, details)
 values ('ok','v4.0.0-games-save-fix','v4.0.0 oyun kaydetme Supabase kolon/policy fix uygulandı.', jsonb_build_object('version','v4.0.0','games_insert','enabled','node','20.x'))
 on conflict do nothing;
+
+
+-- v4.0.0 ARRAY/TEXT KESIN FIX
+-- Eğer eski kurulumdan tags/platforms text[] kaldıysa, metin kolona çevirir. Veri silmez.
+do $$
+begin
+  if exists (select 1 from information_schema.columns where table_schema='public' and table_name='games' and column_name='platforms' and data_type='ARRAY') then
+    alter table public.games alter column platforms type text using array_to_string(platforms, ', ');
+  end if;
+  if exists (select 1 from information_schema.columns where table_schema='public' and table_name='games' and column_name='tags' and data_type='ARRAY') then
+    alter table public.games alter column tags type text using array_to_string(tags, ', ');
+  end if;
+exception when others then
+  raise notice 'array/text conversion skipped: %', sqlerrm;
+end $$;
+
+alter table public.games add column if not exists slug text;
+alter table public.games add column if not exists status_slug text;
+alter table public.games add column if not exists genre_slug text;
+alter table public.games add column if not exists series_slug text;
+alter table public.games add column if not exists rawg_id text;
+alter table public.games add column if not exists rawg_slug text;
+alter table public.games add column if not exists steam_app_id text;
+alter table public.games add column if not exists meta_source text;
+alter table public.games add column if not exists meta_checked_at timestamptz;
+alter table public.games add column if not exists cover_source text;
+alter table public.games add column if not exists playlist_url text;
+alter table public.games add column if not exists youtube_playlist_url text;
+alter table public.games add column if not exists youtube_playlist_id text;
+alter table public.games add column if not exists video_url text;
+alter table public.games add column if not exists series_order integer default 0;
+alter table public.games add column if not exists status_bucket text;
+alter table public.games add column if not exists is_featured boolean default false;
+
+-- v4.0.0 başarılı schema sonucu
+insert into public.admin_activity_logs(action, detail, actor_email)
+values ('schema_fix','v4.0.0 oyun kaydetme array/text ve Supabase kayıt fix uygulandı.','mertdundaroyunda@gmail.com')
+on conflict do nothing;

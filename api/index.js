@@ -86,8 +86,8 @@ function normalizeApiEpisode(ep={}, index=0){
 
 function cleanGame(game){
   if(!game) return null;
-  const tags = Array.isArray(game.tags) ? game.tags.join(', ') : (game.tags || '');
-  const platforms = Array.isArray(game.platforms) ? game.platforms.join(', ') : (game.platforms || '');
+  const tags = normalizeTextColumn(game.tags || '');
+  const platforms = normalizeTextColumn(game.platforms || '');
   return {
     id:game.id,
     title:game.title || game.name || 'İsimsiz Oyun',
@@ -141,7 +141,8 @@ function normalizeDateTR(value){
 function pickDateTR(...values){ for(const v of values){ const d=normalizeDateTR(v); if(d) return d; } return ''; }
 
 function toArray(value){ return Array.isArray(value) ? value.map(String).filter(Boolean) : String(value||'').split(',').map(x=>x.trim()).filter(Boolean); }
-function toCsv(value){ return Array.isArray(value) ? value.map(String).map(x=>x.trim()).filter(Boolean).join(', ') : String(value || '').trim(); }
+function toCsv(value){ return Array.isArray(value) ? value.map(String).map(x=>x.trim()).filter(Boolean).join(', ') : String(value || '').replace(/[{}]/g,'').trim(); }
+function normalizeTextColumn(value){ return toCsv(value); }
 function isUuid(value){ return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value||'')); }
 function safeGameId(title, provided=''){
   const raw=String(provided || '').trim();
@@ -208,9 +209,9 @@ function gamePayload(game={}, existing={}){
     score:Number(game.score ?? existing.score ?? 0),
     cover_url:String(game.cover || game.cover_url || existing.cover_url || ''),
     banner_url:String(game.banner || game.banner_url || existing.banner_url || ''),
-    tags:toCsv(game.tags ?? existing.tags),
+    tags:normalizeTextColumn(game.tags ?? existing.tags),
     release_date:pickDateTR(game.releaseDate, game.release_date, game.released, existing.release_date),
-    platforms:toCsv(game.platforms ?? existing.platforms),
+    platforms:normalizeTextColumn(game.platforms ?? existing.platforms),
     rawg_id:game.rawgId || game.rawg_id || existing.rawg_id || null,
     rawg_slug:String(game.rawgSlug || game.rawg_slug || existing.rawg_slug || ''),
     steam_app_id:String(game.steamAppId || game.steam_app_id || existing.steam_app_id || ''),

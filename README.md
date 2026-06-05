@@ -1,3 +1,20 @@
+# Hayatımız Oyun v4.0.0 - Supabase Kayıt Kesin Final
+
+Bu paket oyun kaydetme hatalarını düzeltir.
+
+## Düzeltilen ana hata
+- `malformed array literal` hatası giderildi.
+- `platforms` ve `tags` eski schema'da array kaldıysa güvenli şekilde text'e çevrilir.
+- Oyun sadece Supabase'e kaydedilir.
+- Supabase hata verirse gerçek hata gösterilir.
+- Bölüm/thumbnail verileri resetlenmez.
+
+## Kurulum
+1. ZIP'i temiz şekilde projeye çıkar.
+2. Supabase SQL Editor'de `schema.sql` çalıştır.
+3. Git push yap.
+4. Vercel Clear Build Cache + Redeploy.
+
 # Hayatımız Oyun v4.0.0 - UI Revolution Final Paket
 
 Bu paket v4.0.0 ana açılış sürümünü korur ve sitenin genel arayüzünü tamamen daha profesyonel görünüme taşır.
