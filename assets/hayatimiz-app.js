@@ -672,18 +672,16 @@ function parseMaintenanceEnabled(value){
   return ['true','1','evet','açık','acik','open','on'].includes(text);
 }
 function sanitizeMaintenance(raw){
-  const base = {enabled:false,message:'Hayatımız Oyun kısa süreli bakımda.',eta:'',percent:0,adminBypass:true,managedBy:'v4.0.1-runtime'};
+  const base = {enabled:false,message:'Hayatımız Oyun kısa süreli bakımda.',eta:'',percent:0,adminBypass:true,managedBy:'v4.0.1-maintenance-guard'};
   const cfg = {...base, ...(raw && typeof raw==='object' ? raw : {})};
-  cfg.enabled = parseMaintenanceEnabled(cfg.enabled);
-  cfg.percent = Math.max(0, Math.min(100, Number(cfg.percent || 0)));
-  if(localStorage.getItem(STORAGE.maintenanceFix)!=='1' && cfg.enabled === true && cfg.adminBypass !== true){
-    cfg.enabled = false;
-    cfg.repairedFromLegacy = true;
-    cfg.repairedAt = new Date().toISOString();
-    cfg.message = cfg.message || base.message;
-    saveMaintenance(cfg);
-    localStorage.setItem(STORAGE.maintenanceFix,'1');
-  }
+  // Bakım modunu asla otomatik kapatma. Eski paketlerde adminBypass eksik/false gelince
+  // enabled=true değeri kapatılıyordu; bu yüzden ziyaretçiler ve normal üyeler siteyi görüyordu.
+  // Artık Supabase veya yönetim formundan gelen enabled=true değeri korunur.
+  cfg.enabled = parseMaintenanceEnabled(cfg.enabled ?? cfg.is_enabled ?? cfg.active ?? cfg.maintenance_mode);
+  cfg.adminBypass = cfg.adminBypass !== false;
+  cfg.percent = Math.max(0, Math.min(100, Number(cfg.percent || cfg.progress || 0)));
+  cfg.message = String(cfg.message || cfg.title || base.message);
+  cfg.eta = String(cfg.eta || cfg.estimated_opening || cfg.estimatedOpening || '');
   return cfg;
 }
 function loadMaintenance(){
@@ -1856,7 +1854,16 @@ function dataHealthPage(){ return adminOnly(()=>{
   return layout(`<section class="adminRepairHero dataHealthHero"><div><span class="badge green">💾 ${VERSION} • Veri Sağlığı Merkezi</span><h1>💾 Supabase Veri Sağlığı ve Yedekleme</h1><p>Oyunlar, kullanıcılar, takvim, güncelleme notları ve bakım kaydı tek ekranda kontrol edilir. Mevcut oyunlar sen silmeden silinmez; yedek alma aracı canlı veriyi korumak için hazırdır.</p><small class="muted">Son kontrol: ${esc(health.checkedAt||'Henüz kontrol edilmedi')} • ${esc(health.message||'Kontrol için butona bas.')}</small></div><div class="actions"><button class="btn primary" type="button" data-admin-health>Supabase Sağlık Kontrolü</button><button class="btn secondary" type="button" data-backup-export>JSON Yedek İndir</button><a class="btn secondary" href="/status">Public Durum</a></div></section><section class="archiveStats"><article><b>${games.length}</b><span>🎮 Oyun</span><small>Silinme korumalı</small></article><article><b>${model.series.size}</b><span>🎬 Seri</span><small>Otomatik gruplama</small></article><article><b>${events.length}</b><span>📅 Takvim</span><small>Kapak eşleşmeli</small></article><article><b>${users.length}</b><span>👥 Kullanıcı</span><small>Tek kurucu kilidi</small></article><article><b>${backupSize} KB</b><span>☁️ Yedek</span><small>Manuel dışa aktarım</small></article></section><section class="panels dataHealthGrid"><article class="panel"><h2>🛡️ Koruma Durumu</h2><div class="roadList"><span class="done">Mevcut oyunlar manuel onay olmadan silinmez</span><span class="done">Boş/daha az liste gerçek listenin üstüne yazılamaz</span><span class="done">Toplu oyun silme kapalı</span><span class="done">Bakım modu ve kullanıcı/yetki kayıtları güncellemede korunur</span><span class="done">Sürüm etiketi v4.0.1 olarak eşitlendi</span></div></article><article class="panel"><h2>🚨 Eksik Kapak Kontrolü</h2>${missingCover.length?missingCover.map(g=>`<p class="activityItem">🖼️ ${esc(g.title)} • Kapak kontrol edilmeli</p>`).join(''):'<p class="muted">Kapak sorunu görünmüyor.</p>'}</article><article class="panel"><h2>🗓️ Eksik Tarih Kontrolü</h2>${missingDate.length?missingDate.map(g=>`<p class="activityItem">🗓️ ${esc(g.title)} • Çıkış tarihi eksik</p>`).join(''):'<p class="muted">Tarih sorunu görünmüyor.</p>'}</article><article class="panel"><h2>📅 Takvim Kapak Kontrolü</h2>${eventMissingCover.length?eventMissingCover.map(e=>`<p class="activityItem">📅 ${esc(eventDisplayTitle(e))} • Oyun kapağı eşleştirilecek</p>`).join(''):'<p class="muted">Takvim kapakları hazır görünüyor.</p>'}</article></section><section class="panel"><h2>🔧 Tek Tuş Kontrol Araçları</h2><p class="muted">Bu sayfa veri silmez. Sadece sağlık kontrolü yapar, eksikleri gösterir ve manuel yedek indirir.</p><div class="actions"><button class="btn primary" type="button" data-admin-health>Sağlık Kontrolünü Yenile</button><button class="btn secondary" type="button" data-supabase-refresh>Supabase Verilerini Yenile</button><button class="btn secondary" type="button" data-backup-export>Yedek İndir</button></div></section>`);
 }); }
 
-function pageHtml(){ const p=route(); const u=currentUser(); const role=roleValue(u?.role||'', u?.email||''); if(u && (role==='banned' || u.is_active===false) && !isAuthRoute(p)) return bannedZiyaretçi(); const m=loadMaintenance(); if(m.enabled && !isYönetim() && !isAuthRoute(p)) return maintenanceZiyaretçi(); if(p==='/'||p==='/ana-sayfa') return home(); if(p.startsWith('/oyun-arsivi')) return archive(); if(p.startsWith('/oyun-detay') || p.startsWith('/oyun')) return gameDetailPage(); if(p.startsWith('/izle')) return watchPage(); if(p.startsWith('/alfabetik-siralama')) return alphabetPage(); if(p.startsWith('/koleksiyonlar')) return collectionsPage(); if(p.startsWith('/seriler')) return seriesPage(); if(p==='/yayin-takvimi'||p==='/takvim') return publicCalendarPage(); if(p==='/status'||p==='/durum') return publicStatusPage(); if(p==='/site-rehberi') return siteGuidePage(); if(p==='/yetkili-rehberi') return authorityGuidePage(); if(p==='/giris-yap'||p==='/auth/login') return loginPage(); if(p==='/kayit-ol'||p==='/auth/register') return registerPage(); if(p==='/hesabim') return accountPage(); if(p==='/yonetim') return admin(); if(p==='/yonetim/not-defteri-oyun-ekle') return noteGameImportPage(); if(p==='/yonetim/oyun-ekle'||p==='/yonetim/oyun-duzenle') return gameForm(); if(p==='/yonetim/mevcut-oyunlar') return currentGamesYönetim(); if(p==='/yonetim/seriler') return seriesManager(); if(p==='/yonetim/yayin-takvimi') return calendar(); if(p==='/yonetim/guncelleme-notlari' || p==='/guncellemeler') return updateNotes(); if(p==='/yonetim/bolum-takibi') return episodeTracker(); if(p==='/yonetim/bakim-modu') return maintenance(); if(p==='/yonetim/kullanicilar') return usersPage(); if(p==='/yonetim/veri-sagligi') return dataHealthPage(); return notFound(); }
+function shouldShowMaintenanceForRoute(p=route()){
+  const m=loadMaintenance();
+  if(!parseMaintenanceEnabled(m.enabled)) return false;
+  // Kurucu/moderatör/editör bakım modunda siteyi ve yönetim panelini görebilir.
+  if(isYönetim()) return false;
+  // Normal kayıtlı üyeler ve giriş yapmamış ziyaretçiler bakım ekranı görür.
+  // Sadece giriş/kayıt sayfaları açık kalır ki yetkili kullanıcı giriş yapabilsin.
+  return !isAuthRoute(p);
+}
+function pageHtml(){ const p=route(); const u=currentUser(); const role=roleValue(u?.role||'', u?.email||''); if(u && (role==='banned' || u.is_active===false) && !isAuthRoute(p)) return bannedZiyaretçi(); if(shouldShowMaintenanceForRoute(p)) return maintenanceZiyaretçi(); if(p==='/'||p==='/ana-sayfa') return home(); if(p.startsWith('/oyun-arsivi')) return archive(); if(p.startsWith('/oyun-detay') || p.startsWith('/oyun')) return gameDetailPage(); if(p.startsWith('/izle')) return watchPage(); if(p.startsWith('/alfabetik-siralama')) return alphabetPage(); if(p.startsWith('/koleksiyonlar')) return collectionsPage(); if(p.startsWith('/seriler')) return seriesPage(); if(p==='/yayin-takvimi'||p==='/takvim') return publicCalendarPage(); if(p==='/status'||p==='/durum') return publicStatusPage(); if(p==='/site-rehberi') return siteGuidePage(); if(p==='/yetkili-rehberi') return authorityGuidePage(); if(p==='/giris-yap'||p==='/auth/login') return loginPage(); if(p==='/kayit-ol'||p==='/auth/register') return registerPage(); if(p==='/hesabim') return accountPage(); if(p==='/yonetim') return admin(); if(p==='/yonetim/not-defteri-oyun-ekle') return noteGameImportPage(); if(p==='/yonetim/oyun-ekle'||p==='/yonetim/oyun-duzenle') return gameForm(); if(p==='/yonetim/mevcut-oyunlar') return currentGamesYönetim(); if(p==='/yonetim/seriler') return seriesManager(); if(p==='/yonetim/yayin-takvimi') return calendar(); if(p==='/yonetim/guncelleme-notlari' || p==='/guncellemeler') return updateNotes(); if(p==='/yonetim/bolum-takibi') return episodeTracker(); if(p==='/yonetim/bakim-modu') return maintenance(); if(p==='/yonetim/kullanicilar') return usersPage(); if(p==='/yonetim/veri-sagligi') return dataHealthPage(); return notFound(); }
 function bind(){
   document.body.addEventListener('click', e=>{
     const a=e.target.closest('a[href]'); if(a && a.origin===location.origin && !a.hasAttribute('download') && a.target !== '_blank' && !a.dataset.newTab){ e.preventDefault(); setRoute(a.pathname + a.search); return; }
