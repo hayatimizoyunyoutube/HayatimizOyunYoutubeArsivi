@@ -310,3 +310,23 @@ alter table public.games add column if not exists is_featured boolean default fa
 insert into public.admin_activity_logs(action, detail, actor_email)
 values ('schema_fix','v4.0.1 oyun kaydetme array/text ve Supabase kayıt fix uygulandı.','mertdundaroyunda@gmail.com')
 on conflict do nothing;
+
+-- v4.0.1 Supabase Games Public Read/Write Stabilite Fix
+-- Mevcut veriyi silmez. games tablosundaki oyunların site tarafından okunmasını ve yetkili panelden yazılmasını düzeltir.
+alter table if exists public.games enable row level security;
+
+do $$ begin
+  create policy "games_public_select_v401" on public.games for select using (true);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "games_public_insert_v401" on public.games for insert with check (true);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "games_public_update_v401" on public.games for update using (true) with check (true);
+exception when duplicate_object then null; end $$;
+
+insert into public.site_runtime_config(key,value,updated_at)
+values ('site_version','"v4.0.1"'::jsonb, now())
+on conflict (key) do update set value=excluded.value, updated_at=now();

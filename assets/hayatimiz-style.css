@@ -994,3 +994,36 @@ html, body, .app, .fullMain, .main, .noSideApp { overflow-x: hidden !important; 
   .archiveGrid .gameCard,.alphaGroup .gameCard,.gamesGrid .gameCard,.proGameCard,.seriesPanel,.proSeriesPanel,.premiumSeriesCard{flex:1 1 100%!important;width:100%!important;max-width:none!important;}
   .topQuickNav a,.fullTopNav a,.adminDock a,.proAdminDock a{flex:1 1 calc(50% - 10px)!important;text-align:center!important;min-width:0!important;}
 }
+
+/* v4.0.1 FINAL FIX: üst menü yan yana, kaydırmasız; arşiv/seri sol hizalı */
+.proStickyTop.topOnlyBar,.topBar{
+  display:grid!important;
+  grid-template-columns:minmax(86px,120px) minmax(0,1fr) minmax(90px,120px) minmax(230px,300px)!important;
+  align-items:center!important;
+  gap:8px!important;
+  overflow:hidden!important;
+  padding:10px 12px!important;
+}
+.fullTopNav,.topQuickNav{
+  display:grid!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  gap:6px!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  min-width:0!important;
+  width:100%!important;
+}
+.fullTopNav a,.topQuickNav a{
+  min-width:0!important;
+  width:100%!important;
+  height:36px!important;
+  padding:0 6px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:clamp(9px,.72vw,12px)!important;
+}
+.topUser{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;min-width:0!important}.topUser>*{min-width:0!important;width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important;justify-content:center!important}.topAdminOpen{min-width:0!important;height:36px!important;padding:0 7px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:clamp(9px,.72vw,12px)!important}.adminDock,.proAdminDock{display:grid!important;grid-template-columns:minmax(160px,220px) minmax(0,1fr)!important;overflow:hidden!important}.adminDock nav,.proAdminDock nav{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(82px,1fr))!important;gap:6px!important;overflow:hidden!important;white-space:nowrap!important}.adminDock nav a,.proAdminDock nav a{min-width:0!important;width:100%!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:clamp(9px,.78vw,12px)!important;padding:8px 6px!important}.choicePills,.genreChoicePills,.categoryGrid,.collectionGrid,.tags{display:flex!important;flex-wrap:wrap!important;justify-content:flex-start!important;gap:8px!important;overflow:visible!important}.archiveGrid,.grid.archiveGrid,.alphaGroup .archiveGrid,.gamesGrid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(250px,300px))!important;justify-content:start!important;justify-items:start!important;align-items:start!important;gap:18px!important;width:100%!important;margin-left:0!important;margin-right:0!important}.archiveGrid .gameCard,.alphaGroup .gameCard,.gamesGrid .gameCard,.proGameCard{width:300px!important;max-width:300px!important;justify-self:start!important;margin:0!important}.seriesGrid,.proSeriesGrid,.premiumSeriesGrid,.homeV214Continue{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(280px,360px))!important;justify-content:start!important;justify-items:start!important;gap:18px!important}.seriesPanel,.proSeriesPanel,.premiumSeriesCard{width:100%!important;max-width:360px!important;justify-self:start!important;margin:0!important}@media(max-width:900px){.proStickyTop.topOnlyBar,.topBar{grid-template-columns:1fr!important;overflow:visible!important}.fullTopNav,.topQuickNav{grid-template-columns:repeat(3,minmax(0,1fr))!important}.topAdminOpen{width:100%!important}.topUser{grid-template-columns:repeat(3,minmax(0,1fr))!important}.adminDock,.proAdminDock{grid-template-columns:1fr!important}.adminDock nav,.proAdminDock nav{grid-template-columns:repeat(3,minmax(0,1fr))!important}.archiveGrid,.grid.archiveGrid,.alphaGroup .archiveGrid,.gamesGrid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))!important}.archiveGrid .gameCard,.alphaGroup .gameCard,.gamesGrid .gameCard,.proGameCard{width:100%!important;max-width:none!important}}@media(max-width:560px){.fullTopNav,.topQuickNav,.adminDock nav,.proAdminDock nav{grid-template-columns:repeat(2,minmax(0,1fr))!important}.topUser{grid-template-columns:1fr!important}.archiveGrid,.grid.archiveGrid,.alphaGroup .archiveGrid,.gamesGrid,.seriesGrid,.proSeriesGrid,.premiumSeriesGrid{grid-template-columns:1fr!important}}
