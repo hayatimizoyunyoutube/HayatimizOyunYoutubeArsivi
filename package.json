@@ -2,8 +2,10 @@
   "name": "hayatimiz-oyun-v400-anti-404-final",
   "private": true,
   "type": "module",
-  "version": "4.0.0",
-  "engines": { "node": "20.x" },
+  "version": "4.0.1",
+  "engines": {
+    "node": "20.x"
+  },
   "description": "Hayatımız Oyun v4.0.0 anti 404 final statik Vercel paketi",
   "scripts": {
     "build": "echo Vercel static build disabled - files served from root",

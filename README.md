@@ -1,4 +1,4 @@
-# Hayatımız Oyun v4.0.0 - Supabase Kayıt Kesin Final
+# Hayatımız Oyun v4.0.1 - Supabase Kayıt Kesin Final
 
 Bu paket oyun kaydetme hatalarını düzeltir.
 
@@ -15,9 +15,9 @@ Bu paket oyun kaydetme hatalarını düzeltir.
 3. Git push yap.
 4. Vercel Clear Build Cache + Redeploy.
 
-# Hayatımız Oyun v4.0.0 - UI Revolution Final Paket
+# Hayatımız Oyun v4.0.1 - UI Revolution Final Paket
 
-Bu paket v4.0.0 ana açılış sürümünü korur ve sitenin genel arayüzünü tamamen daha profesyonel görünüme taşır.
+Bu paket v4.0.1 ana açılış sürümünü korur ve sitenin genel arayüzünü tamamen daha profesyonel görünüme taşır.
 
 ## Yapılanlar
 
@@ -29,7 +29,7 @@ Bu paket v4.0.0 ana açılış sürümünü korur ve sitenin genel arayüzünü 
 - Kategoriler/koleksiyonlar ve butonlar tek sıra/scroll kontrollü yapıldı.
 - Mobil/tablet responsive görünüm iyileştirildi.
 - Vercel hızlı static build sistemi korundu.
-- Sürüm etiketi v4.0.0 olarak bırakıldı.
+- Sürüm etiketi v4.0.1 olarak bırakıldı.
 
 ## Schema durumu
 
@@ -43,17 +43,25 @@ Output Directory: dist
 Install Command: npm install
 
 
-## v4.0.0 FIX - Oyun Kaydetme
+## v4.0.1 FIX - Oyun Kaydetme
 - Oyun ekleme/güncelleme sonrası mevcut oyunların kaybolması engellendi.
 - Supabase boş veriyle yerel listeyi ezmez.
 - Schema gerekli değil.
 
 
-## v4.0.0 FIX - Oyun Kaydetme Kesin Onarım
+## v4.0.1 FIX - Oyun Kaydetme Kesin Onarım
 - dedupeEpisodes kayıt hatası düzeltildi.
 - Supabase kaydetme akışı çökmeden devam eder.
 - Bölüm thumbnail ve gerçek YouTube başlıkları korunur.
 
-## v4.0.0 FIX — Not Defteriyle Oyun Ekleme
+## v4.0.1 FIX — Not Defteriyle Oyun Ekleme
 
 Yönetim panelinde **Notla Oyun Ekle** sayfası eklendi. Oyunları Not Defteri formatında yazıp toplu şekilde doğrudan Supabase `games` tablosuna kaydedebilirsin. Rehber: `NOT-DEFTERI-OYUN-EKLEME-REHBERI.md`
+
+
+## v4.0.1 Profesyonel Not Defteri ve Supabase Stabilite
+- Notla oyun ekleme profesyonel şablona geçirildi.
+- Steam App ID / SteamDB alanı desteklendi.
+- Menü ve kategori butonlarında kaydırma azaltıldı, grid görünüm güçlendirildi.
+- Arşiv ve seri kartları sola hizalı/kompakt tutuldu.
+- Supabase boş dönerse mevcut oyunların sıfırlanmaması korunur.

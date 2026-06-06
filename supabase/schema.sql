@@ -1,6 +1,6 @@
--- Hayatımız Oyun v4.0.0 Temiz Final Schema
+-- Hayatımız Oyun v4.0.1 Temiz Final Schema
 -- Güvenlidir: Mevcut verileri silmez. DROP/TRUNCATE yoktur.
--- Amaç: Eksik kolonları eklemek, aktif sürüm/status/schema/maintenance kayıtlarını v4.0.0 yapmak.
+-- Amaç: Eksik kolonları eklemek, aktif sürüm/status/schema/maintenance kayıtlarını v4.0.1 yapmak.
 
 create extension if not exists pgcrypto;
 
@@ -200,9 +200,9 @@ end $$;
 
 -- Açılışta bakım kapalı; site ziyaretçilere açık.
 insert into public.site_runtime_config(key,value) values
-('site_version', jsonb_build_object('version','v4.0.0','status','Başarılı','title','Ana Açılış Final','vercel_label','v4.0.0-ana-acilis-final','opening_target','v4.0.0','updated_at',now())),
-('schema_version', jsonb_build_object('version','v4.0.0','status','Başarılı','note','Temiz final schema çalıştırıldı','schema_required',true,'drop_tables',false,'updated_at',now())),
-('maintenance_mode', jsonb_build_object('enabled',false,'message','Hayatımız Oyun yayında.','eta','','percent',100,'adminBypass',true,'updatedBy','v4.0.0-final','updated_at',now()))
+('site_version', jsonb_build_object('version','v4.0.1','status','Başarılı','title','Ana Açılış Final','vercel_label','v4.0.1-ana-acilis-final','opening_target','v4.0.1','updated_at',now())),
+('schema_version', jsonb_build_object('version','v4.0.1','status','Başarılı','note','Temiz final schema çalıştırıldı','schema_required',true,'drop_tables',false,'updated_at',now())),
+('maintenance_mode', jsonb_build_object('enabled',false,'message','Hayatımız Oyun yayında.','eta','','percent',100,'adminBypass',true,'updatedBy','v4.0.1-final','updated_at',now()))
 on conflict (key) do update set value=excluded.value, updated_at=now();
 
 -- Eski aktif/pinned v2/v3 notlarının bakım/status üstüne çıkmasını engelle.
@@ -214,28 +214,28 @@ update public.update_notes
 set status='archived', is_published=false, is_planned=false, updated_at=now()
 where version ~ '^v[23]\.';
 
--- Güncel v4.0.0 notları
+-- Güncel v4.0.1 notları
 insert into public.site_update_notes(version,title,summary,status,pinned,planned,sort_order,is_published,is_planned,updated_at) values
-('v4.0.0','Ana Açılış Final','Site v4.0.0 ana açılışa hazırlandı. Ana sayfa, arşiv, seriler, kategoriler, profil, favoriler, başarımlar, yayın takvimi, yönetim paneli ve bakım/ban güvenliği güncellendi.','published',true,false,1,true,false,now()),
-('v4.0.0','Profesyonel Tasarım Finali','Kategori butonları, yönetim paneli menüsü, arşiv kartları, seri görünümü, profil merkezi ve mobil/tablet düzeni profesyonel hale getirildi.','published',true,false,2,true,false,now()),
+('v4.0.1','Ana Açılış Final','Site v4.0.1 ana açılışa hazırlandı. Ana sayfa, arşiv, seriler, kategoriler, profil, favoriler, başarımlar, yayın takvimi, yönetim paneli ve bakım/ban güvenliği güncellendi.','published',true,false,1,true,false,now()),
+('v4.0.1','Profesyonel Tasarım Finali','Kategori butonları, yönetim paneli menüsü, arşiv kartları, seri görünümü, profil merkezi ve mobil/tablet düzeni profesyonel hale getirildi.','published',true,false,2,true,false,now()),
 ('v4.0.1','Açılış Sonrası Stabilite','Canlı kullanımdan sonra küçük görünüm, veri ve mobil düzeltmeleri yapılacak.','planned',false,true,10,true,true,now()),
 ('v4.1.0','Topluluk ve Bildirim Merkezi','Favori serilere yeni bölüm bildirimi, duyuru merkezi ve kullanıcı etkileşimleri geliştirilecek.','planned',false,true,11,true,true,now())
 on conflict do nothing;
 
 insert into public.update_notes(version,title,summary,status,is_published,is_planned,sort_order,updated_at) values
-('v4.0.0','Ana Açılış Final','Site v4.0.0 ana açılışa hazırlandı.','published',true,false,1,now()),
-('v4.0.0','Schema / Status Senkron','Supabase Results, Vercel etiketi, schema ve status v4.0.0 yapıldı.','published',true,false,2,now())
+('v4.0.1','Ana Açılış Final','Site v4.0.1 ana açılışa hazırlandı.','published',true,false,1,now()),
+('v4.0.1','Schema / Status Senkron','Supabase Results, Vercel etiketi, schema ve status v4.0.1 yapıldı.','published',true,false,2,now())
 on conflict do nothing;
 
 insert into public.site_status_logs(status,scope,message,details) values
-('ok','version','v4.0.0 Ana Açılış Final başarılı.', jsonb_build_object('version','v4.0.0','vercel_label','v4.0.0-ana-acilis-final','opening_target','v4.0.0','schema_required',true,'drop_tables',false)),
-('ok','schema','v4.0.0 temiz final schema çalıştırıldı. Mevcut veriler silinmedi.', jsonb_build_object('version','v4.0.0','drop_tables',false,'maintenance_enabled',false));
+('ok','version','v4.0.1 Ana Açılış Final başarılı.', jsonb_build_object('version','v4.0.1','vercel_label','v4.0.1-ana-acilis-final','opening_target','v4.0.1','schema_required',true,'drop_tables',false)),
+('ok','schema','v4.0.1 temiz final schema çalıştırıldı. Mevcut veriler silinmedi.', jsonb_build_object('version','v4.0.1','drop_tables',false,'maintenance_enabled',false));
 
 
 insert into public.site_status_logs(status,scope,message,details) values
-('ok','schema','v4.0.0 site_users.role_code kolon fix uygulandı. Eksik kolonlar güvenli eklendi.', jsonb_build_object('version','v4.0.0','fix','site_users_role_code','drop_tables',false));
+('ok','schema','v4.0.1 site_users.role_code kolon fix uygulandı. Eksik kolonlar güvenli eklendi.', jsonb_build_object('version','v4.0.1','fix','site_users_role_code','drop_tables',false));
 
--- v4.0.0 Supabase oyun kaydetme kesin kolon/policy fix
+-- v4.0.1 Supabase oyun kaydetme kesin kolon/policy fix
 alter table public.games add column if not exists slug text;
 alter table public.games add column if not exists genre_slug text;
 alter table public.games add column if not exists status_slug text;
@@ -270,11 +270,11 @@ create policy games_update_all on public.games for update using (true) with chec
 create policy games_delete_all on public.games for delete using (true);
 
 insert into public.site_status_logs(status, scope, message, details)
-values ('ok','v4.0.0-games-save-fix','v4.0.0 oyun kaydetme Supabase kolon/policy fix uygulandı.', jsonb_build_object('version','v4.0.0','games_insert','enabled','node','20.x'))
+values ('ok','v4.0.1-games-save-fix','v4.0.1 oyun kaydetme Supabase kolon/policy fix uygulandı.', jsonb_build_object('version','v4.0.1','games_insert','enabled','node','20.x'))
 on conflict do nothing;
 
 
--- v4.0.0 ARRAY/TEXT KESIN FIX
+-- v4.0.1 ARRAY/TEXT KESIN FIX
 -- Eğer eski kurulumdan tags/platforms text[] kaldıysa, metin kolona çevirir. Veri silmez.
 do $$
 begin
@@ -306,7 +306,7 @@ alter table public.games add column if not exists series_order integer default 0
 alter table public.games add column if not exists status_bucket text;
 alter table public.games add column if not exists is_featured boolean default false;
 
--- v4.0.0 başarılı schema sonucu
+-- v4.0.1 başarılı schema sonucu
 insert into public.admin_activity_logs(action, detail, actor_email)
-values ('schema_fix','v4.0.0 oyun kaydetme array/text ve Supabase kayıt fix uygulandı.','mertdundaroyunda@gmail.com')
+values ('schema_fix','v4.0.1 oyun kaydetme array/text ve Supabase kayıt fix uygulandı.','mertdundaroyunda@gmail.com')
 on conflict do nothing;
