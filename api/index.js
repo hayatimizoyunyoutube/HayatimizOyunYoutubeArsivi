@@ -236,9 +236,9 @@ async function readBody(req){
   try { return JSON.parse(raw); } catch { return {}; }
 }
 function env(){
-  const url = (process.env.SUPABASE_URL || '').replace(/\/$/, '');
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-  if(!url || !key) throw new Error('Vercel ENV içinde SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY olmalı.');
+  const url = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '').replace(/\/$/, '');
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+  if(!url || !key) throw new Error('Vercel ENV içinde SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY veya ANON KEY olmalı.');
   return { url, key };
 }
 async function supabase(path, options = {}){
@@ -428,10 +428,11 @@ async function ensurePlannerFeature(feature){
 
 async function ho240f31GamesListResilient(){
   const queries = [
-    'games?select=id,slug,title,genre,status,genre_slug,status_slug,episode_count,score,cover_url,banner_url,tags,release_date,platforms,rawg_id,rawg_slug,steam_app_id,meta_source,meta_checked_at,cover_source,series_name,collection_name,playlist_url,youtube_playlist_url,youtube_playlist_id,video_url,watched_episode_count,series_order,sort_order,status_bucket,is_featured,episodes,description,story_text,created_at,updated_at&order=sort_order.asc',
-    'games?select=*&order=created_at.desc',
-    'games?select=*&order=title.asc',
-    'games?select=*&limit=1000'
+    // Önce en güvenli ve kolonsuz sorgu: bazı Supabase projelerinde created_at/sort_order veya opsiyonel kolonlar eksik olabiliyor.
+    'games?select=*&limit=1000',
+    'games?select=*&order=title.asc&limit=1000',
+    'games?select=*&order=created_at.desc&limit=1000',
+    'games?select=id,slug,title,genre,status,genre_slug,status_slug,episode_count,score,cover_url,banner_url,tags,release_date,platforms,rawg_id,rawg_slug,steam_app_id,meta_source,meta_checked_at,cover_source,series_name,collection_name,playlist_url,youtube_playlist_url,youtube_playlist_id,video_url,watched_episode_count,series_order,sort_order,status_bucket,is_featured,episodes,description,story_text,created_at,updated_at&order=sort_order.asc&limit=1000'
   ];
   let lastError = '';
   for(const query of queries){

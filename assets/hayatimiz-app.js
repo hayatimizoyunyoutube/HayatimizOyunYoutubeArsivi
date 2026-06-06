@@ -309,6 +309,16 @@ async function refreshGamesFromSupabase({force=false}={}){
     if(force) { toast('Supabase bağlanamadı, yerel güvenli mod açık.'); render(); }
   }finally{ window.__HAYATIMIZ_SUPABASE_SYNCING__=false; }
 }
+
+function autoRefreshGamesPageFromSupabase(){
+  try{
+    const now=Date.now();
+    if(window.__HAYATIMIZ_GAMES_PAGE_REFRESH_AT && now-window.__HAYATIMIZ_GAMES_PAGE_REFRESH_AT<12000) return;
+    window.__HAYATIMIZ_GAMES_PAGE_REFRESH_AT=now;
+    setTimeout(()=>refreshGamesFromSupabase({force:false}).then(()=>{ if(route()==='/yonetim/mevcut-oyunlar') render(); }).catch(()=>{}), 150);
+  }catch{}
+}
+
 async function persistGameToSupabase(game, editId=''){
   const token=await ensureSupabaseAdminToken();
   if(!token){
@@ -593,46 +603,30 @@ function loadGames(){
   writeJson(STORAGE.games, []);
   return [];
 }
-function mergeGameRowsPreserveCurrent(currentRows=[], incomingRows=[]){
-  const map=new Map();
-  (Array.isArray(currentRows)?currentRows:[]).map(normalizeGame).forEach(g=>{ if(g && g.id) map.set(String(g.id), g); });
-  (Array.isArray(incomingRows)?incomingRows:[]).map(normalizeGame).forEach(g=>{
-    if(!g || !g.id) return;
-    const old=map.get(String(g.id));
-    const oldEpisodes=Array.isArray(old?.episodes) ? old.episodes : loadEpisodes(g.id);
-    const nextEpisodes=Array.isArray(g.episodes) && g.episodes.length ? g.episodes : oldEpisodes;
-    map.set(String(g.id), {...(old||{}), ...g, episodes:nextEpisodes, episodeCount:Math.max(Number(g.episodeCount||0), Number(old?.episodeCount||0), nextEpisodes.length)});
-  });
-  return [...map.values()];
-}
 function saveGames(rows, options={}){
   const incoming = Array.isArray(rows)?rows:[];
-  let normalized = incoming.map(normalizeGame);
-  const current = (firstStoredArray(GAME_KEYS) || []).map(normalizeGame);
+  const normalized = incoming.map(normalizeGame);
+  const current = firstStoredArray(GAME_KEYS) || [];
   const allowEmpty = options && options.allowEmpty === true;
   const allowDecrease = options && options.allowDecrease === true;
   const explicitDelete = options && options.explicitDelete === true;
-  const mergeOnDecrease = options && options.mergeOnDecrease !== false;
-  // v4.0.1 kesin kayıt fix: Oyun ekle/güncelle sırasında az kayıt gelirse arşivi sıfırlama.
-  // Bunun yerine gelen oyunları mevcut listenin üstüne merge et. Sadece açık silme onayı azalabilir.
+  // v4.0.1: Ben silmeden mevcut oyunlar silinmesin.
+  // Boş liste veya daha az kayıt, yalnızca açık/manuel silme onayıyla yazılabilir.
   if(current.length > 0 && normalized.length === 0 && !allowEmpty && !explicitDelete){
     saveSyncState({mode:'protected', status:'Arşiv korundu', message:`Boş oyun listesi yazma engellendi. ${current.length} kayıt korunuyor.`});
-    return false;
+    return;
   }
   if(current.length > 0 && normalized.length < current.length && !allowDecrease && !explicitDelete){
-    normalized = mergeOnDecrease ? mergeGameRowsPreserveCurrent(current, normalized) : current;
-    saveSyncState({mode:'protected-merge', status:'Arşiv merge edildi', message:`Kayıt sayısı düşürülmedi; ${normalized.length} oyun korundu ve gelen değişiklikler işlendi.`});
+    saveSyncState({mode:'protected', status:'Arşiv korundu', message:`Kayıt sayısı ${current.length} → ${normalized.length} düşecekti; manuel silme onayı olmadığı için engellendi.`});
+    return;
   }
   try{
     localStorage.setItem('hayatimiz_games_last_backup', JSON.stringify(current));
     localStorage.setItem('hayatimiz_games_last_backup_at', new Date().toISOString());
   }catch{}
-  let ok=true;
-  for(const key of GAME_KEYS){ if(writeJson(key, normalized) === false) ok=false; }
+  for(const key of GAME_KEYS) writeJson(key, normalized);
   localStorage.setItem(STORAGE.gamesInitialized,'1');
   localStorage.setItem('hayatimiz_games_last_saved_at', new Date().toISOString());
-  saveSyncState({mode:'local-save', status:'Yerel oyun kaydı aktif', message:`${normalized.length} oyun tarayıcıya güvenli kaydedildi.`});
-  return ok;
 }
 function deleteGame(id, options={}){
   if(!options.explicitDelete){
@@ -1791,7 +1785,7 @@ function seriesManager(){ return adminOnly(()=>{
   return layout(`<section class="archiveHero seriesAdminHero v216SeriesHero"><div><span class="badge green">${VERSION} • Gelişmiş Seri Yönetimi</span><h1>🎬 Seri Yönetimi</h1><p>Her seri artık ayrı düzenlenir. Seçili seriye ait oyunlar ve serisiz oyunlar görünür; başka seriye bağlı oyunlar yanlışlıkla bu seriye karışmaz.</p></div><div class="actions"><a class="btn secondary" href="/seriler?sort=az">🎬 Public Seriler</a><a class="btn secondary" href="/yonetim/mevcut-oyunlar">🎮 Mevcut Oyunlar</a><a class="btn primary" href="${selected?seriesWatchHref(selected):'/izle'}">▶️ Tüm Seriyi İzle</a></div></section><section class="archiveStats"><article><b>${seriesNames.length}</b><span>🎬 Seri</span></article><article><b>${selectedRows.length}</b><span>✅ Seçili Oyun</span></article><article><b>${totals.episodes}</b><span>▶️ Seri Bölümü</span></article><article><b>${unassigned}</b><span>📦 Serisiz Oyun</span></article></section><section class="seriesAdminGrid v216SeriesAdminGrid"><aside class="panel seriesAdminList"><h2>🎬 Seri Listesi</h2><p class="muted">Bir seriyi seçip içindeki oyunları düzenle.</p><div class="miniList">${seriesNames.length?seriesNames.map(name=>{ const rows=orderedSeriesRows(model.series.get(name)||[]); const t=seriesTotals(rows); return `<a class="seriesAdminLink ${name===selected?'active':''}" href="/yonetim/seriler?series=${encodeURIComponent(name)}"><b>${esc(name)}</b><small>${rows.length} oyun • ${t.episodes} bölüm • ${t.pct}% takip</small></a>`; }).join(''):'<div class="empty compactEmpty">Henüz seri yok.</div>'}</div><div class="seriesCreateHint"><h3>➕ Yeni seri oluştur</h3><p>Sağdaki formda Seri Adı yaz, sadece serisiz oyunları seç ve kaydet. Diğer serilere ait oyunlar kendi seri ekranında düzenlenir.</p></div></aside><form class="panel seriesEditor v216SeriesEditor" data-series-form><input type="hidden" name="oldSeriesName" value="${esc(selected)}"><div class="sectionHead compact"><div><h2>${selected?esc(selected):'Yeni Seri'} Düzenle</h2><p>${selectedRows.length} oyun seçili • ${totals.episodes} bölüm • ${totals.pct}% takip</p></div><button class="btn primary" type="submit">💾 Seriyi Kalıcı Kaydet</button></div><div class="seriesEditorTopGrid"><label class="field full">Seri Adı<input class="input" name="seriesName" required value="${esc(selected)}" placeholder="Örn: A Plague Tale"></label><article class="seriesOrderPreview"><b>📋 Seri Sırası Önizleme</b><div data-series-preview>${selectedPreview}</div></article></div><div class="seriesEditorToolbar"><button class="miniBtn" type="button" data-series-select-all="1">✅ Tümünü Seç</button><button class="miniBtn" type="button" data-series-clear="1">🧹 Seçimi Temizle</button><button class="miniBtn" type="button" data-series-sort-preview="az">🔤 Seçilileri A-Z Sırala</button><button class="miniBtn" type="button" data-series-sort-preview="episode">▶️ Bölüme Göre Sırala</button><button class="miniBtn" type="button" data-series-sort-preview="status">📌 Duruma Göre Sırala</button><button class="miniBtn" type="button" data-series-sort-preview="release">📅 Tarihe Göre Sırala</button></div><div class="seriesEditorHelp"><span>☰ Sürükle-bırak: satırı tutup taşı</span><span>🔢 Sayı ile sıra: Sıra alanına 1, 2, 3 yaz</span><span>✅ Seçim: oyunu seriye dahil et / çıkar</span><span>💾 Supabase: yetkili oturum varsa kalıcı kaydeder</span><span>🧩 Ayrı seri: başka serideki oyunlar bu ekranda gizlenir</span></div><div class="seriesDndList v216SeriesDndList" data-series-dnd-list>${allRows.map((g,i)=>{ const order=selectedRows.findIndex(x=>String(x.id)===String(g.id)); const eps=loadEpisodes(g.id).length || Number(g.episodeCount||0); const value=order>=0?order+1:(i+1); return `<article class="seriesDndItem ${g._seriesChecked?'selected':''}" draggable="true" data-series-dnd-item data-game-id="${esc(g.id)}" data-game-title="${esc(g.title)}" data-status="${esc(g.status||'')}" data-release-date="${esc(g.releaseDate||'9999')}" data-episode-total="${eps}"><div class="dragHandle" title="Sürükle bırak">☰</div><label class="checkLine"><input type="checkbox" name="gameIds" value="${esc(g.id)}" ${g._seriesChecked?'checked':''}> <span>Seriye dahil</span></label><img src="${esc(g.cover||'/assets/hayatimiz-kapak.png')}" onerror="this.src='/assets/hayatimiz-kapak.png'" alt="${esc(g.title)}"><div class="seriesDndTitle"><b>${esc(g.title)}</b><small>${esc(g.seriesName||'Serisiz')} • ${esc(g.status||'Durum yok')} • ${eps} bölüm</small></div><label class="orderField">Sıra<input class="input" type="number" min="1" name="order__${esc(g.id)}" value="${esc(value)}" data-series-order-input></label><div class="tableActions"><button class="miniBtn" type="button" data-series-row-up>↑</button><button class="miniBtn" type="button" data-series-row-down>↓</button><a class="miniBtn" href="/yonetim/oyun-duzenle?id=${encodeURIComponent(g.id)}">Oyun</a></div></article>`; }).join('')}</div><div class="formSaveBar"><button class="btn primary" type="submit">💾 Seriyi ve Sıralamayı Kaydet</button><a class="btn secondary" href="/seriler?sort=az">🎬 Seriler Sayfası</a><a class="btn secondary" href="${selected?seriesWatchHref(selected):'/izle'}">▶️ Tüm Seriyi İzle</a></div></form></section>`);
 }); }
 
-function currentGamesYönetim(){ return adminOnly(()=>{ const games=buildArchiveModel(loadGames()).games; const sync=syncState(); return layout(`<div class="sectionHead"><div><h2>Mevcut Oyunlar</h2><p>${games.length} kayıt listeleniyor. Veri durumu: ${esc(sync.status||sync.mode)}. Supabase ana kaynaktır; boş dönüş mevcut oyunları sıfırlamaz.</p></div><div class="actions"><a class="btn primary" href="/yonetim/oyun-ekle">Yeni Oyun</a><button class="btn secondary" type="button" data-supabase-refresh>Supabase’den Çek</button><a class="btn secondary" href="/koleksiyonlar">Koleksiyonlar</a><a class="btn secondary" href="/yonetim/seriler">Serileri Yönet</a><a class="btn secondary" href="/yonetim/bolum-takibi">Bölüm Takibi</a><button class="btn secondary" data-reset-demo-games>Örnekleri Geri Yükle</button></div></div><div class="panel tablePanel">${games.length?`<table class="table adminGamesTable"><thead><tr><th>Sıra</th><th>Oyun</th><th>Durum</th><th>Koleksiyon</th><th>Bölüm</th><th>İşlem</th></tr></thead><tbody>${games.map((g,i)=>{ const eps=loadEpisodes(g.id); const total=eps.length || Number(g.episodeCount||0); return `<tr><td><b>#${i+1}</b><div class="tableActions"><button class="miniBtn" data-move-game="${esc(g.id)}" data-delta="-1">↑</button><button class="miniBtn" data-move-game="${esc(g.id)}" data-delta="1">↓</button></div></td><td><b>${esc(g.title)}</b><small>${esc(g.releaseDate||'Tarih yok')} • ${g.youtubePlaylistUrl?'Oynatma listesi var':'Oynatma listesi yok'}</small></td><td><span class="pill ${statusClass(g.status)}">${esc(g.status)}</span><small>${esc(statusBucket(g.status))}</small></td><td><b>${esc(collectionName(g))}</b><small>${esc(g.genre||'-')} • ${esc(g.seriesName||'Serisiz')}</small></td><td><b>${Number(g.watchedEpisodeCount||0)} / ${total}</b><small>${g.episodeSyncedAt?'Senkronlandı':'Bekliyor'}</small></td><td><div class="tableActions"><a class="miniBtn" href="/yonetim/oyun-duzenle?id=${encodeURIComponent(g.id)}">Düzenle</a><button class="miniBtn" data-sync-game-playlist="${esc(g.id)}">Oynatma Listesi Çek</button><button class="miniBtn danger" data-delete-game="${esc(g.id)}">Sil</button></div></td></tr>`; }).join('')}</tbody></table>`:'<div class="empty">Kayıtlı oyun yok. Bu durum artık korunur; sayfa yenilenince demo oyunlar geri gelmez.</div>'}</div>`); }); }
+function currentGamesYönetim(){ autoRefreshGamesPageFromSupabase(); return adminOnly(()=>{ const games=buildArchiveModel(loadGames()).games; const sync=syncState(); return layout(`<div class="sectionHead"><div><h2>Mevcut Oyunlar</h2><p>${games.length} kayıt listeleniyor. Veri durumu: ${esc(sync.status||sync.mode)}. Supabase ana kaynaktır; sayfa açılınca ve butona basınca games tablosu tekrar çekilir.</p></div><div class="actions"><a class="btn primary" href="/yonetim/oyun-ekle">Yeni Oyun</a><button class="btn secondary" type="button" data-supabase-refresh>Supabase’den Çek</button><a class="btn secondary" href="/koleksiyonlar">Koleksiyonlar</a><a class="btn secondary" href="/yonetim/seriler">Serileri Yönet</a><a class="btn secondary" href="/yonetim/bolum-takibi">Bölüm Takibi</a><button class="btn secondary" data-reset-demo-games>Örnekleri Geri Yükle</button></div></div><div class="panel tablePanel">${games.length?`<table class="table adminGamesTable"><thead><tr><th>Sıra</th><th>Oyun</th><th>Durum</th><th>Koleksiyon</th><th>Bölüm</th><th>İşlem</th></tr></thead><tbody>${games.map((g,i)=>{ const eps=loadEpisodes(g.id); const total=eps.length || Number(g.episodeCount||0); return `<tr><td><b>#${i+1}</b><div class="tableActions"><button class="miniBtn" data-move-game="${esc(g.id)}" data-delta="-1">↑</button><button class="miniBtn" data-move-game="${esc(g.id)}" data-delta="1">↓</button></div></td><td><b>${esc(g.title)}</b><small>${esc(g.releaseDate||'Tarih yok')} • ${g.youtubePlaylistUrl?'Oynatma listesi var':'Oynatma listesi yok'}</small></td><td><span class="pill ${statusClass(g.status)}">${esc(g.status)}</span><small>${esc(statusBucket(g.status))}</small></td><td><b>${esc(collectionName(g))}</b><small>${esc(g.genre||'-')} • ${esc(g.seriesName||'Serisiz')}</small></td><td><b>${Number(g.watchedEpisodeCount||0)} / ${total}</b><small>${g.episodeSyncedAt?'Senkronlandı':'Bekliyor'}</small></td><td><div class="tableActions"><a class="miniBtn" href="/yonetim/oyun-duzenle?id=${encodeURIComponent(g.id)}">Düzenle</a><button class="miniBtn" data-sync-game-playlist="${esc(g.id)}">Oynatma Listesi Çek</button><button class="miniBtn danger" data-delete-game="${esc(g.id)}">Sil</button></div></td></tr>`; }).join('')}</tbody></table>`:'<div class="empty">Kayıtlı oyun yok. Bu durum artık korunur; sayfa yenilenince demo oyunlar geri gelmez.</div>'}</div>`); }); }
 
 function episodeTracker(){ return adminOnly(()=>{ const games=loadGames(); return layout(`<div class="sectionHead"><div><h2>Bölüm Takibi</h2><p>YouTube oynatma listesiten çekilen bölümler ve kaldığımız bölüm kontrolü.</p></div><div class="actions"><a class="btn primary" href="/yonetim/oyun-ekle">Oyun Ekle</a><a class="btn secondary" href="/yonetim/mevcut-oyunlar">Mevcut Oyunlar</a></div></div><section class="episodeYönetimGrid">${games.length?games.map(g=>{ const eps=loadEpisodes(g.id); const total=eps.length || Number(g.episodeCount||0); const watched=Number(g.watchedEpisodeCount||0); return `<article class="episodeGamePanel"><div class="episodeGameHead"><img src="${esc(g.cover||'/assets/hayatimiz-kapak.png')}" onerror="this.src='/assets/hayatimiz-kapak.png'" alt="${esc(g.title)}"><div><span class="pill ${statusClass(g.status)}">${esc(g.status)}</span><h3>${esc(g.title)}</h3><p>${esc(g.seriesName||'Serisiz')} • ${watched}/${total} bölüm</p></div></div><div class="progressMini"><i><span style="width:${total?Math.round((watched/total)*100):0}%"></span></i><small>Kaldığımız bölüm: ${watched}</small></div><div class="episodeActions"><button class="miniBtn primary" data-sync-game-playlist="${esc(g.id)}">Oynatma Listesi Bölümlerini Çek</button><button class="miniBtn" data-progress-game="${esc(g.id)}" data-delta="1">+1 Bölüm</button><button class="miniBtn" data-progress-game="${esc(g.id)}" data-delta="-1">-1 Bölüm</button><a class="miniBtn" href="/yonetim/oyun-duzenle?id=${encodeURIComponent(g.id)}">Düzenle</a></div>${renderEpisodeList(eps, watched, g.cover||'/assets/hayatimiz-kapak.png')}</article>`; }).join(''):'<div class="empty">Bölüm takibi için önce oyun ekle.</div>'}</section>`); }); }
 function calendarMonthName(dateValue){

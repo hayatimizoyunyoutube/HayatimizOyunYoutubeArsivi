@@ -962,3 +962,35 @@ html, body, .app, .fullMain, .main, .noSideApp { overflow-x: hidden !important; 
 .notepadImportPanel{border-color:rgba(56,189,248,.3)!important;background:linear-gradient(135deg,rgba(8,47,73,.78),rgba(15,23,42,.96))!important}
 .notepadTextarea{min-height:520px!important}
 @media(max-width:700px){.archiveGrid,.alphaGroup .archiveGrid,.gamesGrid{grid-template-columns:1fr!important}.fullTopNav a,.topQuickNav a,.adminDock a,.proAdminDock a{flex:1 1 calc(50% - 10px)!important;text-align:center!important}}
+
+
+/* v4.0.1 KESIN FIX: kaydırmasız tek sıra/grid menüler + arşiv/seri sol hizalama */
+.topQuickNav,.fullTopNav,.adminDock nav,.proAdminDock nav,.adminMenu,.menuRow,.tabs,.buttonRow,.nav{
+  display:flex!important; flex-wrap:wrap!important; overflow:visible!important; overflow-x:visible!important; scrollbar-width:none!important; gap:10px!important;
+}
+.topQuickNav::-webkit-scrollbar,.fullTopNav::-webkit-scrollbar,.adminDock nav::-webkit-scrollbar,.proAdminDock nav::-webkit-scrollbar,.adminMenu::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+.topQuickNav a,.fullTopNav a,.adminDock a,.proAdminDock a,.adminMenu a,.menuRow a,.tabs a,.buttonRow a,.topAdminOpen,.topBtn,.btn{
+  flex:0 1 auto!important; white-space:nowrap!important; min-width:max-content!important;
+}
+.proStickyTop.topOnlyBar,.topBar,.adminDock,.proAdminDock{overflow:visible!important;}
+.choicePills,.genreChoicePills,.categoryGrid,.collectionGrid,.tags{
+  display:flex!important; flex-wrap:wrap!important; justify-content:flex-start!important; align-items:flex-start!important; gap:10px!important; overflow:visible!important;
+}
+.choicePills > *, .genreChoicePills > *, .categoryGrid > *, .collectionGrid > *, .tags > *{flex:0 0 auto!important;}
+.archiveHero,.v209Hero,.alphaMini,.alphaGroup,.seriesBucket,.filterPanel,.archiveStats{max-width:100%!important;margin-left:0!important;margin-right:0!important;}
+.archiveGrid,.grid.archiveGrid,.alphaGroup .archiveGrid,.gamesGrid{
+  display:flex!important; flex-wrap:wrap!important; justify-content:flex-start!important; align-items:flex-start!important; gap:18px!important; width:100%!important; margin-left:0!important; margin-right:0!important;
+}
+.archiveGrid .gameCard,.alphaGroup .gameCard,.gamesGrid .gameCard,.proGameCard{
+  flex:0 0 300px!important; width:300px!important; max-width:300px!important; min-width:0!important; margin:0!important; justify-self:start!important;
+}
+.archiveGrid .gameCard img,.alphaGroup .gameCard img,.gamesGrid .gameCard img,.proGameCard img{height:170px!important; width:100%!important; object-fit:cover!important;}
+.seriesGrid,.proSeriesGrid,.premiumSeriesGrid,.homeV214Continue{
+  display:flex!important; flex-wrap:wrap!important; justify-content:flex-start!important; align-items:flex-start!important; gap:18px!important; width:100%!important; margin-left:0!important;
+}
+.seriesPanel,.proSeriesPanel,.premiumSeriesCard{flex:0 0 360px!important; max-width:360px!important; width:360px!important; margin:0!important; justify-self:start!important;}
+.alphaGroup .sectionHead,.seriesBucket .sectionHead{width:100%!important; justify-content:space-between!important;}
+@media(max-width:720px){
+  .archiveGrid .gameCard,.alphaGroup .gameCard,.gamesGrid .gameCard,.proGameCard,.seriesPanel,.proSeriesPanel,.premiumSeriesCard{flex:1 1 100%!important;width:100%!important;max-width:none!important;}
+  .topQuickNav a,.fullTopNav a,.adminDock a,.proAdminDock a{flex:1 1 calc(50% - 10px)!important;text-align:center!important;min-width:0!important;}
+}
