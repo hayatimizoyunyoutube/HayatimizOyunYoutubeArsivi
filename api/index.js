@@ -584,14 +584,18 @@ async function fetchYoutubePlaylistItemsNoKey(playlistUrl){
 async function fetchYoutubePlaylistItems(playlistUrl){
   const playlistId = extractYoutubePlaylistId(playlistUrl);
   if(!playlistId) return { count:0, episodes:[] };
-  const key = process.env.YOUTUBE_API_KEY || '';
-  if(!key) return await fetchYoutubePlaylistItemsNoKey(playlistUrl);
+  const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
+  if(!key) throw new Error('YOUTUBE_API_KEY eksik. Vercel Environment Variables içine YouTube Data API anahtarı eklenmeli.');
   const rows = [];
   let pageToken = '';
   for(let page=0; page<20; page++){
     const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
     const response = await fetch(url);
-    if(!response.ok) break;
+    if(!response.ok){
+      let errText='';
+      try { errText = await response.text(); } catch {}
+      throw new Error(`YouTube API hata verdi: ${response.status} ${errText.slice(0,180)}`);
+    }
     const data = await response.json();
     (data.items || []).forEach((item)=>{
       const sn = item.snippet || {};
@@ -606,12 +610,12 @@ async function fetchYoutubePlaylistItems(playlistUrl){
     if(!pageToken) break;
   }
   let episodes = uniqueEpisodes(rows);
-  if(!episodes.length) return await fetchYoutubePlaylistItemsNoKey(playlistUrl);
-  return { count:episodes.length, episodes };
+  if(!episodes.length) throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz veya API key yetkisiz olabilir.');
+  return { count:episodes.length, episodes, source:'YouTube Data API v3' };
 }
 async function fetchYoutubePlaylistCount(playlistUrl){
-  const key = process.env.YOUTUBE_API_KEY || '';
-  if(!key) return 0;
+  const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
+  if(!key) throw new Error('YOUTUBE_API_KEY eksik.');
   const playlistId = extractYoutubePlaylistId(playlistUrl);
   if(!playlistId) return 0;
   const url = `https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&id=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}`;
@@ -1256,14 +1260,14 @@ export default async function handler(req, res){
 
 
     if(action === 'playlist-count'){
-      const count = await fetchYoutubePlaylistCount(String(body.playlistUrl || '')).catch(()=>0);
-      return json(res, 200, { ok:true, count });
+      const count = await fetchYoutubePlaylistCount(String(body.playlistUrl || ''));
+      return json(res, 200, { ok:true, count, source:'YouTube Data API v3' });
     }
 
     if(action === 'playlist-items' || action === 'playlist-sync-lite'){
-      const items = await fetchYoutubePlaylistItems(String(body.playlistUrl || '')).catch(()=>({ count:0, episodes:[] }));
-      const count = items.count || await fetchYoutubePlaylistCount(String(body.playlistUrl || '')).catch(()=>0);
-      return json(res, 200, { ok:true, count, episodes:items.episodes || [] });
+      const items = await fetchYoutubePlaylistItems(String(body.playlistUrl || ''));
+      const count = items.count || items.episodes?.length || 0;
+      return json(res, 200, { ok:true, count, episodes:items.episodes || [], source:items.source || 'YouTube Data API v3' });
     }
 
 

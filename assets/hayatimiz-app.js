@@ -1177,7 +1177,7 @@ function makeLocalEpisodes(title, playlistUrl, count=8){
   const playlistId=extractYoutubePlaylistId(playlistUrl);
   const safeTitle=String(title||'Seri').trim() || 'Seri';
   const n=Math.max(1, Math.min(24, Number(count||8)));
-  return Array.from({length:n}, (_,i)=>({id:`local-${slugify(safeTitle)}-${i+1}`, number:i+1, title:`${safeTitle} ${i+1}. Bölüm`, description:playlistId?`Oynatma listesi ID: ${playlistId}`:'Yerel güvenli bölüm', thumbnail:'/assets/hayatimiz-kapak.png', videoId:'', videoUrl:playlistUrl || '', watched:false}));
+  return Array.from({length:n}, (_,i)=>({id:`local-${slugify(safeTitle)}-${i+1}`, number:i+1, title:`${safeTitle} ${i+1}. Bölüm`, description:playlistId?`Oynatma listesi ID: ${playlistId}`:'Yerel güvenli bölüm', thumbnail:'', videoId:'', videoUrl:playlistUrl || '', watched:false}));
 }
 async function fetchPlaylistEpisodes(playlistUrl, title){
   const playlistId=extractYoutubePlaylistId(playlistUrl);
@@ -1186,9 +1186,9 @@ async function fetchPlaylistEpisodes(playlistUrl, title){
     const data=await apiJson('playlist-items', {playlistUrl, playlistId});
     const episodes=Array.isArray(data.episodes) ? data.episodes.map(normalizeEpisode) : [];
     if(episodes.length) return {episodes, count:data.count || episodes.length, source:'YouTube API / güvenli tarama'};
-  }catch(err){ console.warn('Oynatma listesi servisi yedek moda geçti:', err); }
+  }catch(err){ console.error('YouTube API playlist hatası:', err); throw err; }
   // v4.0.1: API başarısızsa sahte bölüm/kanal logosu üretme. Gerçek YouTube listesi çekilemiyorsa mevcut liste korunur.
-  return {episodes:[], count:0, source:'YouTube API çekilemedi - gerçek bölüm bulunamadı'};
+  throw new Error('YouTube API gerçek bölüm çekemedi. Vercel YOUTUBE_API_KEY ve playlist erişimini kontrol et.');
 }
 function renderEpisodeList(episodes, watched=0, fallbackCover='/assets/hayatimiz-kapak.png'){
   const list=(Array.isArray(episodes)?episodes:[]).slice(0,50);
@@ -1212,8 +1212,8 @@ async function syncPlaylistForForm(form){
   if(!result.episodes.length){
     const hidden=form.elements?.episodesJson;
     if(hidden && !hidden.value) hidden.value='[]';
-    if(box) box.innerHTML='<b>Gerçek bölüm çekilemedi.</b> YouTube API/playlist erişimi kontrol edilmeli; mevcut bölüm listesi korunur.';
-    toast('Playlist gerçek bölüm listesi çekilemedi; sahte bölüm oluşturulmadı.');
+    if(box) box.innerHTML='<b>Gerçek bölüm bulunamadı.</b> YouTube API çalışıyor ama playlist boş döndü; mevcut liste korunur.';
+    toast('Playlist boş döndü; mevcut liste korunur.');
     return;
   }
   setField(form,'episodeCount',result.count || result.episodes.length, false);
@@ -1270,7 +1270,7 @@ function appBootRepair(){
 
 function adminDock(){
   if(!isYönetim() || !route().startsWith('/yonetim')) return '';
-  const items=[['/yonetim','🛡️ Panel'],['/yonetim/oyun-ekle','➕ Oyun Ekle'],['/yonetim/not-defteri-oyun-ekle','📝 Notla Oyun Ekle'],['/yonetim/mevcut-oyunlar','🎮 Oyunlar'],['/yonetim/seriler','🎬 Seriler'],['/yonetim/bolum-takibi','▶️ Bölümler'],['/yonetim/yayin-takvimi','📅 Takvim'],['/yonetim/guncelleme-notlari','📝 Notlar'],['/yonetim/bakim-modu','🛠️ Bakım'],['/yonetim/kullanicilar','👥 Kullanıcılar ve Yetkiler'],['/yonetim/veri-sagligi','💾 Veri Sağlığı'],['/yetkili-rehberi','👑 Yetkili Rehberi']];
+  const items=[['/yonetim','🛡️ Panel'],['/yonetim/oyun-ekle','➕ Oyun Ekle'],['/yonetim/mevcut-oyunlar','🎮 Oyunlar'],['/yonetim/seriler','🎬 Seriler'],['/yonetim/bolum-takibi','▶️ Bölümler'],['/yonetim/yayin-takvimi','📅 Takvim'],['/yonetim/guncelleme-notlari','📝 Notlar'],['/yonetim/bakim-modu','🛠️ Bakım'],['/yonetim/kullanicilar','👥 Kullanıcılar ve Yetkiler'],['/yonetim/veri-sagligi','💾 Veri Sağlığı'],['/yetkili-rehberi','👑 Yetkili Rehberi']];
   return `<section class="adminDock proAdminDock"><div><b>🛡️ Yönetim Paneli</b><small>Yönetim araçları</small></div><nav>${items.map(([href,label])=>`<a class="${active(href)?'active':''}" href="${href}">${label}</a>`).join('')}</nav></section>`;
 }
 function layout(content){ return `<main class="app noSideApp"><section class="main fullMain">${userTopbar()}${adminDock()}${content}</section></main>`; }
@@ -1886,7 +1886,7 @@ function shouldShowMaintenanceForRoute(p=route()){
   // Sadece giriş/kayıt sayfaları açık kalır ki yetkili kullanıcı giriş yapabilsin.
   return !isAuthRoute(p);
 }
-function pageHtml(){ const p=route(); const u=currentUser(); const role=roleValue(u?.role||'', u?.email||''); if(u && (role==='banned' || u.is_active===false) && !isAuthRoute(p)) return bannedZiyaretçi(); if(shouldShowMaintenanceForRoute(p)) return maintenanceZiyaretçi(); if(p==='/'||p==='/ana-sayfa') return home(); if(p.startsWith('/oyun-arsivi')) return archive(); if(p.startsWith('/oyun-detay') || p.startsWith('/oyun')) return gameDetailPage(); if(p.startsWith('/izle')) return watchPage(); if(p.startsWith('/alfabetik-siralama')) return alphabetPage(); if(p.startsWith('/koleksiyonlar')) return collectionsPage(); if(p.startsWith('/seriler')) return seriesPage(); if(p==='/yayin-takvimi'||p==='/takvim') return publicCalendarPage(); if(p==='/status'||p==='/durum') return publicStatusPage(); if(p==='/site-rehberi') return siteGuidePage(); if(p==='/yetkili-rehberi') return authorityGuidePage(); if(p==='/giris-yap'||p==='/auth/login') return loginPage(); if(p==='/kayit-ol'||p==='/auth/register') return registerPage(); if(p==='/hesabim') return accountPage(); if(p==='/yonetim') return admin(); if(p==='/yonetim/not-defteri-oyun-ekle') return noteGameImportPage(); if(p==='/yonetim/oyun-ekle'||p==='/yonetim/oyun-duzenle') return gameForm(); if(p==='/yonetim/mevcut-oyunlar') return currentGamesYönetim(); if(p==='/yonetim/seriler') return seriesManager(); if(p==='/yonetim/yayin-takvimi') return calendar(); if(p==='/yonetim/guncelleme-notlari' || p==='/guncellemeler') return updateNotes(); if(p==='/yonetim/bolum-takibi') return episodeTracker(); if(p==='/yonetim/bakim-modu') return maintenance(); if(p==='/yonetim/kullanicilar') return usersPage(); if(p==='/yonetim/veri-sagligi') return dataHealthPage(); return notFound(); }
+function pageHtml(){ const p=route(); const u=currentUser(); const role=roleValue(u?.role||'', u?.email||''); if(u && (role==='banned' || u.is_active===false) && !isAuthRoute(p)) return bannedZiyaretçi(); if(shouldShowMaintenanceForRoute(p)) return maintenanceZiyaretçi(); if(p==='/'||p==='/ana-sayfa') return home(); if(p.startsWith('/oyun-arsivi')) return archive(); if(p.startsWith('/oyun-detay') || p.startsWith('/oyun')) return gameDetailPage(); if(p.startsWith('/izle')) return watchPage(); if(p.startsWith('/alfabetik-siralama')) return alphabetPage(); if(p.startsWith('/koleksiyonlar')) return collectionsPage(); if(p.startsWith('/seriler')) return seriesPage(); if(p==='/yayin-takvimi'||p==='/takvim') return publicCalendarPage(); if(p==='/status'||p==='/durum') return publicStatusPage(); if(p==='/site-rehberi') return siteGuidePage(); if(p==='/yetkili-rehberi') return authorityGuidePage(); if(p==='/giris-yap'||p==='/auth/login') return loginPage(); if(p==='/kayit-ol'||p==='/auth/register') return registerPage(); if(p==='/hesabim') return accountPage(); if(p==='/yonetim') return admin(); if(p==='/yonetim/oyun-ekle'||p==='/yonetim/oyun-duzenle') return gameForm(); if(p==='/yonetim/mevcut-oyunlar') return currentGamesYönetim(); if(p==='/yonetim/seriler') return seriesManager(); if(p==='/yonetim/yayin-takvimi') return calendar(); if(p==='/yonetim/guncelleme-notlari' || p==='/guncellemeler') return updateNotes(); if(p==='/yonetim/bolum-takibi') return episodeTracker(); if(p==='/yonetim/bakim-modu') return maintenance(); if(p==='/yonetim/kullanicilar') return usersPage(); if(p==='/yonetim/veri-sagligi') return dataHealthPage(); return notFound(); }
 function bind(){
   document.body.addEventListener('click', e=>{
     const a=e.target.closest('a[href]'); if(a && a.origin===location.origin && !a.hasAttribute('download') && a.target !== '_blank' && !a.dataset.newTab){ e.preventDefault(); setRoute(a.pathname + a.search); return; }
@@ -1944,26 +1944,6 @@ function bind(){
     const login=e.target.closest('[data-login-form]'); if(login){ e.preventDefault(); (async()=>{ const fd=new FormData(login); const email=String(fd.get('email')||'').trim().toLowerCase(); const password=String(fd.get('password')||''); try{ const data=await apiJson('login',{email,password}); const u=data.user||{}; localStorage.setItem(STORAGE.session, JSON.stringify({email:u.email||email,displayName:u.full_name||u.displayName||'Hayatımız Oyun',role:isYönetimEmail(email)?'owner':(u.role||'user'),adminToken:data.adminToken||''})); toast('Supabase giriş başarılı.'); await refreshGamesFromSupabase({force:false}); setRoute(isYönetimEmail(email)?'/yonetim':'/ana-sayfa'); return; }catch(err){ console.warn('Supabase login yok, yerel deneniyor:', err.message); } let users=loadUsers(); let user=users.find(u=>String(u.email).toLowerCase()===email); if(!user && isYönetimEmail(email)){ user={id:'user-'+Date.now(),email,displayName:'Hayatımız Oyun Yönetim',password,role:'owner',createdAt:new Date().toISOString()}; users.push(user); saveUsers(users); } if(!user || String(user.password||'')!==password){ toast('E-posta veya şifre hatalı. Kayıt olmayı dene.'); return; } localStorage.setItem(STORAGE.session, JSON.stringify({email:user.email,displayName:user.displayName,role:isYönetimEmail(user.email)?'owner':(user.role||'user'),adminToken:user.adminToken||''})); toast('Yerel giriş başarılı. Supabase için şema ve kayıt gerekebilir.'); setRoute(isYönetimEmail(user.email)?'/yonetim':'/ana-sayfa'); })(); return; }
     const register=e.target.closest('[data-register-form]'); if(register){ e.preventDefault(); (async()=>{ const fd=new FormData(register); const email=String(fd.get('email')||'').trim().toLowerCase(); const displayName=String(fd.get('displayName')||'').trim(); const password=String(fd.get('password')||''); if(password.length<3){ toast('Şifre en az 3 karakter olsun.'); return; } let adminToken=''; let remoteUser=null; try{ const data=await apiJson('register',{email,password,fullName:displayName}); adminToken=data.adminToken||''; remoteUser=data.user||null; toast('Supabase kayıt oluşturuldu.'); }catch(err){ console.warn('Supabase kayıt yok, yerel kayıt:', err.message); toast('Yerel kayıt oluşturuldu. Supabase daha sonra bağlanabilir.'); } let users=loadUsers().filter(u=>String(u.email).toLowerCase()!==email); const role=isYönetimEmail(email)?'owner':(remoteUser?.role||'user'); const user={id:remoteUser?.id || 'user-'+Date.now(),email:remoteUser?.email || email,displayName:remoteUser?.full_name || displayName || email, password, role, adminToken, is_active:remoteUser?.is_active !== false, source:remoteUser?'Supabase':'Yerel',createdAt:remoteUser?.created_at || new Date().toISOString()}; users.push(user); saveUsers(users); localStorage.setItem(STORAGE.session, JSON.stringify({email:user.email,displayName:user.displayName,role:user.role,adminToken})); setRoute(isYönetimEmail(user.email)?'/yonetim':'/ana-sayfa'); })(); return; }
     const pf=e.target.closest('[data-profile-form]'); if(pf){ e.preventDefault(); const fd=new FormData(pf); const u=currentUser(); if(!u){ setRoute('/giris-yap'); return; } const displayName=String(fd.get('displayName')||'').trim() || u.displayName || u.email; const next={...u, displayName, updatedAt:new Date().toISOString()}; localStorage.setItem(STORAGE.session, JSON.stringify(next)); const users=loadUsers().map(row=>String(row.email).toLowerCase()===String(u.email).toLowerCase()?{...row, displayName, updatedAt:next.updatedAt}:row); saveUsers(users.length?users:[next]); toast('Profil bilgileri kaydedildi.'); render(); return; }
-
-    const ngf=e.target.closest('[data-notepad-game-form]');
-    if(ngf){
-      e.preventDefault();
-      const box=ngf.querySelector('[data-notepad-result]');
-      const games=parseGameNotes(new FormData(ngf).get('notes'));
-      if(!games.length){ toast('Not defterinde oyun bulunamadı. Oyun: satırıyla başla.'); if(box) box.innerHTML='<b>Oyun bulunamadı.</b><span>Her kayıt için Oyun: alanı yazmalısın.</span>'; return; }
-      if(box) box.innerHTML=`<b>${games.length} oyun algılandı.</b><span>Supabase kaydı başlıyor...</span>`;
-      (async()=>{
-        const ok=[]; const fail=[];
-        for(const game of games){
-          try{ await persistGameToSupabase(game, ''); ok.push(game.title); }
-          catch(err){ fail.push(`${game.title}: ${err.message||err}`); }
-        }
-        await refreshGamesFromSupabase({force:false}).catch(()=>{});
-        if(box) box.innerHTML=`<b>✅ ${ok.length} başarılı • ❌ ${fail.length} hata</b><span>${ok.map(x=>'Kaydedildi: '+esc(x)).join('<br>')}${fail.length?'<br><br>'+fail.map(x=>'Hata: '+esc(x)).join('<br>'):''}</span>`;
-        toast(fail.length ? `${ok.length} oyun kaydedildi, ${fail.length} hata var.` : `${ok.length} oyun Supabase’e kaydedildi.`);
-      })();
-      return;
-    }
 
     const gf=e.target.closest('[data-game-form]'); if(gf){
       e.preventDefault();
