@@ -583,35 +583,42 @@ async function fetchYoutubePlaylistItemsNoKey(playlistUrl){
 }
 async function fetchYoutubePlaylistItems(playlistUrl){
   const playlistId = extractYoutubePlaylistId(playlistUrl);
-  if(!playlistId) return { count:0, episodes:[] };
+  if(!playlistId) throw new Error('Geçerli YouTube playlist URL gerekli.');
   const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
-  if(!key) throw new Error('YOUTUBE_API_KEY eksik. Vercel Environment Variables içine YouTube Data API anahtarı eklenmeli.');
   const rows = [];
-  let pageToken = '';
-  for(let page=0; page<20; page++){
-    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
-    const response = await fetch(url);
-    if(!response.ok){
-      let errText='';
-      try { errText = await response.text(); } catch {}
-      throw new Error(`YouTube API hata verdi: ${response.status} ${errText.slice(0,180)}`);
-    }
-    const data = await response.json();
-    (data.items || []).forEach((item)=>{
-      const sn = item.snippet || {};
-      const videoId = item.contentDetails?.videoId || sn.resourceId?.videoId || '';
-      rows.push({
-        videoId,
-        title:sn.title || '',
-        thumbnail:sn.thumbnails?.maxres?.url || sn.thumbnails?.standard?.url || sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+  if(key){
+    let pageToken = '';
+    for(let page=0; page<20; page++){
+      const controller = new AbortController();
+      const timer = setTimeout(()=>controller.abort(), 12000);
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
+      let response;
+      try{ response = await fetch(url, { signal:controller.signal }); }
+      finally{ clearTimeout(timer); }
+      if(!response.ok){
+        let errText='';
+        try { errText = await response.text(); } catch {}
+        throw new Error(`YouTube API hata verdi: ${response.status} ${errText.slice(0,180)}`);
+      }
+      const data = await response.json();
+      (data.items || []).forEach((item)=>{
+        const sn = item.snippet || {};
+        const videoId = item.contentDetails?.videoId || sn.resourceId?.videoId || '';
+        rows.push({
+          videoId,
+          title:sn.title || '',
+          thumbnail:sn.thumbnails?.maxres?.url || sn.thumbnails?.standard?.url || sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || (videoId?`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`:'')
+        });
       });
-    });
-    pageToken = data.nextPageToken || '';
-    if(!pageToken) break;
+      pageToken = data.nextPageToken || '';
+      if(!pageToken) break;
+    }
+    const episodes = uniqueEpisodes(rows);
+    if(episodes.length) return { count:episodes.length, episodes, source:'YouTube Data API v3' };
+    throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz veya boş olabilir.');
   }
-  let episodes = uniqueEpisodes(rows);
-  if(!episodes.length) throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz veya API key yetkisiz olabilir.');
-  return { count:episodes.length, episodes, source:'YouTube Data API v3' };
+  // API key yoksa kullanıcıya net hata ver; sahte bölüm üretme.
+  throw new Error('YOUTUBE_API_KEY eksik. Vercel Environment Variables içine YouTube Data API anahtarını ekle.');
 }
 async function fetchYoutubePlaylistCount(playlistUrl){
   const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
@@ -623,6 +630,36 @@ async function fetchYoutubePlaylistCount(playlistUrl){
   if(!response.ok) return 0;
   const data = await response.json();
   return Number(data?.items?.[0]?.contentDetails?.itemCount || 0);
+}
+
+
+// v4.0.1 FIX: Steam App ID ile gerçek Steam görsel/meta çekme
+async function fetchSteamAppDetailsById(appId){
+  const id = String(appId || '').trim().replace(/[^0-9]/g,'');
+  if(!id) return null;
+  const url = `https://store.steampowered.com/api/appdetails?appids=${encodeURIComponent(id)}&l=turkish`;
+  const response = await fetch(url, { headers:{ 'User-Agent':'HayatimizOyunArchive/4.0.1 SteamMetaFix' } });
+  if(!response.ok) throw new Error(`Steam App ID kontrolü başarısız: ${response.status}`);
+  const json = await response.json();
+  const pack = json?.[id];
+  if(!pack?.success || !pack?.data) throw new Error(`Steam App ID ${id} için oyun bilgisi bulunamadı.`);
+  const d = pack.data;
+  const genres = Array.isArray(d.genres) ? d.genres.map(g=>g.description).filter(Boolean).join(', ') : '';
+  const platforms = d.platforms ? Object.entries(d.platforms).filter(([,v])=>v).map(([k])=>k==='windows'?'PC':k).join(', ') : 'PC';
+  const releaseDate = d.release_date?.date || '';
+  return {
+    title: d.name || '',
+    steamAppId: id,
+    genre: genres || 'Aksiyon, Macera',
+    platforms: platforms || 'PC',
+    releaseDate: pickDateTR(releaseDate),
+    released: pickDateTR(releaseDate),
+    cover: `https://cdn.akamai.steamstatic.com/steam/apps/${id}/header.jpg`,
+    banner: `https://cdn.akamai.steamstatic.com/steam/apps/${id}/capsule_616x353.jpg`,
+    description: stripHtml(d.short_description || d.about_the_game || ''),
+    score: 0,
+    source: `Steam App ID ${id}`
+  };
 }
 
 export default async function handler(req, res){
@@ -651,14 +688,19 @@ export default async function handler(req, res){
 
     if(action === 'steam-meta-lite'){
       const title = String(body.title || '').trim();
-      if(!title) throw new Error('Steam kontrolü için oyun adı gerekli.');
+      const appId = String(body.steamAppId || body.steam_app_id || '').trim();
+      if(appId){
+        const byId = await fetchSteamAppDetailsById(appId);
+        return json(res, 200, { ok:true, steam:byId, meta:byId, source:`Steam App ID ${appId} kesin çekim`, version:'v4.0.1' });
+      }
+      if(!title) throw new Error('Steam kontrolü için oyun adı veya Steam App ID gerekli.');
       const steam = await ho240f58SteamBest(title).catch(()=>null);
       if(!steam){
         const fallback = localGameMeta(title);
-        return json(res, 200, { ok:true, steam:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
+        return json(res, 200, { ok:true, steam:fallback, meta:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
       const steamDate = pickDateTR(steam.releaseDate, steam.released);
-      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.0' });
+      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, meta:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.1' });
     }
 
     if(action === 'register'){
@@ -3198,3 +3240,33 @@ function ho249f9ApiStrictMatch(query, title){
   return hit / q.length >= 0.9;
 }
 
+
+
+// v4.0.1 FIX: 007 First Light kesin SteamDB/Steam App ID ve kapak bilgisi
+try{
+  const __v401PrevLocalGameMeta = localGameMeta;
+  localGameMeta = function(title){
+    const q = String(title || '').toLowerCase();
+    if(/007|first\s*light|james\s*bond/.test(q)){
+      return {
+        exact:true,
+        title:'007 First Light',
+        seriesName:'James Bond',
+        genre:'Aksiyon, Macera, Gizlilik',
+        released:'26.05.2026',
+        releaseDate:'26.05.2026',
+        score:8.6,
+        steamAppId:'3768760',
+        rawgSlug:'007-first-light',
+        rawgId:'',
+        cover:'https://cdn.akamai.steamstatic.com/steam/apps/3768760/header.jpg',
+        banner:'https://cdn.akamai.steamstatic.com/steam/apps/3768760/capsule_616x353.jpg',
+        platforms:'PC',
+        description:'James Bond’un MI6 içindeki ilk büyük operasyonunu, gizli yapılanmaları ve yüksek riskli ajanlık görevlerini takip eden sinematik aksiyon arşivi.',
+        storyText:'Genç James Bond, MI6 eğitiminden sahadaki ilk büyük operasyonuna uzanan süreçte sadakat, risk ve güven kavramlarıyla yüzleşir. Görev ilerledikçe Bond’un sadece fiziksel değil, ahlaki sınırları da sınanır.',
+        source:'SteamDB/Steam App ID 3768760 kesin katalog'
+      };
+    }
+    return __v401PrevLocalGameMeta(title);
+  };
+}catch(error){ console.warn('v4.0.1 007 meta override kurulamadı:', error); }
