@@ -53,3 +53,7 @@ Install Command: npm install
 - dedupeEpisodes kayıt hatası düzeltildi.
 - Supabase kaydetme akışı çökmeden devam eder.
 - Bölüm thumbnail ve gerçek YouTube başlıkları korunur.
+
+## v4.0.0 FIX — Not Defteriyle Oyun Ekleme
+
+Yönetim panelinde **Notla Oyun Ekle** sayfası eklendi. Oyunları Not Defteri formatında yazıp toplu şekilde doğrudan Supabase `games` tablosuna kaydedebilirsin. Rehber: `NOT-DEFTERI-OYUN-EKLEME-REHBERI.md`

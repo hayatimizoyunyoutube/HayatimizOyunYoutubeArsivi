@@ -871,3 +871,80 @@ body:after{
 .safeError{border-radius:32px!important;background:linear-gradient(135deg,rgba(15,23,42,.92),rgba(50,16,55,.82))!important;}
 @media(max-width:1100px){.quickGrid,.adminActionGrid,.grid,.archiveGrid,.gamesGrid,.seriesGrid,.collectionGrid,.alphabetCards,.homeV214Cards{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important}.topQuickNav,.fullTopNav{justify-content:flex-start!important}.hero,.dashboardHero,.adminDashboardHero,.archiveHero,.profileHero,.pageHero{padding:22px!important}}
 @media(max-width:720px){.noSideApp .fullMain,.main{padding:10px 12px 28px!important}.proStickyTop.topOnlyBar,.topBar,.topbar,.siteHeader,.header{border-radius:0 0 24px 24px!important;margin:0 -2px 14px!important}.quickGrid,.adminActionGrid,.grid,.archiveGrid,.gamesGrid,.seriesGrid,.collectionGrid,.alphabetCards,.homeV214Cards{grid-template-columns:1fr!important}.gameCard,.seriesCard,.proGameCard,.oldHomeTile{max-width:none!important}.heroContent h1,.hero h1,.adminDashboardHero h1,.profileHero h1,.pageHero h1{font-size:clamp(38px,12vw,58px)!important}.topQuickNav a,.fullTopNav a,.topAdminOpen,.topBtn,.adminDock a,.nav a,.menuRow a,.tabs a,.adminMenu a,.btn,button{font-size:12px!important;padding:8px 11px!important}.stats,.adminMetricGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* v4.0.0 Not Defteriyle Supabase Oyun Ekleme */
+.notepadImportPanel{margin:18px auto;max-width:1180px;border:1px solid rgba(34,197,94,.22);background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(2,6,23,.92));box-shadow:0 24px 80px rgba(0,0,0,.28)}
+.notepadTextarea{min-height:440px;width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;line-height:1.55;background:rgba(2,6,23,.78);border:1px solid rgba(148,163,184,.25);border-radius:18px;padding:18px;color:#e5e7eb;resize:vertical;white-space:pre}
+.notepadResult{margin-top:14px;padding:14px 16px;border-radius:16px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.22);display:grid;gap:6px;color:#d1fae5;max-height:260px;overflow:auto}
+.notepadResult b{color:#fff}.notepadResult span{font-size:.92rem;color:#b7f7ce}.notepadGuide{max-width:1180px;margin:18px auto}.notepadGuide .roadList{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+@media(max-width:720px){.notepadTextarea{min-height:360px;font-size:13px}.notepadImportPanel .actions{display:grid;grid-template-columns:1fr}.notepadImportPanel .btn{width:100%}}
+
+
+/* v4.0.0 FINAL FIX: Arşiv/Seri sol hizalama + kompakt kartlar + yatay taşma koruması */
+html, body, .app, .fullMain, .main, .noSideApp { overflow-x: hidden !important; }
+.archiveHero, .v209Hero, .alphaMini, .alphaGroup, .seriesBucket, .compactLetterBucket, .filterPanel, .archiveStats { width: 100% !important; max-width: 1240px !important; margin-left: auto !important; margin-right: auto !important; }
+.alphaGroup { padding-top: 12px !important; }
+.alphaGroup .sectionHead, .seriesBucket .sectionHead { align-items: center !important; }
+.archiveGrid, .grid.archiveGrid, .alphaGroup .archiveGrid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 300px)) !important;
+  justify-content: start !important;
+  justify-items: stretch !important;
+  align-items: start !important;
+  gap: 16px !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+.archiveGrid .gameCard, .alphaGroup .gameCard {
+  width: 100% !important;
+  max-width: 300px !important;
+  min-width: 0 !important;
+  justify-self: start !important;
+  overflow: hidden !important;
+}
+.archiveGrid .gameCard img, .alphaGroup .gameCard img {
+  width: 100% !important;
+  height: 172px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+}
+.archiveGrid .gameCard .body { padding: 12px 13px !important; }
+.archiveGrid .gameCard h3 { font-size: 18px !important; line-height: 1.18 !important; margin: 9px 0 6px !important; }
+.archiveGrid .gameCard p {
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+.alphaMini .alphaIndex { display:flex !important; flex-wrap:wrap !important; gap:10px !important; justify-content:flex-start !important; }
+.alphaMini .alphaIndex a { flex:0 0 auto !important; min-width:86px !important; }
+.seriesGrid, .proSeriesGrid, .premiumSeriesGrid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 360px)) !important;
+  justify-content: start !important;
+  justify-items: stretch !important;
+  align-items: start !important;
+  gap: 16px !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+.seriesPanel, .proSeriesPanel, .premiumSeriesCard { width:100% !important; max-width:360px !important; justify-self:start !important; }
+.seriesCoverLine, .premiumSeriesHead { grid-template-columns:82px 1fr !important; gap:12px !important; align-items:center !important; }
+.seriesCoverLine img, .premiumSeriesHead img { width:82px !important; height:108px !important; object-fit:cover !important; border-radius:14px !important; }
+.compactLetterBucket details { max-width: 100% !important; }
+.compactLetterBucket summary { white-space: normal !important; }
+.homeV214Continue, .homeV214Cards { display:grid !important; grid-template-columns:repeat(auto-fill,minmax(260px,320px)) !important; justify-content:start !important; gap:14px !important; }
+.adminDock nav, .fullTopNav { scrollbar-width: thin !important; }
+@media(max-width:900px){
+  .archiveGrid, .grid.archiveGrid, .alphaGroup .archiveGrid, .seriesGrid, .proSeriesGrid, .premiumSeriesGrid, .homeV214Continue, .homeV214Cards { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important; }
+  .archiveGrid .gameCard, .alphaGroup .gameCard, .seriesPanel, .proSeriesPanel, .premiumSeriesCard { max-width: none !important; }
+}
+@media(max-width:560px){
+  .archiveHero, .v209Hero, .alphaMini, .alphaGroup, .seriesBucket, .filterPanel, .archiveStats { padding-left: 12px !important; padding-right: 12px !important; }
+  .archiveGrid, .grid.archiveGrid, .alphaGroup .archiveGrid, .seriesGrid, .proSeriesGrid, .premiumSeriesGrid { grid-template-columns: 1fr !important; }
+  .archiveGrid .gameCard img, .alphaGroup .gameCard img { height: 160px !important; }
+  .seriesCoverLine, .premiumSeriesHead { grid-template-columns:70px 1fr !important; }
+  .seriesCoverLine img, .premiumSeriesHead img { width:70px !important; height:92px !important; }
+}
