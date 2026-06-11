@@ -1,14 +1,17 @@
--- v4.0.1 SUPABASE TEMIZ SIFIRLAMA + SITE UYUMLULUK SQL
--- DIKKAT: Bu dosya games, calendar, notes vb. site tablolarını temiz arşiv başlangıcı için sıfırlar.
--- Kullanıcı/yetki tablosu korunur. Mevcut games kayıtları önce yedeklenir.
+-- v4.0.2 SUPABASE RESET + YENI GAMES/EPISODES SCHEMA
+-- Bu dosya istek üzerine TEMIZ RESET yapar: games ve episodes verilerini sıfırlar.
+-- site_users/yetki/kullanıcı tablolarını silmez.
+-- Reset istemediğin güncellemelerde migration dosyası kullan.
 
 create extension if not exists pgcrypto;
 
-create table if not exists public.games_backup_v401_reset as
-select *, now() as backup_created_at from public.games where false;
-
-insert into public.games_backup_v401_reset
-select *, now() as backup_created_at from public.games;
+do $$
+begin
+  if to_regclass('public.games') is not null then
+    execute 'create table if not exists public.games_reset_backup_v402 as select *, now() as backup_created_at from public.games where false';
+    execute 'insert into public.games_reset_backup_v402 select *, now() as backup_created_at from public.games';
+  end if;
+end $$;
 
 create table if not exists public.games (
   id uuid primary key default gen_random_uuid(),
@@ -87,20 +90,69 @@ alter table public.games add column if not exists is_featured boolean default fa
 alter table public.games add column if not exists created_at timestamptz default now();
 alter table public.games add column if not exists updated_at timestamptz default now();
 
--- Temiz sıfırlama: oyun arşivini boş başlatır. Kullanıcı/yetki silmez.
+create table if not exists public.episodes (
+  id uuid primary key default gen_random_uuid(),
+  game_id uuid not null references public.games(id) on delete cascade,
+  episode_number int not null default 1,
+  title text not null default '',
+  description text default '',
+  youtube_video_id text,
+  youtube_url text default '',
+  thumbnail_url text default '',
+  playlist_id text default '',
+  duration text default '',
+  published_at timestamptz,
+  is_watched boolean default false,
+  sort_order int default 0,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(game_id, episode_number)
+);
+
+alter table public.episodes add column if not exists game_id uuid references public.games(id) on delete cascade;
+alter table public.episodes add column if not exists episode_number int default 1;
+alter table public.episodes add column if not exists title text default '';
+alter table public.episodes add column if not exists description text default '';
+alter table public.episodes add column if not exists youtube_video_id text;
+alter table public.episodes add column if not exists youtube_url text default '';
+alter table public.episodes add column if not exists thumbnail_url text default '';
+alter table public.episodes add column if not exists playlist_id text default '';
+alter table public.episodes add column if not exists duration text default '';
+alter table public.episodes add column if not exists published_at timestamptz;
+alter table public.episodes add column if not exists is_watched boolean default false;
+alter table public.episodes add column if not exists sort_order int default 0;
+alter table public.episodes add column if not exists created_at timestamptz default now();
+alter table public.episodes add column if not exists updated_at timestamptz default now();
+
+do $$ begin
+  alter table public.episodes add constraint episodes_game_number_unique unique(game_id, episode_number);
+exception when duplicate_object then null;
+end $$;
+
+-- TEMIZ RESET: yeni arşiv başlangıcı için sadece oyun ve bölüm kayıtları sıfırlanır.
+truncate table public.episodes restart identity cascade;
 truncate table public.games restart identity cascade;
 
 alter table public.games enable row level security;
+alter table public.episodes enable row level security;
+
 drop policy if exists "games_public_read" on public.games;
 drop policy if exists "games_admin_write" on public.games;
-drop policy if exists "games_all_access" on public.games;
+drop policy if exists "episodes_public_read" on public.episodes;
+drop policy if exists "episodes_admin_write" on public.episodes;
+
 create policy "games_public_read" on public.games for select using (true);
 create policy "games_admin_write" on public.games for all using (true) with check (true);
+create policy "episodes_public_read" on public.episodes for select using (true);
+create policy "episodes_admin_write" on public.episodes for all using (true) with check (true);
 
 create index if not exists games_slug_idx on public.games(slug);
 create index if not exists games_title_idx on public.games(title);
 create index if not exists games_series_idx on public.games(series_name);
 create index if not exists games_status_idx on public.games(status);
+create index if not exists episodes_game_idx on public.episodes(game_id);
+create index if not exists episodes_playlist_idx on public.episodes(playlist_id);
+create index if not exists episodes_video_idx on public.episodes(youtube_video_id);
 
 create table if not exists public.site_runtime_config (
   key text primary key,
@@ -109,11 +161,11 @@ create table if not exists public.site_runtime_config (
 );
 
 insert into public.site_runtime_config(key,value,updated_at)
-values ('site_version', jsonb_build_object('version','v4.0.1','label','v4.0.1 Supabase Temiz Stabilite','vercel_label','v4.0.1-supabase-temiz-stabilite','status','Başarılı'), now())
+values ('site_version', jsonb_build_object('version','v4.0.2','label','v4.0.2 YouTube Episodes Reset Fix','vercel_label','v4.0.2-youtube-episodes-reset-fix','status','Başarılı'), now())
 on conflict (key) do update set value=excluded.value, updated_at=now();
 
 insert into public.site_runtime_config(key,value,updated_at)
 values ('maintenance_mode', jsonb_build_object('enabled',false,'message','Site yayında.','percent',100,'adminBypass',true), now())
 on conflict (key) do update set value=excluded.value, updated_at=now();
 
-select 'Başarılı' as durum, 'v4.0.1' as surum, 'Supabase temiz sıfırlama ve games uyumluluk tamamlandı' as islem;
+select 'Başarılı' as durum, 'v4.0.2' as surum, 'Games + Episodes reset schema kuruldu; YouTube playlistItems çıktısı episodes tablosuna yazılmaya hazır.' as islem;

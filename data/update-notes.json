@@ -1,5 +1,11 @@
 [
   {
+    "version": "v4.0.2",
+    "title": "YouTube playlistItems + Episodes tablo reset fix",
+    "summary": "Games ve Episodes schema yenilendi; playlist videoları YouTube Data API playlistItems.list ile çekilip Episodes tablosuna yazılır.",
+    "status": "Tamamlandı"
+  },
+  {
     "version": "v4.0.0",
     "title": "🎉 Ana Açılış Final",
     "summary": "Site v4.0.0 ana açılışa hazırlandı. Ana sayfa, arşiv, seriler, kategoriler, profil, favoriler, başarımlar, yayın takvimi, yönetim paneli ve bakım/ban güvenliği güncellendi.",

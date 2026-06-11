@@ -1073,3 +1073,14 @@ html, body, .app, .fullMain, .main, .noSideApp { overflow-x: hidden !important; 
   .archiveGrid,.grid.archiveGrid,.alphaGroup .archiveGrid,.gamesGrid,.seriesGrid,.proSeriesGrid,.premiumSeriesGrid{grid-template-columns:1fr!important;}
   .archiveGrid .gameCard,.alphaGroup .gameCard,.gamesGrid .gameCard,.proGameCard{width:100%!important;max-width:none!important;}
 }
+
+/* v4.0.2 Yönetim paneli kaydırma/taşma kesin fix */
+html,body,.app,.main,.fullMain,.noSideApp{max-width:100%!important;overflow-x:hidden!important;}
+.tablePanel,.panel,.adminGamesTable,.table{max-width:100%!important;}
+.tablePanel{overflow-x:auto!important;scrollbar-width:thin;}
+.adminGamesTable{table-layout:fixed!important;min-width:920px;}
+.adminGamesTable th,.adminGamesTable td{white-space:normal!important;overflow-wrap:anywhere!important;vertical-align:top;}
+.tableActions,.actions,.episodeActions{display:flex;flex-wrap:wrap!important;gap:8px;min-width:0;}
+.tableActions .miniBtn,.actions .btn,.episodeActions .miniBtn{white-space:normal!important;text-align:center;}
+.adminDock.proAdminDock nav,.adminDock nav{max-width:100%!important;}
+@media(max-width:760px){.adminGamesTable{min-width:760px}.main,.fullMain{padding-left:12px!important;padding-right:12px!important}.actions .btn,.tableActions .miniBtn{width:auto;min-width:0}}

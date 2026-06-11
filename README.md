@@ -1,67 +1,40 @@
-# Hayatımız Oyun v4.0.1 - Supabase Kayıt Kesin Final
+# Hayatımız Oyun v4.0.2 - YouTube Episodes Reset Fix
 
-Bu paket oyun kaydetme hatalarını düzeltir.
+Bu paket yeni özellik eklemeden önce temel veri akışını düzeltir.
 
-## Düzeltilen ana hata
-- `malformed array literal` hatası giderildi.
-- `platforms` ve `tags` eski schema'da array kaldıysa güvenli şekilde text'e çevrilir.
-- Oyun sadece Supabase'e kaydedilir.
-- Supabase hata verirse gerçek hata gösterilir.
-- Bölüm/thumbnail verileri resetlenmez.
+## Yapılan kesin düzeltmeler
 
-## Kurulum
-1. ZIP'i temiz şekilde projeye çıkar.
-2. Supabase SQL Editor'de `schema.sql` çalıştır.
-3. Git push yap.
-4. Vercel Clear Build Cache + Redeploy.
+- Supabase `games` tablosu reset uyumlu yeni schema ile düzenlendi.
+- Supabase `episodes` tablosu eklendi.
+- YouTube oynatma listesi çekme `playlistItems.list` endpoint mantığına kilitlendi.
+- Playlistten gelen gerçek videolar artık doğrudan `episodes` tablosuna yazılır.
+- `games-list` çıktısı artık `games + episodes` birlikte döndürür.
+- Oyun kaydetme/güncelleme sırasında formdaki bölümler Supabase `episodes` tablosuna da işlenir.
+- Steam App ID ile Steam kapak/tarih/meta çekme akışı korundu.
+- RAWG/meta çekme akışı korundu.
+- Kanal logosu/thumbnail sahte fallback üretimi yerine gerçek veri yoksa mevcut liste korunur.
+- Yönetim panelinde tablo ve buton taşmaları azaltıldı; yatay kaydırma sadece tablo içinde kaldı.
 
-# Hayatımız Oyun v4.0.1 - UI Revolution Final Paket
+## Supabase kurulumu
 
-Bu paket v4.0.1 ana açılış sürümünü korur ve sitenin genel arayüzünü tamamen daha profesyonel görünüme taşır.
+1. Supabase SQL Editor aç.
+2. `schema.sql` içeriğini çalıştır.
+3. Bu dosya istek üzerine reset yapar: `games` ve `episodes` boş başlar.
+4. Vercel Environment Variables içinde şunlar olmalı:
+   - `SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `YOUTUBE_API_KEY`
+   - RAWG kullanıyorsan `RAWG_API_KEY`
 
-## Yapılanlar
+## YouTube kontrol
 
-- Ana sayfa sinematik dashboard görünümüne güncellendi.
-- Arşiv kartları kompakt, sol hizalı ve modern grid yapısına alındı.
-- Seriler sayfası premium kart görünümüne taşındı.
-- Yönetim paneli modern dashboard hissiyle yenilendi.
-- Profil, favoriler, başarımlar ve veri sağlığı kartları cilalandı.
-- Kategoriler/koleksiyonlar ve butonlar tek sıra/scroll kontrollü yapıldı.
-- Mobil/tablet responsive görünüm iyileştirildi.
-- Vercel hızlı static build sistemi korundu.
-- Sürüm etiketi v4.0.1 olarak bırakıldı.
+Oyun düzenleme ekranında playlist URL girip **Oynatma Listesi Çek** dediğinde:
 
-## Schema durumu
+- API `playlistItems.list` ile videoları çeker.
+- Video başlığı, video ID, thumbnail ve URL normalize edilir.
+- Sonuçlar `episodes` tablosuna kaydedilir.
+- Oyun kartında bölüm sayısı güncellenir.
 
-schema.sql gerekli değil. Bu paket arayüz/UI paketidir, veritabanı yapısını değiştirmez.
+## Sürüm etiketi
 
-## Vercel
-
-Framework Preset: Other  
-Build Command: node scripts/build-static.mjs  
-Output Directory: dist  
-Install Command: npm install
-
-
-## v4.0.1 FIX - Oyun Kaydetme
-- Oyun ekleme/güncelleme sonrası mevcut oyunların kaybolması engellendi.
-- Supabase boş veriyle yerel listeyi ezmez.
-- Schema gerekli değil.
-
-
-## v4.0.1 FIX - Oyun Kaydetme Kesin Onarım
-- dedupeEpisodes kayıt hatası düzeltildi.
-- Supabase kaydetme akışı çökmeden devam eder.
-- Bölüm thumbnail ve gerçek YouTube başlıkları korunur.
-
-## v4.0.1 FIX — Not Defteriyle Oyun Ekleme
-
-Yönetim panelinde **Notla Oyun Ekle** sayfası eklendi. Oyunları Not Defteri formatında yazıp toplu şekilde doğrudan Supabase `games` tablosuna kaydedebilirsin. Rehber: `NOT-DEFTERI-OYUN-EKLEME-REHBERI.md`
-
-
-## v4.0.1 Profesyonel Not Defteri ve Supabase Stabilite
-- Notla oyun ekleme profesyonel şablona geçirildi.
-- Steam App ID / SteamDB alanı desteklendi.
-- Menü ve kategori butonlarında kaydırma azaltıldı, grid görünüm güçlendirildi.
-- Arşiv ve seri kartları sola hizalı/kompakt tutuldu.
-- Supabase boş dönerse mevcut oyunların sıfırlanmaması korunur.
+Aktif paket: `v4.0.2-youtube-episodes-reset-fix`

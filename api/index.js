@@ -662,6 +662,52 @@ async function fetchSteamAppDetailsById(appId){
   };
 }
 
+
+// v4.0.2 CORE FIX: gerçek episodes tablosu yazma/okuma + playlistItems.list kilidi
+function extractVideoIdFromEpisode(ep={}){
+  return String(ep.videoId || ep.youtubeVideoId || ep.youtube_video_id || ep.video_id || '').trim();
+}
+async function upsertEpisodesForGame(gameId, episodes=[], playlistId=''){
+  const gid=String(gameId||'').trim();
+  if(!gid || !Array.isArray(episodes)) return {saved:0, episodes:[]};
+  const rows=episodes.map((ep,index)=>{
+    const n=Number(ep.number || ep.episodeNumber || ep.episode_number || index+1);
+    const videoId=extractVideoIdFromEpisode(ep);
+    return {
+      game_id:gid,
+      episode_number:n,
+      title:cleanYoutubeTitle(ep.title || ep.name || `${n}. Bölüm`),
+      description:String(ep.description || ''),
+      youtube_video_id:videoId || null,
+      youtube_url:String(ep.videoUrl || ep.video_url || (videoId?`https://www.youtube.com/watch?v=${videoId}`:'')),
+      thumbnail_url:String(ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || (videoId?`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`:'')),
+      playlist_id:String(playlistId || ep.playlistId || ep.playlist_id || ''),
+      is_watched:ep.watched === true || ep.is_watched === true,
+      sort_order:n,
+      updated_at:new Date().toISOString()
+    };
+  }).filter(r=>r.title && (r.youtube_video_id || r.youtube_url));
+  if(!rows.length) return {saved:0, episodes:[]};
+  const saved=await supabase('episodes?on_conflict=game_id,episode_number', {method:'POST', headers:{Prefer:'resolution=merge-duplicates,return=representation'}, body:JSON.stringify(rows)});
+  await supabase(`games?id=eq.${encodeURIComponent(gid)}`, {method:'PATCH', body:JSON.stringify({episodes:episodes.map(normalizeApiEpisode), episode_count:rows.length, youtube_playlist_id:playlistId || undefined, updated_at:new Date().toISOString()})}).catch(()=>{});
+  return {saved:Array.isArray(saved)?saved.length:rows.length, episodes:Array.isArray(saved)?saved.map(row=>normalizeApiEpisode({
+    id:row.id, number:row.episode_number, title:row.title, description:row.description, thumbnail:row.thumbnail_url, videoId:row.youtube_video_id, videoUrl:row.youtube_url, watched:row.is_watched
+  })):episodes.map(normalizeApiEpisode)};
+}
+async function readEpisodesForGames(gameIds=[]){
+  const ids=[...new Set((gameIds||[]).map(String).filter(Boolean))];
+  if(!ids.length) return new Map();
+  const quoted=ids.map(id=>id.replace(/[^0-9a-fA-F-]/g,'')).filter(Boolean).join(',');
+  const rows=await supabase(`episodes?game_id=in.(${quoted})&select=*&order=episode_number.asc`, {method:'GET'}).catch(()=>[]);
+  const map=new Map();
+  (Array.isArray(rows)?rows:[]).forEach(row=>{
+    const key=String(row.game_id||'');
+    if(!map.has(key)) map.set(key,[]);
+    map.get(key).push(normalizeApiEpisode({id:row.id, number:row.episode_number, title:row.title, description:row.description, thumbnail:row.thumbnail_url, videoId:row.youtube_video_id, videoUrl:row.youtube_url, watched:row.is_watched}));
+  });
+  return map;
+}
+
 export default async function handler(req, res){
   if(req.method === 'OPTIONS') return json(res, 200, { ok:true });
   const url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
@@ -669,7 +715,7 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v4.0.0', status:'Ana açılış final aktif' });
+    if(action === 'health') return json(res, 200, { ok:true, version:'v4.0.2', status:'YouTube playlistItems + Episodes tablo fix aktif' });
 
     if(action === 'game-meta-lite'){
       const title = String(body.title || '').trim();
@@ -691,7 +737,7 @@ export default async function handler(req, res){
       const appId = String(body.steamAppId || body.steam_app_id || '').trim();
       if(appId){
         const byId = await fetchSteamAppDetailsById(appId);
-        return json(res, 200, { ok:true, steam:byId, meta:byId, source:`Steam App ID ${appId} kesin çekim`, version:'v4.0.1' });
+        return json(res, 200, { ok:true, steam:byId, meta:byId, source:`Steam App ID ${appId} kesin çekim`, version:'v4.0.2' });
       }
       if(!title) throw new Error('Steam kontrolü için oyun adı veya Steam App ID gerekli.');
       const steam = await ho240f58SteamBest(title).catch(()=>null);
@@ -700,7 +746,7 @@ export default async function handler(req, res){
         return json(res, 200, { ok:true, steam:fallback, meta:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
       const steamDate = pickDateTR(steam.releaseDate, steam.released);
-      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, meta:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.1' });
+      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, meta:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.2' });
     }
 
     if(action === 'register'){
@@ -906,7 +952,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v4.0.0', note:'v4.0.0 temiz final sürüm senkronizasyonu', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v4.0.2', note:'v4.0.2 YouTube Episodes Reset Fix sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -923,7 +969,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v4.0.0', note:'v4.0.0 temiz final sürüm senkronizasyonu', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v4.0.2', note:'v4.0.2 YouTube Episodes Reset Fix sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -1067,7 +1113,7 @@ export default async function handler(req, res){
       const games = await supabase('games?select=*&order=series_order.asc', { method:'GET' }).catch(()=>[]);
       const runtime = await supabase('site_runtime_config?select=key,value,updated_at', { method:'GET' }).catch(()=>[]);
       const snapshot = {
-        version:'v4.0.0',
+        version:'v4.0.2',
         source,
         created_at:now,
         counts:{
@@ -1162,14 +1208,14 @@ export default async function handler(req, res){
         schemaVersion: schemaRow?.value?.version || 'Bilinmiyor',
         checkedAt: new Date().toISOString()
       };
-      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v4.0.0 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
+      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v4.0.2 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
       return json(res, 200, { ok:true, health, message:'Supabase veri sağlığı kontrol edildi.' });
     }
 
     if(action === 'data-backup-save'){
       await requireStaff(body.adminToken);
       const payload = body.payload || {};
-      const row = { backup_type:String(body.backupType||'manual'), version:'v4.0.0', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
+      const row = { backup_type:String(body.backupType||'manual'), version:'v4.0.2', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
       const rows = await supabase('site_data_backups', { method:'POST', body: JSON.stringify([row]) }).catch(()=>[]);
       return json(res, 200, { ok:true, backup:Array.isArray(rows)?rows[0]:row, message:'Yedek kaydı oluşturuldu.' });
     }
@@ -1244,6 +1290,7 @@ export default async function handler(req, res){
       }
       const rows = await supabase('games', { method:'POST', headers:{ Prefer:'return=representation' }, body: JSON.stringify([payload]) });
       if(!Array.isArray(rows) || !rows[0]) throw new Error('Supabase oyun kaydı boş döndü. games tablosu ve service role key kontrol edilmeli.');
+      if(Array.isArray(game.episodes) && game.episodes.length){ await upsertEpisodesForGame(rows[0].id, game.episodes, payload.youtube_playlist_id || extractYoutubePlaylistId(payload.youtube_playlist_url)).catch(()=>{}); }
       return json(res, 200, { ok:true, game:cleanGame(rows[0]) });
     }
 
@@ -1266,6 +1313,7 @@ export default async function handler(req, res){
       Object.keys(patch).forEach(k => (patch[k] === undefined || patch[k] === null || Number.isNaN(patch[k])) && delete patch[k]);
       if(existing && existing.id){
         const rows = await supabase(`games?id=eq.${encodeURIComponent(existing.id)}`, { method:'PATCH', body: JSON.stringify(patch) });
+        if(Array.isArray(game.episodes) && game.episodes.length){ await upsertEpisodesForGame(existing.id, game.episodes, patch.youtube_playlist_id || extractYoutubePlaylistId(patch.youtube_playlist_url)).catch(()=>{}); }
         return json(res, 200, { ok:true, game:cleanGame(rows?.[0]) });
       }
       // Eski id slug ise ve Supabase'te kayıt yoksa güncelleme yerine yeni kayıt aç.
@@ -1307,9 +1355,15 @@ export default async function handler(req, res){
     }
 
     if(action === 'playlist-items' || action === 'playlist-sync-lite'){
-      const items = await fetchYoutubePlaylistItems(String(body.playlistUrl || ''));
-      const count = items.count || items.episodes?.length || 0;
-      return json(res, 200, { ok:true, count, episodes:items.episodes || [], source:items.source || 'YouTube Data API v3' });
+      const playlistUrl=String(body.playlistUrl || '');
+      const playlistId=extractYoutubePlaylistId(playlistUrl);
+      const items = await fetchYoutubePlaylistItems(playlistUrl);
+      const episodes=(items.episodes || []).map(normalizeApiEpisode);
+      const count = items.count || episodes.length || 0;
+      let saved=0;
+      const gameId=String(body.gameId || body.game_id || '').trim();
+      if(gameId && episodes.length){ const write=await upsertEpisodesForGame(gameId, episodes, playlistId); saved=write.saved || 0; }
+      return json(res, 200, { ok:true, count, saved, episodes, playlistId, source:items.source || 'YouTube Data API v3 playlistItems.list' });
     }
 
 
@@ -1665,7 +1719,7 @@ export default async function handler(req, res){
     }
 
     if(action === 'auto-fix-request-add'){
-      const payload = { version:String(body.version || 'v4.0.0'), source:String(body.source || 'admin_panel'), error_text:String(body.errorText || body.error_text || ''), diagnosis:body.diagnosis || [], status:String(body.status || 'new'), fixed_files:String(body.fixedFiles || body.fixed_files || ''), created_at:new Date().toISOString(), updated_at:new Date().toISOString() };
+      const payload = { version:String(body.version || 'v4.0.2'), source:String(body.source || 'admin_panel'), error_text:String(body.errorText || body.error_text || ''), diagnosis:body.diagnosis || [], status:String(body.status || 'new'), fixed_files:String(body.fixedFiles || body.fixed_files || ''), created_at:new Date().toISOString(), updated_at:new Date().toISOString() };
       await supabase('site_auto_fix_requests', { method:'POST', body: JSON.stringify([payload]) }).catch(()=>{});
       return json(res, 200, { ok:true, request:payload });
     }
@@ -1705,9 +1759,9 @@ export default async function handler(req, res){
         storeScores.forEach(s=>sources.push(s));
       }catch{}
       const clean = sources.filter(s=>Number.isFinite(Number(s.score)) && Number(s.score)>0);
-      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v4.0.0' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
+      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v4.0.2' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
       const avg = clean.reduce((a,b)=>a+Number(b.score),0)/clean.length;
-      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v4.0.0' });
+      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v4.0.2' });
     }
 
 
@@ -1717,7 +1771,7 @@ export default async function handler(req, res){
       const source = String(body.source || 'epic').trim().toLowerCase();
       if(!title) throw new Error('Kaynak kontrolü için oyun adı gerekli.');
       const result = ho244ApiStoreSearch(title, source);
-      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v4.0.0' });
+      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v4.0.2' });
     }
 
     return json(res, 404, { ok:false, error:'Bilinmeyen API action.' });

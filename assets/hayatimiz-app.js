@@ -1,4 +1,4 @@
-const VERSION = 'v4.0.1';
+const VERSION = 'v4.0.2';
 const FIX_NAME = 'v4.0.1 - İçerik Çekme Playlist Hikaye Kapak Stabilite';
 const RELEASE_TAG = 'v4.0.1-CONTENT-PLAYLIST-COVER-STABILITE';
 const ADMIN_EMAILS = ['mertdundaroyunda@gmail.com'];
@@ -32,6 +32,7 @@ const DEFAULT_GAMES = [
   {id:'control-ultimate-edition',title:'Control Ultimate Edition',status:'Ara Verildi',genre:'Aksiyon',seriesName:'Remedy Evreni',cover:'/assets/hayatimiz-kapak.png',releaseDate:'2019',description:'Ara verilen seriler için durum rozeti ve koleksiyon sayacı örneği.',episodeCount:5,tags:'Aksiyon, Bilim Kurgu, Seri'}
 ];
 const DEFAULT_NOTES = [
+  {id:'v402-youtube-episodes-reset-fix',version:'v4.0.2',title:'✅ YouTube Episodes Reset Fix',summary:'Supabase games + episodes schema yenilendi; playlistItems.list ile çekilen gerçek videolar Episodes tablosuna yazılır.',status:'Tamamlandı'},
   {id:'v401-ana-acilis-profesyonel-final',version:'v4.0.1',title:'🎉 Ana Açılış Sürümü',summary:'Hayatımız Oyun public arşiv sitesi profesyonel ana sayfa, arşiv, seriler, yayın takvimi, profil, favoriler, başarımlar, veri sağlığı, bakım/ban güvenliği ve yönetim paneliyle yayına hazır hale getirildi.',status:'Tamamlandı'},
   {id:'v401-profesyonel-tasarim-final',version:'v4.0.1 FIX',title:'🎨 Profesyonel Tasarım Finali',summary:'Ana sayfa, arşiv kartları, seri merkezi, kategori/koleksiyon sayfaları, profil merkezi ve yönetim paneli daha modern, kompakt ve mobil uyumlu hale getirildi.',status:'Tamamlandı'},
   {id:'v401-versiyon-senkron-final',version:'v4.0.1 FIX',title:'🏷️ Sürüm Senkronizasyonu',summary:'Site sürümü, Vercel etiketi, schema.sql Results çıktısı, status, health, README ve güncelleme notları v4.0.1 olarak eşitlendi. Eski aktif sürüm etiketleri pasifleştirildi.',status:'Tamamlandı'},
@@ -1232,7 +1233,8 @@ async function syncPlaylistForGame(id){
   const game=loadGames().find(g=>String(g.id)===String(id));
   if(!game){ toast('Oyun bulunamadı.'); return; }
   if(!game.youtubePlaylistUrl){ toast('Bu oyunda playlist URL yok. Düzenle sayfasından ekle.'); return; }
-  const result=await fetchPlaylistEpisodes(game.youtubePlaylistUrl, game.title);
+  const data=await apiJson('playlist-sync-lite', {playlistUrl:game.youtubePlaylistUrl, playlistId:extractYoutubePlaylistId(game.youtubePlaylistUrl), title:game.title, gameId:game.id});
+  const result={episodes:Array.isArray(data.episodes)?data.episodes.map(normalizeEpisode):[], count:data.count||0, source:data.source||'YouTube Data API v3 playlistItems.list'};
   if(!result.episodes.length){ toast('Playlist gerçek bölüm listesi çekilemedi; mevcut bölümler korunur.'); return; }
   saveEpisodes(game.id, result.episodes);
   updateGamePatch(game.id,{episodes:result.episodes, episodeCount:result.count || result.episodes.length, youtubePlaylistUrl:game.youtubePlaylistUrl, youtubePlaylistId:extractYoutubePlaylistId(game.youtubePlaylistUrl), episodeSyncSource:result.source, episodeSyncedAt:new Date().toISOString()});

@@ -1,15 +1,17 @@
-# v4.0.1 Supabase Temiz Sıfırlama
+# v4.0.2 Supabase Temiz Reset
 
-Supabase ile site uyumsuz kaldıysa bu dosyayı çalıştır:
+Çalıştırılacak dosya:
 
-`supabase/SUPABASE-TEMIZ-SIFIRLAMA-UYUMLU-v4.0.1.sql`
+`schema.sql`
 
-Ne yapar?
-- Mevcut games kayıtlarını önce `games_backup_v401_reset` içine yedekler.
-- `games` tablosunu siteyle tam uyumlu hale getirir.
-- Oyun tablosunu temizler.
-- RLS okuma/yazma izinlerini açar.
-- v4.0.1 sürüm bilgisini Supabase runtime config içine yazar.
-- Bakım modunu kapalı yapar.
+veya aynı içerik:
 
-Dikkat: games tablosunu boşaltır. Kullanıcı/yetki kayıtlarını silmez.
+`supabase/SUPABASE-TEMIZ-SIFIRLAMA-UYUMLU-v4.0.2.sql`
+
+## Ne yapar?
+
+- `games` ve `episodes` tablolarını kurar.
+- Mevcut oyunları `games_reset_backup_v402` içine yedeklemeye çalışır.
+- İstek üzerine temiz başlangıç için `games` ve `episodes` tablolarını sıfırlar.
+- `site_users` / kullanıcı yetki kayıtlarına dokunmaz.
+- Runtime sürümünü `v4.0.2` yazar.
