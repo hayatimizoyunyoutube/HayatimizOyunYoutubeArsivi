@@ -557,11 +557,11 @@ function uniqueEpisodes(rows){
   }
   return out;
 }
-async function fetchYoutubePlaylistItemsNoKey(playlistUrl){
+async function fetchYoutubePlaylistItemsNoKey(playlistUrl, signal){
   const playlistId = extractYoutubePlaylistId(playlistUrl);
   if(!playlistId) return { count:0, episodes:[] };
   const url = `https://www.youtube.com/playlist?list=${encodeURIComponent(playlistId)}`;
-  const response = await fetch(url, { headers:{ 'User-Agent':'Mozilla/5.0 HayatimizOyunBot/1.0', 'Accept-Language':'tr-TR,tr;q=0.9,en;q=0.7' } });
+  const response = await fetch(url, { signal, headers:{ 'User-Agent':'Mozilla/5.0 HayatimizOyunBot/1.0', 'Accept-Language':'tr-TR,tr;q=0.9,en;q=0.7' } });
   if(!response.ok) return { count:0, episodes:[] };
   const html = await response.text();
   const rows = [];
@@ -583,46 +583,49 @@ async function fetchYoutubePlaylistItemsNoKey(playlistUrl){
 }
 async function fetchYoutubePlaylistItems(playlistUrl){
   const playlistId = extractYoutubePlaylistId(playlistUrl);
-  if(!playlistId) throw new Error('Geçerli YouTube playlist URL gerekli.');
+  if(!playlistId) throw new Error('Geçerli YouTube playlist URL gerekli. Link içinde list=PL... olmalı.');
   const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
-  const rows = [];
-  if(key){
-    let pageToken = '';
-    for(let page=0; page<20; page++){
-      const controller = new AbortController();
-      const timer = setTimeout(()=>controller.abort(), 12000);
-      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
-      let response;
-      try{ response = await fetch(url, { signal:controller.signal }); }
-      finally{ clearTimeout(timer); }
-      if(!response.ok){
-        let errText='';
-        try { errText = await response.text(); } catch {}
-        const fallback = await fetchYoutubePlaylistItemsNoKey(playlistUrl).catch(()=>({count:0, episodes:[]}));
-        if(fallback.episodes?.length) return { ...fallback, source:`YouTube playlist sayfası gerçek video yedeği (API ${response.status})` };
-        throw new Error(`YouTube API hata verdi: ${response.status} ${errText.slice(0,180)}`);
-      }
-      const data = await response.json();
-      (data.items || []).forEach((item)=>{
-        const sn = item.snippet || {};
-        const videoId = item.contentDetails?.videoId || sn.resourceId?.videoId || '';
-        rows.push({
-          videoId,
-          title:sn.title || '',
-          thumbnail:sn.thumbnails?.maxres?.url || sn.thumbnails?.standard?.url || sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || (videoId?`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`:'')
-        });
-      });
-      pageToken = data.nextPageToken || '';
-      if(!pageToken) break;
-    }
-    const episodes = uniqueEpisodes(rows);
-    if(episodes.length) return { count:episodes.length, episodes, source:'YouTube Data API v3 playlistItems.list' };
-    throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz veya boş olabilir.');
+  if(!key){
+    // API yoksa uzun süre bekletme: 5 sn gerçek sayfa yedeği dene, olmazsa net hata dön.
+    const controller = new AbortController();
+    const timer = setTimeout(()=>controller.abort(), 5000);
+    try{
+      const fallback = await fetchYoutubePlaylistItemsNoKey(playlistUrl, controller.signal).catch(()=>({count:0, episodes:[]}));
+      if(fallback.episodes?.length) return { ...fallback, source:'YouTube playlist sayfası gerçek video yedeği' };
+    }finally{ clearTimeout(timer); }
+    throw new Error('YOUTUBE_API_KEY eksik veya Vercel Production ortamına tanımlı değil. YouTube Data API v3 key Production + Preview için eklenmeli.');
   }
-  // API key yoksa yine de playlist sayfasındaki gerçek video ID'leri denenir; sahte bölüm üretilmez.
-  const fallback = await fetchYoutubePlaylistItemsNoKey(playlistUrl).catch(()=>({count:0, episodes:[]}));
-  if(fallback.episodes?.length) return { ...fallback, source:'YouTube playlist sayfası gerçek video yedeği' };
-  throw new Error('YOUTUBE_API_KEY eksik veya playlist erişilemedi. Vercel Environment Variables içine YouTube Data API anahtarını ekle.');
+  const rows = [];
+  let pageToken = '';
+  for(let page=0; page<25; page++){
+    const controller = new AbortController();
+    const timer = setTimeout(()=>controller.abort(), 9000);
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
+    let response;
+    try{ response = await fetch(url, { signal:controller.signal }); }
+    catch(err){ throw new Error(`YouTube API cevap vermedi: ${err.name === 'AbortError' ? 'zaman aşımı' : err.message}`); }
+    finally{ clearTimeout(timer); }
+    if(!response.ok){
+      let errText='';
+      try { errText = await response.text(); } catch {}
+      throw new Error(`YouTube API hata verdi: ${response.status}. API anahtarı, quota ve YouTube Data API v3 etkinliğini kontrol et. ${errText.slice(0,160)}`);
+    }
+    const data = await response.json();
+    (data.items || []).forEach((item)=>{
+      const sn = item.snippet || {};
+      const videoId = item.contentDetails?.videoId || sn.resourceId?.videoId || '';
+      rows.push({
+        videoId,
+        title:sn.title || '',
+        thumbnail:sn.thumbnails?.maxres?.url || sn.thumbnails?.standard?.url || sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || (videoId?`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`:'')
+      });
+    });
+    pageToken = data.nextPageToken || '';
+    if(!pageToken) break;
+  }
+  const episodes = uniqueEpisodes(rows);
+  if(episodes.length) return { count:episodes.length, episodes, source:'YouTube Data API v3 playlistItems.list' };
+  throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz, boş veya API key ilgili kanala erişemiyor olabilir.');
 }
 async function fetchYoutubePlaylistCount(playlistUrl){
   const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
@@ -643,13 +646,14 @@ async function fetchSteamAppDetailsById(appId){
   if(!id) return null;
   const url = `https://store.steampowered.com/api/appdetails?appids=${encodeURIComponent(id)}&l=turkish`;
   const directById = {
-    '3768760': {title:'007 First Light', seriesName:'James Bond', genre:'Aksiyon, Gizlilik, Macera', releaseDate:'2026', platforms:'PC, PlayStation 5, Xbox Series S/X, Nintendo Switch', rawgSlug:'007-first-light'}
+    '3768760': {title:'007 First Light', seriesName:'James Bond', genre:'Aksiyon, Gizlilik, Macera', releaseDate:'2026', platforms:'PC, PlayStation 5, Xbox Series S/X, Nintendo Switch', rawgSlug:'007-first-light', rawgId:'007-first-light'}
   };
   const cdnFallback = (extra={}) => ({
     title: extra.title || directById[id]?.title || '',
     seriesName: extra.seriesName || directById[id]?.seriesName || '',
     steamAppId: id,
     rawgSlug: extra.rawgSlug || directById[id]?.rawgSlug || slugify(extra.title || directById[id]?.title || ''),
+    rawgId: extra.rawgId || directById[id]?.rawgId || extra.rawgSlug || directById[id]?.rawgSlug || slugify(extra.title || directById[id]?.title || ''),
     genre: extra.genre || directById[id]?.genre || 'Aksiyon, Macera',
     platforms: extra.platforms || directById[id]?.platforms || 'PC',
     releaseDate: pickDateTR(extra.releaseDate || directById[id]?.releaseDate || ''),
@@ -779,7 +783,7 @@ export default async function handler(req, res){
           steamApiKeyRequired:false,
           steamDbApiKeyRequired:false
         },
-        note:'SteamDB için ayrı API anahtarı yok; Steam App ID/SteamDB URL içindeki app id ile Steam Store CDN kapakları çekilir.'
+        note:'SteamDB için ayrı API anahtarı yok; kapak Steam CDN App ID ile çekilir. YouTube için YOUTUBE_API_KEY Production ortamında olmalı.'
       });
     }
 

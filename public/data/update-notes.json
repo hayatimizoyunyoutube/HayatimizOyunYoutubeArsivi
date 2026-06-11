@@ -1,6 +1,13 @@
 [
   {
     "version": "v4.0.5",
+    "title": "Revizyon 3 - YouTube cevap vermeme + Steam kapak önizleme fix",
+    "summary": "YouTube playlist çekme artık uzun süre takılmaz; API key yoksa/yanlışsa net hata döner. Steam App ID girildiğinde servis cevap vermese bile önizleme Steam CDN kapağıyla dolar. RAWG ID boş kalmasın diye slug/yerel eşleşme güvenli ID alanına yazılır.",
+    "status": "Tamamlandı",
+    "id": "revizyon-3-youtube-steam-onizleme-rawg-id-fix"
+  },
+  {
+    "version": "v4.0.5",
     "title": "SteamDB kapak + YouTube playlist revizyonu",
     "summary": "SteamDB/Steam App ID alanı URL içinden ID ayıklar; kapak Hayatımız Oyun fallback yerine Steam CDN header/capsule görselinden gelir. YouTube API çalışmazsa gerçek playlist sayfasındaki video ID yedeği denenir.",
     "status": "Tamamlandı"

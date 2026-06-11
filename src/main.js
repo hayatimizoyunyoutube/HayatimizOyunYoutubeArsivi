@@ -190,7 +190,7 @@ function localGameMetaCandidate(title){
   const row=LOCAL_META_CATALOG.find(x=>x.rx.test(q));
   if(row) return {...row, source:'Yerel güvenli bilgi kataloğu'};
   const slug=slugify(q);
-  return {title:q,seriesName:q.split(':')[0],genre:'Aksiyon, Macera, Hikaye',releaseDate:'',platforms:'PC, PlayStation 5, Xbox Series S/X',tags:'Türkçe Altyazılı, Hikaye',score:0,rawgSlug:slug,cover:'/assets/hayatimiz-kapak.png',banner:'/assets/hayatimiz-kapak.png',source:'Yerel güvenli varsayılan'};
+  return {title:q,seriesName:q.split(':')[0],genre:'Aksiyon, Macera, Hikaye',releaseDate:'',platforms:'PC, PlayStation 5, Xbox Series S/X',tags:'Türkçe Altyazılı, Hikaye',score:0,rawgSlug:slug,cover:'',banner:'',source:'Yerel güvenli varsayılan'};
 }
 async function apiJson(action, payload){
   const session = (typeof currentUser === 'function') ? currentUser() : null;
@@ -528,8 +528,8 @@ function mapMeta(raw, title){
     platforms: Array.isArray(m.platforms) ? m.platforms.join(', ') : (m.platforms || local.platforms || ''),
     tags: Array.isArray(m.tags) ? m.tags.join(', ') : (m.tags || local.tags || ''),
     score: m.score || m.rating || local.score || 0,
-    rawgId: m.rawgId || m.rawg_id || m.id || '',
     rawgSlug: m.rawgSlug || m.rawg_slug || m.slug || local.rawgSlug || '',
+    rawgId: m.rawgId || m.rawg_id || (m.rawg_id === 0 ? '0' : '') || local.rawgId || m.rawgSlug || m.rawg_slug || local.rawgSlug || '',
     steamAppId: steamId,
     cover: m.cover || m.cover_url || m.background_image || m.image || (steamId ? `https://cdn.akamai.steamstatic.com/steam/apps/${steamId}/header.jpg` : local.cover),
     banner: m.banner || m.banner_url || m.background || (steamId ? `https://cdn.akamai.steamstatic.com/steam/apps/${steamId}/capsule_616x353.jpg` : local.banner),
@@ -579,7 +579,12 @@ async function resolveMetaForForm(form, source){
   try{
     raw = await apiJson(source==='steam'?'steam-meta-lite':'game-meta-lite', {title, steamAppId, steamdbUrl:steamRaw, releaseDate:form?.elements?.releaseDate?.value || '', cover:form?.elements?.cover?.value || ''});
   }catch(err){
-    raw = {ok:true, meta:localGameMetaCandidate(title), source:'Servis yok / yerel güvenli bilgi'};
+    const local=localGameMetaCandidate(title) || {title};
+    if(steamAppId){
+      raw = {ok:true, meta:{...local, steamAppId, cover:`https://cdn.akamai.steamstatic.com/steam/apps/${steamAppId}/header.jpg`, banner:`https://cdn.akamai.steamstatic.com/steam/apps/${steamAppId}/capsule_616x353.jpg`, rawgSlug:local.rawgSlug || slugify(title), rawgId:local.rawgId || local.rawgSlug || slugify(title), source:`Steam CDN yerel kesin kapak • App ID ${steamAppId}`}, source:`Steam CDN yerel kesin kapak • App ID ${steamAppId}`};
+    }else{
+      raw = {ok:true, meta:{...local, cover:'', banner:'', rawgId:local.rawgId || local.rawgSlug || slugify(title)}, source:'Servis yok / yerel güvenli bilgi'};
+    }
   }
   const meta=mapMeta(raw, title);
   fillMetaToForm(form, meta, 'safe');
