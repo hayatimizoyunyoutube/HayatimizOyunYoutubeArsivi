@@ -1,4 +1,4 @@
-# Supabase v4.0.4 Sırası
+# Supabase v4.0.5 Sırası
 
 1. `supabase/schema.sql` çalıştır.
 2. Hata almadan biterse Vercel'e deploy et.

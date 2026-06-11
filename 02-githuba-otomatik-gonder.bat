@@ -12,7 +12,7 @@ echo Bu dosya klasordeki mevcut dosyalari GitHub main dalina gonderir.
 echo Hizli kullanim: Ac, ENTER'a bas, bitince tekrar ENTER'a bas.
 echo.
 set "REPO=https://github.com/hayatimizoyunyoutube/HayatimizOyunYoutubeArsivi.git"
-set "DEFAULT_COMMIT=v4.0.0 temiz final tam paket"
+set "DEFAULT_COMMIT=v4.0.5 temiz final tam paket"
 
 where git >nul 2>nul
 if errorlevel 1 (

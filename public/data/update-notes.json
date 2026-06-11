@@ -1,32 +1,14 @@
 [
   {
-    "version": "v4.0.4",
-    "title": "YouTube playlistItems + Episodes tablo reset fix",
-    "summary": "Games ve Episodes schema yenilendi; playlist videoları YouTube Data API playlistItems.list ile çekilip Episodes tablosuna yazılır.",
+    "version": "v4.0.5",
+    "title": "SteamDB kapak + gerçek YouTube bölüm fix",
+    "summary": "RAWG yerine SteamDB/Steam App ID öncelikli kapak çekme aktif edildi. YouTube playlist sahte bölüm üretimi kapatıldı; yalnızca playlistItems.list ile gelen gerçek videolar Episodes tablosuna yazılır.",
     "status": "Tamamlandı"
   },
   {
-    "version": "v4.0.0",
-    "title": "🎉 Ana Açılış Final",
-    "summary": "Site v4.0.0 ana açılışa hazırlandı. Ana sayfa, arşiv, seriler, kategoriler, profil, favoriler, başarımlar, yayın takvimi, yönetim paneli ve bakım/ban güvenliği güncellendi.",
+    "version": "v4.0.5",
+    "title": "Site sürüm senkronizasyonu",
+    "summary": "index, uygulama, API health, update-notes, schema ve dist dosyalarındaki görünen sürüm v4.0.5 olarak eşitlendi.",
     "status": "Tamamlandı"
-  },
-  {
-    "version": "v4.0.0",
-    "title": "🎨 Profesyonel Tasarım Finali",
-    "summary": "Kategori butonları, yönetim paneli menüsü, arşiv kartları, seri görünümü, profil merkezi ve mobil/tablet düzeni profesyonel hale getirildi.",
-    "status": "Tamamlandı"
-  },
-  {
-    "version": "v4.0.0",
-    "title": "🏷️ Sürüm Senkronizasyonu",
-    "summary": "Site, Vercel etiketi, schema.sql Results, status, health, README ve güncelleme notları v4.0.0 olarak eşitlendi.",
-    "status": "Tamamlandı"
-  },
-  {
-    "version": "v4.0.1",
-    "title": "🛠️ Açılış Sonrası Stabilite",
-    "summary": "Canlı kullanımdan sonra küçük görünüm, veri ve mobil düzeltmeleri yapılacak.",
-    "status": "Planlandı"
   }
 ]

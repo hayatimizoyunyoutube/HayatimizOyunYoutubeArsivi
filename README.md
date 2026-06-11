@@ -1,6 +1,6 @@
-# Hayatımız Oyun v4.0.4 - Supabase Constraint + Temiz Paket Fix
+# Hayatımız Oyun v4.0.5 - Supabase Constraint + Temiz Paket Fix
 
-Bu paket v4.0.3 üstüne temizlenmiş kesin fix paketidir.
+Bu paket v4.0.5 üstüne temizlenmiş kesin fix paketidir.
 
 ## Önce Supabase'de çalıştır
 1. Supabase > SQL Editor aç.
@@ -23,4 +23,4 @@ Vercel'de görünen değişkenler yeterli:
 SteamDB için API key gerekmez. SteamDB linkinden App ID alınır: `https://steamdb.info/app/123456/`
 
 ## Temizlenenler
-Eski v4.0.0/v4.0.1/v4.0.2 not dosyaları paketten kaldırıldı. Sadece gerekli kurulum ve schema dosyaları bırakıldı.
+Eski v4.0.5/v4.0.5/v4.0.5 not dosyaları paketten kaldırıldı. Sadece gerekli kurulum ve schema dosyaları bırakıldı.

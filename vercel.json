@@ -23,7 +23,7 @@
       "source": "/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "X-Hayatimiz-Oyun-Version", "value": "v4.0.0-ANTI-404-FINAL" }
+        { "key": "X-Hayatimiz-Oyun-Version", "value": "v4.0.5-ANTI-404-FINAL" }
       ]
     }
   ]

@@ -1,4 +1,4 @@
--- v4.0.4 SUPABASE TEMIZ RESET + IDempotent GAMES/EPISODES SCHEMA
+-- v4.0.5 SUPABASE TEMIZ RESET + IDempotent GAMES/EPISODES SCHEMA
 -- Bu dosya istek üzerine TEMIZ RESET yapar: games ve episodes verilerini sıfırlar.
 -- site_users/yetki/kullanıcı tablolarını silmez.
 -- Reset istemediğin güncellemelerde migration dosyası kullan.
@@ -161,11 +161,11 @@ create table if not exists public.site_runtime_config (
 );
 
 insert into public.site_runtime_config(key,value,updated_at)
-values ('site_version', jsonb_build_object('version','v4.0.4','label','v4.0.4 YouTube SteamDB Playlist Kesin Fix','vercel_label','v4.0.4-youtube-steamdb-playlist-kesin-fix','status','Başarılı'), now())
+values ('site_version', jsonb_build_object('version','v4.0.5','label','v4.0.5 YouTube SteamDB Playlist Kesin Fix','vercel_label','v4.0.5-youtube-steamdb-playlist-kesin-fix','status','Başarılı'), now())
 on conflict (key) do update set value=excluded.value, updated_at=now();
 
 insert into public.site_runtime_config(key,value,updated_at)
 values ('maintenance_mode', jsonb_build_object('enabled',false,'message','Site yayında.','percent',100,'adminBypass',true), now())
 on conflict (key) do update set value=excluded.value, updated_at=now();
 
-select 'Başarılı' as durum, 'v4.0.4' as surum, 'Games + Episodes reset schema kuruldu; constraint çakışması giderildi; YouTube playlistItems çıktısı episodes tablosuna yazılmaya hazır.' as islem;
+select 'Başarılı' as durum, 'v4.0.5' as surum, 'Games + Episodes reset schema kuruldu; constraint çakışması giderildi; YouTube playlistItems çıktısı episodes tablosuna yazılmaya hazır.' as islem;
