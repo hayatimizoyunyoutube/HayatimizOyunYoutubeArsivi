@@ -1,26 +1,67 @@
-# Hayatımız Oyun v4.0.5 - Supabase Constraint + Temiz Paket Fix
+# Hayatımız Oyun v4.0.1 - Supabase Kayıt Kesin Final
 
-Bu paket v4.0.5 üstüne temizlenmiş kesin fix paketidir.
+Bu paket oyun kaydetme hatalarını düzeltir.
 
-## Önce Supabase'de çalıştır
-1. Supabase > SQL Editor aç.
-2. `supabase/schema.sql` dosyasının tamamını çalıştır.
-3. Bu dosya sadece `games` ve `episodes` tablolarını temiz resetler. Yetki/kullanıcı tablolarını silmez.
+## Düzeltilen ana hata
+- `malformed array literal` hatası giderildi.
+- `platforms` ve `tags` eski schema'da array kaldıysa güvenli şekilde text'e çevrilir.
+- Oyun sadece Supabase'e kaydedilir.
+- Supabase hata verirse gerçek hata gösterilir.
+- Bölüm/thumbnail verileri resetlenmez.
 
-## Düzeltilen hata
-- `relation "episodes_game_number_unique" already exists` hatası düzeltildi.
-- Eski constraint güvenli kaldırılıp idempotent unique index ile yeniden kuruluyor.
-- Aynı SQL tekrar çalıştırıldığında aynı constraint hatasını vermez.
+## Kurulum
+1. ZIP'i temiz şekilde projeye çıkar.
+2. Supabase SQL Editor'de `schema.sql` çalıştır.
+3. Git push yap.
+4. Vercel Clear Build Cache + Redeploy.
 
-## API değişkenleri
-Vercel'de görünen değişkenler yeterli:
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `YOUTUBE_API_KEY`
-- `RAWG_API_KEY`
-- `ADMIN_PASSWORD`
+# Hayatımız Oyun v4.0.1 - UI Revolution Final Paket
 
-SteamDB için API key gerekmez. SteamDB linkinden App ID alınır: `https://steamdb.info/app/123456/`
+Bu paket v4.0.1 ana açılış sürümünü korur ve sitenin genel arayüzünü tamamen daha profesyonel görünüme taşır.
 
-## Temizlenenler
-Eski v4.0.5/v4.0.5/v4.0.5 not dosyaları paketten kaldırıldı. Sadece gerekli kurulum ve schema dosyaları bırakıldı.
+## Yapılanlar
+
+- Ana sayfa sinematik dashboard görünümüne güncellendi.
+- Arşiv kartları kompakt, sol hizalı ve modern grid yapısına alındı.
+- Seriler sayfası premium kart görünümüne taşındı.
+- Yönetim paneli modern dashboard hissiyle yenilendi.
+- Profil, favoriler, başarımlar ve veri sağlığı kartları cilalandı.
+- Kategoriler/koleksiyonlar ve butonlar tek sıra/scroll kontrollü yapıldı.
+- Mobil/tablet responsive görünüm iyileştirildi.
+- Vercel hızlı static build sistemi korundu.
+- Sürüm etiketi v4.0.1 olarak bırakıldı.
+
+## Schema durumu
+
+schema.sql gerekli değil. Bu paket arayüz/UI paketidir, veritabanı yapısını değiştirmez.
+
+## Vercel
+
+Framework Preset: Other  
+Build Command: node scripts/build-static.mjs  
+Output Directory: dist  
+Install Command: npm install
+
+
+## v4.0.1 FIX - Oyun Kaydetme
+- Oyun ekleme/güncelleme sonrası mevcut oyunların kaybolması engellendi.
+- Supabase boş veriyle yerel listeyi ezmez.
+- Schema gerekli değil.
+
+
+## v4.0.1 FIX - Oyun Kaydetme Kesin Onarım
+- dedupeEpisodes kayıt hatası düzeltildi.
+- Supabase kaydetme akışı çökmeden devam eder.
+- Bölüm thumbnail ve gerçek YouTube başlıkları korunur.
+
+## v4.0.1 FIX — Not Defteriyle Oyun Ekleme
+
+Yönetim panelinde **Notla Oyun Ekle** sayfası eklendi. Oyunları Not Defteri formatında yazıp toplu şekilde doğrudan Supabase `games` tablosuna kaydedebilirsin. Rehber: `NOT-DEFTERI-OYUN-EKLEME-REHBERI.md`
+
+
+## v4.0.1 Profesyonel Not Defteri ve Supabase Stabilite
+- Notla oyun ekleme profesyonel şablona geçirildi.
+- Steam App ID / SteamDB alanı desteklendi.
+- Menü ve kategori butonlarında kaydırma azaltıldı, grid görünüm güçlendirildi.
+- Arşiv ve seri kartları sola hizalı/kompakt tutuldu.
+- Supabase boş dönerse mevcut oyunların sıfırlanmaması korunur.

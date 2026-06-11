@@ -20,12 +20,12 @@ const copyDir = (src, dest) => {
 ['assets','data','public'].forEach(dir => copyDir(path.join(root,dir), path.join(dist,dir)));
 
 const index = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
-if (!index.includes('v4.0.5')) throw new Error('index.html içinde v4.0.5 etiketi yok');
+if (!index.includes('v4.0.0')) throw new Error('index.html içinde v4.0.0 etiketi yok');
 const appPath = path.join(dist, 'assets', 'hayatimiz-app.js');
 if (fs.existsSync(appPath)) {
   const app = fs.readFileSync(appPath, 'utf8');
-  if (!app.includes("v4.0.5") && !app.includes("VERSION = 'v4.0.5'")) {
-    throw new Error('app içinde v4.0.5 etiketi yok');
+  if (!app.includes("v4.0.0") && !app.includes("VERSION = 'v4.0.0'")) {
+    throw new Error('app içinde v4.0.0 etiketi yok');
   }
 }
-console.log('✅ Hayatımız Oyun v4.0.5 statik build hazır.');
+console.log('✅ Hayatımız Oyun v4.0.0 statik build hazır.');

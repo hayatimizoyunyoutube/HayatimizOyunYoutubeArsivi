@@ -557,11 +557,11 @@ function uniqueEpisodes(rows){
   }
   return out;
 }
-async function fetchYoutubePlaylistItemsNoKey(playlistUrl, signal){
+async function fetchYoutubePlaylistItemsNoKey(playlistUrl){
   const playlistId = extractYoutubePlaylistId(playlistUrl);
   if(!playlistId) return { count:0, episodes:[] };
   const url = `https://www.youtube.com/playlist?list=${encodeURIComponent(playlistId)}`;
-  const response = await fetch(url, { signal, headers:{ 'User-Agent':'Mozilla/5.0 HayatimizOyunBot/1.0', 'Accept-Language':'tr-TR,tr;q=0.9,en;q=0.7' } });
+  const response = await fetch(url, { headers:{ 'User-Agent':'Mozilla/5.0 HayatimizOyunBot/1.0', 'Accept-Language':'tr-TR,tr;q=0.9,en;q=0.7' } });
   if(!response.ok) return { count:0, episodes:[] };
   const html = await response.text();
   const rows = [];
@@ -583,49 +583,42 @@ async function fetchYoutubePlaylistItemsNoKey(playlistUrl, signal){
 }
 async function fetchYoutubePlaylistItems(playlistUrl){
   const playlistId = extractYoutubePlaylistId(playlistUrl);
-  if(!playlistId) throw new Error('Geçerli YouTube playlist URL gerekli. Link içinde list=PL... olmalı.');
+  if(!playlistId) throw new Error('Geçerli YouTube playlist URL gerekli.');
   const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
-  if(!key){
-    // API yoksa uzun süre bekletme: 5 sn gerçek sayfa yedeği dene, olmazsa net hata dön.
-    const controller = new AbortController();
-    const timer = setTimeout(()=>controller.abort(), 5000);
-    try{
-      const fallback = await fetchYoutubePlaylistItemsNoKey(playlistUrl, controller.signal).catch(()=>({count:0, episodes:[]}));
-      if(fallback.episodes?.length) return { ...fallback, source:'YouTube playlist sayfası gerçek video yedeği' };
-    }finally{ clearTimeout(timer); }
-    throw new Error('YOUTUBE_API_KEY eksik veya Vercel Production ortamına tanımlı değil. YouTube Data API v3 key Production + Preview için eklenmeli.');
-  }
   const rows = [];
-  let pageToken = '';
-  for(let page=0; page<25; page++){
-    const controller = new AbortController();
-    const timer = setTimeout(()=>controller.abort(), 9000);
-    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
-    let response;
-    try{ response = await fetch(url, { signal:controller.signal }); }
-    catch(err){ throw new Error(`YouTube API cevap vermedi: ${err.name === 'AbortError' ? 'zaman aşımı' : err.message}`); }
-    finally{ clearTimeout(timer); }
-    if(!response.ok){
-      let errText='';
-      try { errText = await response.text(); } catch {}
-      throw new Error(`YouTube API hata verdi: ${response.status}. API anahtarı, quota ve YouTube Data API v3 etkinliğini kontrol et. ${errText.slice(0,160)}`);
-    }
-    const data = await response.json();
-    (data.items || []).forEach((item)=>{
-      const sn = item.snippet || {};
-      const videoId = item.contentDetails?.videoId || sn.resourceId?.videoId || '';
-      rows.push({
-        videoId,
-        title:sn.title || '',
-        thumbnail:sn.thumbnails?.maxres?.url || sn.thumbnails?.standard?.url || sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || (videoId?`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`:'')
+  if(key){
+    let pageToken = '';
+    for(let page=0; page<20; page++){
+      const controller = new AbortController();
+      const timer = setTimeout(()=>controller.abort(), 12000);
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
+      let response;
+      try{ response = await fetch(url, { signal:controller.signal }); }
+      finally{ clearTimeout(timer); }
+      if(!response.ok){
+        let errText='';
+        try { errText = await response.text(); } catch {}
+        throw new Error(`YouTube API hata verdi: ${response.status} ${errText.slice(0,180)}`);
+      }
+      const data = await response.json();
+      (data.items || []).forEach((item)=>{
+        const sn = item.snippet || {};
+        const videoId = item.contentDetails?.videoId || sn.resourceId?.videoId || '';
+        rows.push({
+          videoId,
+          title:sn.title || '',
+          thumbnail:sn.thumbnails?.maxres?.url || sn.thumbnails?.standard?.url || sn.thumbnails?.high?.url || sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || (videoId?`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`:'')
+        });
       });
-    });
-    pageToken = data.nextPageToken || '';
-    if(!pageToken) break;
+      pageToken = data.nextPageToken || '';
+      if(!pageToken) break;
+    }
+    const episodes = uniqueEpisodes(rows);
+    if(episodes.length) return { count:episodes.length, episodes, source:'YouTube Data API v3' };
+    throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz veya boş olabilir.');
   }
-  const episodes = uniqueEpisodes(rows);
-  if(episodes.length) return { count:episodes.length, episodes, source:'YouTube Data API v3 playlistItems.list' };
-  throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz, boş veya API key ilgili kanala erişemiyor olabilir.');
+  // API key yoksa kullanıcıya net hata ver; sahte bölüm üretme.
+  throw new Error('YOUTUBE_API_KEY eksik. Vercel Environment Variables içine YouTube Data API anahtarını ekle.');
 }
 async function fetchYoutubePlaylistCount(playlistUrl){
   const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
@@ -640,125 +633,33 @@ async function fetchYoutubePlaylistCount(playlistUrl){
 }
 
 
-// v4.0.5 FIX: Steam App ID ile gerçek Steam görsel/meta çekme
+// v4.0.1 FIX: Steam App ID ile gerçek Steam görsel/meta çekme
 async function fetchSteamAppDetailsById(appId){
   const id = String(appId || '').trim().replace(/[^0-9]/g,'');
   if(!id) return null;
   const url = `https://store.steampowered.com/api/appdetails?appids=${encodeURIComponent(id)}&l=turkish`;
-  const directById = {
-    '3768760': {title:'007 First Light', seriesName:'James Bond', genre:'Aksiyon, Gizlilik, Macera', releaseDate:'2026', platforms:'PC, PlayStation 5, Xbox Series S/X, Nintendo Switch', rawgSlug:'007-first-light', rawgId:'007-first-light'}
-  };
-  const cdnFallback = (extra={}) => ({
-    title: extra.title || directById[id]?.title || '',
-    seriesName: extra.seriesName || directById[id]?.seriesName || '',
-    steamAppId: id,
-    rawgSlug: extra.rawgSlug || directById[id]?.rawgSlug || slugify(extra.title || directById[id]?.title || ''),
-    rawgId: extra.rawgId || directById[id]?.rawgId || extra.rawgSlug || directById[id]?.rawgSlug || slugify(extra.title || directById[id]?.title || ''),
-    genre: extra.genre || directById[id]?.genre || 'Aksiyon, Macera',
-    platforms: extra.platforms || directById[id]?.platforms || 'PC',
-    releaseDate: pickDateTR(extra.releaseDate || directById[id]?.releaseDate || ''),
-    released: pickDateTR(extra.releaseDate || directById[id]?.releaseDate || ''),
-    cover: `https://cdn.akamai.steamstatic.com/steam/apps/${id}/header.jpg`,
-    banner: `https://cdn.akamai.steamstatic.com/steam/apps/${id}/capsule_616x353.jpg`,
-    capsule: `https://cdn.akamai.steamstatic.com/steam/apps/${id}/library_600x900.jpg`,
-    description: extra.description || '',
-    score: Number(extra.score || 0),
-    source: `SteamDB / Steam CDN App ID ${id}`
-  });
-  let response, json, pack, d;
-  try{
-    response = await fetch(url, { headers:{ 'User-Agent':'HayatimizOyunArchive/4.0.5 SteamMetaFix' } });
-    if(!response.ok) return cdnFallback();
-    json = await response.json();
-    pack = json?.[id];
-    if(!pack?.success || !pack?.data) return cdnFallback();
-    d = pack.data;
-  }catch{
-    return cdnFallback();
-  }
+  const response = await fetch(url, { headers:{ 'User-Agent':'HayatimizOyunArchive/4.0.1 SteamMetaFix' } });
+  if(!response.ok) throw new Error(`Steam App ID kontrolü başarısız: ${response.status}`);
+  const json = await response.json();
+  const pack = json?.[id];
+  if(!pack?.success || !pack?.data) throw new Error(`Steam App ID ${id} için oyun bilgisi bulunamadı.`);
+  const d = pack.data;
   const genres = Array.isArray(d.genres) ? d.genres.map(g=>g.description).filter(Boolean).join(', ') : '';
   const platforms = d.platforms ? Object.entries(d.platforms).filter(([,v])=>v).map(([k])=>k==='windows'?'PC':k).join(', ') : 'PC';
   const releaseDate = d.release_date?.date || '';
-  return cdnFallback({
-    title: d.name || directById[id]?.title || '',
-    seriesName: directById[id]?.seriesName || '',
-    genre: genres || directById[id]?.genre || 'Aksiyon, Macera',
-    platforms: platforms || directById[id]?.platforms || 'PC',
-    releaseDate,
+  return {
+    title: d.name || '',
+    steamAppId: id,
+    genre: genres || 'Aksiyon, Macera',
+    platforms: platforms || 'PC',
+    releaseDate: pickDateTR(releaseDate),
+    released: pickDateTR(releaseDate),
+    cover: `https://cdn.akamai.steamstatic.com/steam/apps/${id}/header.jpg`,
+    banner: `https://cdn.akamai.steamstatic.com/steam/apps/${id}/capsule_616x353.jpg`,
     description: stripHtml(d.short_description || d.about_the_game || ''),
-    rawgSlug: directById[id]?.rawgSlug || slugify(d.name || '')
-  });
-}
-
-
-async function fetchSteamAppByTitle(title){
-  const q = String(title || '').trim();
-  if(!q) return null;
-  const url = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(q)}&l=turkish&cc=tr`;
-  const response = await fetch(url, { headers:{ 'User-Agent':'HayatimizOyunArchive/4.0.5 SteamDBSearch' } });
-  if(!response.ok) return null;
-  const data = await response.json().catch(()=>null);
-  const items = Array.isArray(data?.items) ? data.items : [];
-  if(!items.length) return null;
-  const norm = (v)=>String(v||'').toLowerCase().replace(/[^a-z0-9ığüşöçİĞÜŞÖÇ]+/gi,' ').trim();
-  const nq = norm(q);
-  const scored = items.map(it=>{
-    const name = norm(it.name);
-    let score = 0;
-    if(name === nq) score = 100;
-    else if(name.includes(nq) || nq.includes(name)) score = 86;
-    else score = q.split(/\s+/).filter(w=>name.includes(norm(w))).length * 12;
-    return {it, score};
-  }).sort((a,b)=>b.score-a.score);
-  const best = scored[0];
-  if(!best?.it?.id || best.score < 24) return null;
-  const meta = await fetchSteamAppDetailsById(best.it.id).catch(()=>null);
-  return meta ? {...meta, matchScore:best.score, source:`Steam Store / SteamDB App ID ${best.it.id}`} : null;
-}
-
-// v4.0.5 CORE FIX: gerçek episodes tablosu yazma/okuma + playlistItems.list kilidi
-function extractVideoIdFromEpisode(ep={}){
-  return String(ep.videoId || ep.youtubeVideoId || ep.youtube_video_id || ep.video_id || '').trim();
-}
-async function upsertEpisodesForGame(gameId, episodes=[], playlistId=''){
-  const gid=String(gameId||'').trim();
-  if(!gid || !Array.isArray(episodes)) return {saved:0, episodes:[]};
-  const rows=episodes.map((ep,index)=>{
-    const n=Number(ep.number || ep.episodeNumber || ep.episode_number || index+1);
-    const videoId=extractVideoIdFromEpisode(ep);
-    return {
-      game_id:gid,
-      episode_number:n,
-      title:cleanYoutubeTitle(ep.title || ep.name || `${n}. Bölüm`),
-      description:String(ep.description || ''),
-      youtube_video_id:videoId || null,
-      youtube_url:String(ep.videoUrl || ep.video_url || (videoId?`https://www.youtube.com/watch?v=${videoId}`:'')),
-      thumbnail_url:String(ep.thumbnail || ep.thumbnailUrl || ep.thumbnail_url || (videoId?`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`:'')),
-      playlist_id:String(playlistId || ep.playlistId || ep.playlist_id || ''),
-      is_watched:ep.watched === true || ep.is_watched === true,
-      sort_order:n,
-      updated_at:new Date().toISOString()
-    };
-  }).filter(r=>r.title && (r.youtube_video_id || r.youtube_url));
-  if(!rows.length) return {saved:0, episodes:[]};
-  const saved=await supabase('episodes?on_conflict=game_id,episode_number', {method:'POST', headers:{Prefer:'resolution=merge-duplicates,return=representation'}, body:JSON.stringify(rows)});
-  await supabase(`games?id=eq.${encodeURIComponent(gid)}`, {method:'PATCH', body:JSON.stringify({episodes:episodes.map(normalizeApiEpisode), episode_count:rows.length, youtube_playlist_id:playlistId || undefined, updated_at:new Date().toISOString()})}).catch(()=>{});
-  return {saved:Array.isArray(saved)?saved.length:rows.length, episodes:Array.isArray(saved)?saved.map(row=>normalizeApiEpisode({
-    id:row.id, number:row.episode_number, title:row.title, description:row.description, thumbnail:row.thumbnail_url, videoId:row.youtube_video_id, videoUrl:row.youtube_url, watched:row.is_watched
-  })):episodes.map(normalizeApiEpisode)};
-}
-async function readEpisodesForGames(gameIds=[]){
-  const ids=[...new Set((gameIds||[]).map(String).filter(Boolean))];
-  if(!ids.length) return new Map();
-  const quoted=ids.map(id=>id.replace(/[^0-9a-fA-F-]/g,'')).filter(Boolean).join(',');
-  const rows=await supabase(`episodes?game_id=in.(${quoted})&select=*&order=episode_number.asc`, {method:'GET'}).catch(()=>[]);
-  const map=new Map();
-  (Array.isArray(rows)?rows:[]).forEach(row=>{
-    const key=String(row.game_id||'');
-    if(!map.has(key)) map.set(key,[]);
-    map.get(key).push(normalizeApiEpisode({id:row.id, number:row.episode_number, title:row.title, description:row.description, thumbnail:row.thumbnail_url, videoId:row.youtube_video_id, videoUrl:row.youtube_url, watched:row.is_watched}));
-  });
-  return map;
+    score: 0,
+    source: `Steam App ID ${id}`
+  };
 }
 
 export default async function handler(req, res){
@@ -768,40 +669,14 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v4.0.5', status:'SteamDB App ID kapak öncelikli + YouTube playlistItems.list sahte bölüm kapalı' });
-
-
-    if(action === 'api-env-check'){
-      return json(res, 200, {
-        ok:true,
-        version:'v4.0.5',
-        env:{
-          supabaseUrl:!!process.env.SUPABASE_URL,
-          supabaseServiceRole:!!process.env.SUPABASE_SERVICE_ROLE_KEY,
-          rawgApiKey:!!process.env.RAWG_API_KEY,
-          youtubeApiKey:!!(process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY),
-          steamApiKeyRequired:false,
-          steamDbApiKeyRequired:false
-        },
-        note:'SteamDB için ayrı API anahtarı yok; kapak Steam CDN App ID ile çekilir. YouTube için YOUTUBE_API_KEY Production ortamında olmalı.'
-      });
-    }
+    if(action === 'health') return json(res, 200, { ok:true, version:'v4.0.0', status:'Ana açılış final aktif' });
 
     if(action === 'game-meta-lite'){
       const title = String(body.title || '').trim();
-      const appId = String(body.steamAppId || body.steam_app_id || body.steamdbUrl || body.steamUrl || '').trim().match(/(\d{3,})/)?.[1] || String(body.steamAppId || body.steam_app_id || '').trim();
-      if(!title && !appId) throw new Error('Oyun adı veya Steam App ID gerekli.');
-      if(appId){
-        const byId = await fetchSteamAppDetailsById(appId);
-        return json(res, 200, { ok:true, meta:byId, candidates:[byId], source:`SteamDB/Steam App ID ${appId} kesin çekim`, version:'v4.0.5' });
-      }
-      const steamFirst = await fetchSteamAppByTitle(title).catch(()=>null);
-      if(steamFirst?.cover){
-        return json(res, 200, { ok:true, meta:steamFirst, candidates:[steamFirst], source:steamFirst.source || 'Steam Store / SteamDB App ID', version:'v4.0.5' });
-      }
+      if(!title) throw new Error('Oyun adı gerekli.');
       const fixed = await ho240f42BuildGameMeta(title).catch(()=>null);
       if(fixed?.meta){
-        return json(res, 200, { ok:true, meta:fixed.meta, candidates:fixed.candidates || [], source:fixed.source || 'v4.0.5 güvenli RAWG/meta' });
+        return json(res, 200, { ok:true, meta:fixed.meta, candidates:fixed.candidates || [], source:fixed.source || 'v4.0.0 güvenli RAWG/meta' });
       }
       const fallback = localGameMeta(title) || {title, genre:'Genel, Hikaye Odaklı', releaseDate:'', cover:'', banner:'', source:'Yerel güvenli meta'};
       if(fallback?.exact === true){ return json(res, 200, { ok:true, meta:fallback, candidates:[fallback], source:'Kesin yerel oyun eşleşmesi' }); }
@@ -813,19 +688,19 @@ export default async function handler(req, res){
 
     if(action === 'steam-meta-lite'){
       const title = String(body.title || '').trim();
-      const appId = String(body.steamAppId || body.steam_app_id || body.steamdbUrl || body.steamUrl || '').trim().match(/(\d{3,})/)?.[1] || String(body.steamAppId || body.steam_app_id || '').trim();
+      const appId = String(body.steamAppId || body.steam_app_id || '').trim();
       if(appId){
         const byId = await fetchSteamAppDetailsById(appId);
-        return json(res, 200, { ok:true, steam:byId, meta:byId, source:`Steam App ID ${appId} kesin çekim`, version:'v4.0.5' });
+        return json(res, 200, { ok:true, steam:byId, meta:byId, source:`Steam App ID ${appId} kesin çekim`, version:'v4.0.1' });
       }
       if(!title) throw new Error('Steam kontrolü için oyun adı veya Steam App ID gerekli.');
-      const steam = await fetchSteamAppByTitle(title).catch(()=>null) || await ho240f58SteamBest(title).catch(()=>null);
+      const steam = await ho240f58SteamBest(title).catch(()=>null);
       if(!steam){
         const fallback = localGameMeta(title);
         return json(res, 200, { ok:true, steam:fallback, meta:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
       const steamDate = pickDateTR(steam.releaseDate, steam.released);
-      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, meta:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.5' });
+      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, meta:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.1' });
     }
 
     if(action === 'register'){
@@ -966,11 +841,11 @@ export default async function handler(req, res){
         await supabase('site_authority_assignments?on_conflict=email', {
           method:'POST',
           headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
-          body: JSON.stringify([{ email, display_name:displayName || rows?.[0]?.full_name || email.split('@')[0], role_code:role, is_active:role !== 'banned', note:'Yönetim panelinden yetki verildi', created_by:'v4.0.5-final-role-stability', updated_at:now }])
+          body: JSON.stringify([{ email, display_name:displayName || rows?.[0]?.full_name || email.split('@')[0], role_code:role, is_active:role !== 'banned', note:'Yönetim panelinden yetki verildi', created_by:'v4.0.0-final-role-stability', updated_at:now }])
         }).catch(()=>{});
         await supabase('site_user_role_audit', {
           method:'POST',
-          body: JSON.stringify([{ target_email:email, new_role:role, changed_by:'v4.0.5-final-role-stability', source:'yonetim-paneli', note:'Yönetim panelinden rol/yetki kaydedildi.', metadata:{ userId, displayName } }])
+          body: JSON.stringify([{ target_email:email, new_role:role, changed_by:'v4.0.0-final-role-stability', source:'yonetim-paneli', note:'Yönetim panelinden rol/yetki kaydedildi.', metadata:{ userId, displayName } }])
         }).catch(()=>{});
       }
       return json(res, 200, { ok:true, user:cleanUser(rows?.[0] || { id:userId || `authority-${email}`, email, role, is_active:role !== 'banned', full_name:displayName }) });
@@ -1006,7 +881,7 @@ export default async function handler(req, res){
         await supabaseAuthDeleteUserByEmail(targetEmail).catch(()=>{});
         await supabase('site_user_role_audit', {
           method:'POST',
-          body: JSON.stringify([{ target_email:targetEmail, new_role:'deleted', changed_by:'v4.0.5-final-role-stability', source:'yonetim-paneli', note:'Kullanıcı Supabase Auth + site_users + yetki kayıtlarından temizlendi.', metadata:{ userId } }])
+          body: JSON.stringify([{ target_email:targetEmail, new_role:'deleted', changed_by:'v4.0.0-final-role-stability', source:'yonetim-paneli', note:'Kullanıcı Supabase Auth + site_users + yetki kayıtlarından temizlendi.', metadata:{ userId } }])
         }).catch(()=>{});
       }
       return json(res, 200, { ok:true, deleted:{ userId, email:targetEmail } });
@@ -1031,7 +906,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v4.0.5', note:'v4.0.5 YouTube Episodes Reset Fix sürüm senkronizasyonu', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v4.0.0', note:'v4.0.0 temiz final sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -1048,7 +923,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v4.0.5', note:'v4.0.5 YouTube Episodes Reset Fix sürüm senkronizasyonu', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v4.0.0', note:'v4.0.0 temiz final sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -1192,7 +1067,7 @@ export default async function handler(req, res){
       const games = await supabase('games?select=*&order=series_order.asc', { method:'GET' }).catch(()=>[]);
       const runtime = await supabase('site_runtime_config?select=key,value,updated_at', { method:'GET' }).catch(()=>[]);
       const snapshot = {
-        version:'v4.0.5',
+        version:'v4.0.0',
         source,
         created_at:now,
         counts:{
@@ -1287,14 +1162,14 @@ export default async function handler(req, res){
         schemaVersion: schemaRow?.value?.version || 'Bilinmiyor',
         checkedAt: new Date().toISOString()
       };
-      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v4.0.5 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
+      await supabase('site_status_logs', { method:'POST', body: JSON.stringify([{ status:'ok', scope:'admin-data-health', message:'v4.0.0 admin veri sağlığı kontrol edildi.', details:health }]) }).catch(()=>{});
       return json(res, 200, { ok:true, health, message:'Supabase veri sağlığı kontrol edildi.' });
     }
 
     if(action === 'data-backup-save'){
       await requireStaff(body.adminToken);
       const payload = body.payload || {};
-      const row = { backup_type:String(body.backupType||'manual'), version:'v4.0.5', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
+      const row = { backup_type:String(body.backupType||'manual'), version:'v4.0.0', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
       const rows = await supabase('site_data_backups', { method:'POST', body: JSON.stringify([row]) }).catch(()=>[]);
       return json(res, 200, { ok:true, backup:Array.isArray(rows)?rows[0]:row, message:'Yedek kaydı oluşturuldu.' });
     }
@@ -1369,7 +1244,6 @@ export default async function handler(req, res){
       }
       const rows = await supabase('games', { method:'POST', headers:{ Prefer:'return=representation' }, body: JSON.stringify([payload]) });
       if(!Array.isArray(rows) || !rows[0]) throw new Error('Supabase oyun kaydı boş döndü. games tablosu ve service role key kontrol edilmeli.');
-      if(Array.isArray(game.episodes) && game.episodes.length){ await upsertEpisodesForGame(rows[0].id, game.episodes, payload.youtube_playlist_id || extractYoutubePlaylistId(payload.youtube_playlist_url)).catch(()=>{}); }
       return json(res, 200, { ok:true, game:cleanGame(rows[0]) });
     }
 
@@ -1392,7 +1266,6 @@ export default async function handler(req, res){
       Object.keys(patch).forEach(k => (patch[k] === undefined || patch[k] === null || Number.isNaN(patch[k])) && delete patch[k]);
       if(existing && existing.id){
         const rows = await supabase(`games?id=eq.${encodeURIComponent(existing.id)}`, { method:'PATCH', body: JSON.stringify(patch) });
-        if(Array.isArray(game.episodes) && game.episodes.length){ await upsertEpisodesForGame(existing.id, game.episodes, patch.youtube_playlist_id || extractYoutubePlaylistId(patch.youtube_playlist_url)).catch(()=>{}); }
         return json(res, 200, { ok:true, game:cleanGame(rows?.[0]) });
       }
       // Eski id slug ise ve Supabase'te kayıt yoksa güncelleme yerine yeni kayıt aç.
@@ -1430,19 +1303,13 @@ export default async function handler(req, res){
 
     if(action === 'playlist-count'){
       const count = await fetchYoutubePlaylistCount(String(body.playlistUrl || ''));
-      return json(res, 200, { ok:true, count, source:'YouTube Data API v3 playlistItems.list' });
+      return json(res, 200, { ok:true, count, source:'YouTube Data API v3' });
     }
 
     if(action === 'playlist-items' || action === 'playlist-sync-lite'){
-      const playlistUrl=String(body.playlistUrl || '');
-      const playlistId=extractYoutubePlaylistId(playlistUrl);
-      const items = await fetchYoutubePlaylistItems(playlistUrl);
-      const episodes=(items.episodes || []).map(normalizeApiEpisode);
-      const count = items.count || episodes.length || 0;
-      let saved=0;
-      const gameId=String(body.gameId || body.game_id || '').trim();
-      if(gameId && episodes.length){ const write=await upsertEpisodesForGame(gameId, episodes, playlistId); saved=write.saved || 0; }
-      return json(res, 200, { ok:true, count, saved, episodes, playlistId, source:items.source || 'YouTube Data API v3 playlistItems.list' });
+      const items = await fetchYoutubePlaylistItems(String(body.playlistUrl || ''));
+      const count = items.count || items.episodes?.length || 0;
+      return json(res, 200, { ok:true, count, episodes:items.episodes || [], source:items.source || 'YouTube Data API v3' });
     }
 
 
@@ -1798,7 +1665,7 @@ export default async function handler(req, res){
     }
 
     if(action === 'auto-fix-request-add'){
-      const payload = { version:String(body.version || 'v4.0.5'), source:String(body.source || 'admin_panel'), error_text:String(body.errorText || body.error_text || ''), diagnosis:body.diagnosis || [], status:String(body.status || 'new'), fixed_files:String(body.fixedFiles || body.fixed_files || ''), created_at:new Date().toISOString(), updated_at:new Date().toISOString() };
+      const payload = { version:String(body.version || 'v4.0.0'), source:String(body.source || 'admin_panel'), error_text:String(body.errorText || body.error_text || ''), diagnosis:body.diagnosis || [], status:String(body.status || 'new'), fixed_files:String(body.fixedFiles || body.fixed_files || ''), created_at:new Date().toISOString(), updated_at:new Date().toISOString() };
       await supabase('site_auto_fix_requests', { method:'POST', body: JSON.stringify([payload]) }).catch(()=>{});
       return json(res, 200, { ok:true, request:payload });
     }
@@ -1808,7 +1675,7 @@ export default async function handler(req, res){
       await requireStaff(body.adminToken);
       const title = String(body.title || '').trim();
       if(!title) throw new Error('Steam kontrolü için oyun adı gerekli.');
-      const steam = await fetchSteamAppByTitle(title).catch(()=>null) || await ho240f58SteamBest(title).catch(()=>null);
+      const steam = await ho240f58SteamBest(title).catch(()=>null);
       if(!steam) return json(res, 200, { ok:false, steam:null, message:'Steam sonucu bulunamadı.' });
       const currentDate = ho240f58ApiDate(body.releaseDate || '');
       const steamDate = pickDateTR(steam.releaseDate, steam.released);
@@ -1824,7 +1691,7 @@ export default async function handler(req, res){
       if(!title) throw new Error('Puan çekmek için oyun adı gerekli.');
       const sources = [];
       try{
-        const steam = await fetchSteamAppByTitle(title).catch(()=>null) || await ho240f58SteamBest(title).catch(()=>null);
+        const steam = await ho240f58SteamBest(title).catch(()=>null);
         const steamScore = steam?.score || steam?.steamScore || '';
         const n = Number(String(steamScore).replace(',', '.'));
         if(Number.isFinite(n) && n > 0){ sources.push({ source:'Steam', score:Math.max(0,Math.min(10,n>10?n/10:n)) }); }
@@ -1838,9 +1705,9 @@ export default async function handler(req, res){
         storeScores.forEach(s=>sources.push(s));
       }catch{}
       const clean = sources.filter(s=>Number.isFinite(Number(s.score)) && Number(s.score)>0);
-      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v4.0.5' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
+      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v4.0.0' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
       const avg = clean.reduce((a,b)=>a+Number(b.score),0)/clean.length;
-      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v4.0.5' });
+      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v4.0.0' });
     }
 
 
@@ -1850,7 +1717,7 @@ export default async function handler(req, res){
       const source = String(body.source || 'epic').trim().toLowerCase();
       if(!title) throw new Error('Kaynak kontrolü için oyun adı gerekli.');
       const result = ho244ApiStoreSearch(title, source);
-      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v4.0.5' });
+      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v4.0.0' });
     }
 
     return json(res, 404, { ok:false, error:'Bilinmeyen API action.' });
@@ -1859,7 +1726,7 @@ export default async function handler(req, res){
   }
 }
 
-/* v4.0.5 14 - API tarafında çıkış tarihini gün.ay.yıl üret */
+/* v4.0.0 14 - API tarafında çıkış tarihini gün.ay.yıl üret */
 const FIX14_RELEASE_DATE_MAP_API = [
   [/a\s*plague\s*tale.*innocence|innocence/i, '14.05.2019'],
   [/a\s*plague\s*tale.*requiem|requiem/i, '18.10.2022'],
@@ -1904,7 +1771,7 @@ localGameMeta = function(title){
 };
 
 
-/* v4.0.5 - API doğru oyun tanıma, gün.ay.yıl tarih ve doğru kapak önceliği */
+/* v4.0.0 - API doğru oyun tanıma, gün.ay.yıl tarih ve doğru kapak önceliği */
 const HO240_FIX7_API_META = [
   {rx:/a\s*way\s*out|way\s*out|away\s*out/i,title:'A Way Out',seriesName:'A Way Out',genre:'Aksiyon-macera, co-op, hikaye odaklı, sinematik, kaçış',released:'23.03.2018',releaseDate:'23.03.2018',score:8.2,cover:'https://media.rawg.io/media/games/fc2/fc2277ac5e7f7e31a8d5f9a12efc44f1.jpg',slug:'a-way-out',exact:true},
   {rx:/alan\s*wake.*remaster|alan\s*wake/i,title:'Alan Wake Remastered',seriesName:'Alan Wake',genre:'Aksiyon-macera, psikolojik korku, hikaye odaklı, tek oyunculu',released:'05.10.2021',releaseDate:'05.10.2021',score:8.0,cover:'https://media.rawg.io/media/games/053/0531fbe64d90d7a97acb88ba8f340cb9.jpg',slug:'alan-wake-remastered',exact:true},
@@ -1928,8 +1795,8 @@ localTurkishStory = function(title, genre=''){
   return ho240Fix7OldStoryApi(title, genre);
 };
 
-/* v4.0.5 - API kapak/meta kesin eşleşme genişletmesi */
-const HO240F14_API_VERSION = 'v4.0.5';
+/* v4.0.0 - API kapak/meta kesin eşleşme genişletmesi */
+const HO240F14_API_VERSION = 'v4.0.0';
 const HO240F14_API_CATALOG = [
   {rx:/alan\s*wake\s*'?s?\s*american\s*nightmare|american\s*nightmare/i,title:"Alan Wake's American Nightmare",seriesName:'Alan Wake',genre:'Aksiyon, Psikolojik Korku, Gerilim, Hikaye Odaklı',released:'22.02.2012',releaseDate:'22.02.2012',score:7.8,cover:'https://cdn.akamai.steamstatic.com/steam/apps/202750/header.jpg',slug:'alan-wakes-american-nightmare',covers:['https://cdn.akamai.steamstatic.com/steam/apps/202750/header.jpg','https://cdn.akamai.steamstatic.com/steam/apps/202750/capsule_616x353.jpg','https://cdn.cloudflare.steamstatic.com/steam/apps/202750/header.jpg','https://cdn.cloudflare.steamstatic.com/steam/apps/202750/capsule_616x353.jpg'],exact:true},
   {rx:/alan\s*wake\s*2/i,title:'Alan Wake 2',seriesName:'Alan Wake',genre:'Hayatta Kalma Korku, Psikolojik Gerilim, Hikaye Odaklı',released:'27.10.2023',releaseDate:'27.10.2023',score:9.1,cover:'https://media.rawg.io/media/games/599/5999f254b9a7facb3147a28d956a163e.jpg',slug:'alan-wake-2',covers:['https://media.rawg.io/media/games/599/5999f254b9a7facb3147a28d956a163e.jpg'],exact:true},
@@ -1975,7 +1842,7 @@ fetchRawgMeta = async function(title){
 };
 
 
-/* v4.0.5 - API tarafında oyun adı kesin eşleşme kilidi */
+/* v4.0.0 - API tarafında oyun adı kesin eşleşme kilidi */
 function ho240f33ApiNorm(value=''){
   return String(value || '')
     .toLocaleLowerCase('tr-TR')
@@ -2071,7 +1938,7 @@ fetchRawgMeta = async function(title){
   return { ...best, title:best.title || query, releaseDate:best.releaseDate || best.released || '', released:best.released || best.releaseDate || '', exact:best.matchScore >= 92, candidates };
 };
 
-/* v4.0.5 - API meta/kapak kesin başlık güvenliği
+/* v4.0.0 - API meta/kapak kesin başlık güvenliği
    Eski geniş regexler (özellikle Alan Wake) farklı oyunu döndürmesin. */
 function ho240f34ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’`´]/g,' ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
@@ -2118,7 +1985,7 @@ fetchRawgMeta = async function(title){
   return { ...best, title:best.title || query, exact:Number(best.matchScore||0) >= 92, candidates };
 };
 
-/* v4.0.5 - API kapak arama için Steam yedek kaynağı
+/* v4.0.0 - API kapak arama için Steam yedek kaynağı
    RAWG key yoksa veya sonuç dönmezse Steam store aramasıyla header/capsule kapak adayları üretilir. */
 function ho240f35ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’`´]/g,' ').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
@@ -2183,7 +2050,7 @@ fetchRawgMeta = async function(title){
 };
 
 
-/* v4.0.5 - API tüm Alan Wake kapakları + çıkış tarihi adayları
+/* v4.0.0 - API tüm Alan Wake kapakları + çıkış tarihi adayları
    Kapak aramasında sadece ilk eşleşmeyi değil, aynı seri ailesindeki tüm güvenli adayları döndürür. */
 const HO240F36_API_ALAN_WAKE_FAMILY = [
   {title:'Alan Wake Remastered DLC: The Writer',seriesName:'Alan Wake',releaseDate:'12.10.2010',released:'12.10.2010',genre:'Psikolojik gerilim, hikaye odaklı DLC, aksiyon-macera',score:8.1,match:['alan wake remastered dlc the writer','alan wake the writer','the writer'],covers:[['https://cdn.akamai.steamstatic.com/steam/apps/108710/header.jpg','The Writer / Alan Wake geniş kapak'],['https://cdn.akamai.steamstatic.com/steam/apps/108710/capsule_616x353.jpg','The Writer / Steam capsule'],['https://cdn.cloudflare.steamstatic.com/steam/apps/108710/header.jpg','The Writer / Cloudflare header'],['https://cdn.cloudflare.steamstatic.com/steam/apps/108710/capsule_616x353.jpg','The Writer / Cloudflare capsule']]},
@@ -2277,8 +2144,8 @@ fetchRawgMeta = async function(title){
   return prev;
 };
 
-/* v4.0.5 - API Google/Internet geniş DLC kapak havuzu */
-const HO240F37_API_VERSION = 'v4.0.5';
+/* v4.0.0 - API Google/Internet geniş DLC kapak havuzu */
+const HO240F37_API_VERSION = 'v4.0.0';
 function ho240f37ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['’`´]/g,' ').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
 }
@@ -2390,9 +2257,9 @@ try{
   };
 }catch(error){ console.warn('FIX37 API kapak havuzu kurulamadı:', error); }
 
-/* v4.0.5 - API kapak/tarih/tür kaynaklarını genişletme
+/* v4.0.0 - API kapak/tarih/tür kaynaklarını genişletme
    Steam Store + RAWG + internet görsel havuzu + yerel DLC katalog adayları birlikte döner. */
-const HO240F41_API_VERSION = 'v4.0.5';
+const HO240F41_API_VERSION = 'v4.0.0';
 function ho240f41ApiMonthToTr(value=''){
   const map = {jan:'01',january:'01',feb:'02',february:'02',mar:'03',march:'03',apr:'04',april:'04',may:'05',jun:'06',june:'06',jul:'07',july:'07',aug:'08',august:'08',sep:'09',sept:'09',september:'09',oct:'10',october:'10',nov:'11',november:'11',dec:'12',december:'12'};
   return map[String(value||'').toLowerCase()] || '';
@@ -2497,9 +2364,9 @@ try{
   };
 }catch(error){ console.warn('FIX41 API fetchRawgMeta genişletilemedi:', error); }
 
-/* v4.0.5 - Profesyonel temizlik + çıkış tarihi kesinleştirme motoru
+/* v4.0.0 - Profesyonel temizlik + çıkış tarihi kesinleştirme motoru
    Oyun adı kilitli kalır. Kapak/tarih/tür/açıklama çekimleri öneri üretir, ana adı değiştirmez. */
-const HO240F42_API_VERSION = 'v4.0.5';
+const HO240F42_API_VERSION = 'v4.0.0';
 function ho240f42Norm(value=''){
   return String(value || '')
     .toLocaleLowerCase('tr-TR')
@@ -2695,8 +2562,8 @@ try{
   };
 }catch(error){ console.warn('FIX42 API fetchRawgMeta override kurulamadı:', error); }
 
-/* FIX55 API: v4.0.5 kesin tarih kataloğu, Avatar DLC tarih düzeltmesi */
-const HO240F55_API_VERSION = 'v4.0.5';
+/* FIX55 API: v4.0.0 kesin tarih kataloğu, Avatar DLC tarih düzeltmesi */
+const HO240F55_API_VERSION = 'v4.0.0';
 function ho240f55ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’'`]/g,'').replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ]+/gi,' ').replace(/\s+/g,' ').trim();
 }
@@ -2752,7 +2619,7 @@ try{
 }catch(error){ console.warn('FIX55 API meta override kurulamadı:', error); }
 
 /* FIX57 API: Assassin's Creed kesin tarih/kapak kataloğu + Google tarzı web görsel yedeği */
-const HO240F57_API_VERSION = 'v4.0.5';
+const HO240F57_API_VERSION = 'v4.0.0';
 function ho240f57ApiNorm(value=''){
   return String(value || '')
     .toLocaleLowerCase('tr-TR')
@@ -2874,7 +2741,7 @@ try{
 }catch(error){ console.warn('FIX57 API build meta kurulamadı:', error); }
 
 /* FIX58 API: Steam tarih/kapak kontrolü + güçlü playlist video çekme */
-const HO240F58_API_VERSION = 'v4.0.5';
+const HO240F58_API_VERSION = 'v4.0.0';
 function ho240f58ApiNorm(value=''){
   return String(value || '')
     .toLocaleLowerCase('tr-TR')
@@ -3075,7 +2942,7 @@ try{
 try{
   const __ho240f58PrevResolve = typeof ho240f42ResolveReleaseDate === 'function' ? ho240f42ResolveReleaseDate : null;
   ho240f42ResolveReleaseDate = async function(title=''){
-    const steam = await fetchSteamAppByTitle(title).catch(()=>null) || await ho240f58SteamBest(title).catch(()=>null);
+    const steam = await ho240f58SteamBest(title).catch(()=>null);
     if(steam?.releaseDate && Number(steam.matchScore || 0) >= 70){
       return { releaseDate:steam.releaseDate, released:steam.releaseDate, source:'FIX58 Steam doğrulama', steam, candidates:(steam.covers || [steam.cover]).filter(Boolean).map((cover,index)=>({ ...steam, cover, matchScore:Number(steam.matchScore||0)-index })) };
     }
@@ -3101,7 +2968,7 @@ try{
   };
 }catch(error){ console.warn('FIX58 meta override kurulamadı:', error); }
 
-/* v4.0.5 - Playlist çekme sadece formdaki gerçek playlist listesine kilitlendi */
+/* v4.0.0 - Playlist çekme sadece formdaki gerçek playlist listesine kilitlendi */
 function ho240f63StrictPlaylistId(playlistUrl=''){
   const id = extractYoutubePlaylistId(String(playlistUrl || ''));
   if(!id) return '';
@@ -3143,7 +3010,7 @@ try{
   fetchYoutubePlaylistItems = async function(playlistUrl){
     const playlistId = ho240f63StrictPlaylistId(playlistUrl);
     if(!playlistId) return { count:0, episodes:[], source:'FIX63: sadece playlist URL kabul edilir' };
-    const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
+    const key = process.env.YOUTUBE_API_KEY || '';
     let official = { count:0, episodes:[] };
     if(key){
       const rows = [];
@@ -3151,11 +3018,7 @@ try{
       for(let page=0; page<20; page++){
         const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
         const response = await fetch(url);
-        if(!response.ok){
-          let errText='';
-          try{ errText = await response.text(); }catch{}
-          throw new Error(`YouTube playlistItems.list hata verdi: ${response.status} ${errText.slice(0,160)}`);
-        }
+        if(!response.ok) break;
         const data = await response.json();
         (data.items || []).forEach((item)=>{
           const sn = item.snippet || {};
@@ -3174,7 +3037,7 @@ try{
 }catch(error){ console.warn('FIX63 playlist kaynak kilidi kurulamadı:', error); }
 
 
-/* v4.0.5 - API hikaye açıklaması iyileştirmesi */
+/* v4.0.0 - API hikaye açıklaması iyileştirmesi */
 function ho243ApiNorm(value=''){
   return String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ]+/gi,' ').replace(/\s+/g,' ').trim();
 }
@@ -3198,7 +3061,7 @@ try{ localTurkishStory = ho243ApiStory; }catch{}
 try{ ho240f57ApiStory = ho243ApiStory; }catch{}
 
 
-/* v4.0.5 - Epic Games / Ubisoft kaynak kontrol yardımcıları */
+/* v4.0.0 - Epic Games / Ubisoft kaynak kontrol yardımcıları */
 function ho244ApiStoreSearch(title, source='epic'){
   const q = encodeURIComponent(String(title || '').trim());
   const store = String(source || '').toLowerCase();
@@ -3208,8 +3071,8 @@ function ho244ApiStoreSearch(title, source='epic'){
 }
 
 
-/* v4.0.5 API - Steam kullanıcı puanı / metacritic puanı otomatik hesaplama */
-const HO246F2_API_VERSION = 'v4.0.5';
+/* v4.0.0 API - Steam kullanıcı puanı / metacritic puanı otomatik hesaplama */
+const HO246F2_API_VERSION = 'v4.0.0';
 async function ho246f2SteamReviewScore(appid){
   const id = String(appid || '').trim();
   if(!id || typeof fetch !== 'function') return null;
@@ -3242,8 +3105,8 @@ try{
 }catch(error){ console.warn('FIX2 Steam puan API override atlandı:', error); }
 
 
-/* v4.0.5 API - Steam puanı yoksa varsayılan/eski puan yok */
-const HO246F9_API_VERSION = 'v4.0.5';
+/* v4.0.0 API - Steam puanı yoksa varsayılan/eski puan yok */
+const HO246F9_API_VERSION = 'v4.0.0';
 try{
   const prevHo246F9SteamDetailsApi = ho240f58SteamDetails;
   ho240f58SteamDetails = async function(appid){
@@ -3259,7 +3122,7 @@ try{
 }catch(error){ console.warn('FIX9 Steam puan API override atlandı:', error); }
 
 
-/* v4.0.5 API - Google puanlarını yakala ve ortalama için hazırla */
+/* v4.0.0 API - Google puanlarını yakala ve ortalama için hazırla */
 async function ho247ApiGoogleScores(title=''){
   const out = [];
   if(typeof fetch !== 'function') return out;
@@ -3291,7 +3154,7 @@ async function ho247ApiGoogleScores(title=''){
 }
 
 
-/* v4.0.5 API - Epic Games / Ubisoft puanlarını Google üzerinden ortalamaya dahil et */
+/* v4.0.0 API - Epic Games / Ubisoft puanlarını Google üzerinden ortalamaya dahil et */
 async function ho247f6ApiSearchScores(title='', label='Kaynak'){
   const out = [];
   if(typeof fetch !== 'function') return out;
@@ -3334,7 +3197,7 @@ async function ho247f6ApiStoreScores(title=''){
 }
 
 
-// v4.0.5 - score-check güvenli fallback katalogu
+// v4.0.0 - score-check güvenli fallback katalogu
 function ho247f8ApiKnownScore(title=''){
   const q = String(title || '').toLowerCase();
   const rows = [
@@ -3360,7 +3223,7 @@ function ho247f8ApiKnownScore(title=''){
 
 
 
-/* v4.0.5 - API tarafı başlık benzerliği yardımcıları */
+/* v4.0.0 - API tarafı başlık benzerliği yardımcıları */
 function ho249f9ApiNorm(value){
   return String(value || '').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9\s:.-]/g,' ').replace(/\s+/g,' ').trim();
 }
@@ -3379,7 +3242,7 @@ function ho249f9ApiStrictMatch(query, title){
 
 
 
-// v4.0.5 FIX: 007 First Light kesin SteamDB/Steam App ID ve kapak bilgisi
+// v4.0.1 FIX: 007 First Light kesin SteamDB/Steam App ID ve kapak bilgisi
 try{
   const __v401PrevLocalGameMeta = localGameMeta;
   localGameMeta = function(title){
@@ -3406,4 +3269,4 @@ try{
     }
     return __v401PrevLocalGameMeta(title);
   };
-}catch(error){ console.warn('v4.0.5 007 meta override kurulamadı:', error); }
+}catch(error){ console.warn('v4.0.1 007 meta override kurulamadı:', error); }
