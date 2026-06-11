@@ -1,4 +1,4 @@
--- v4.0.2 SUPABASE RESET + YENI GAMES/EPISODES SCHEMA
+-- v4.0.4 SUPABASE TEMIZ RESET + IDempotent GAMES/EPISODES SCHEMA
 -- Bu dosya istek üzerine TEMIZ RESET yapar: games ve episodes verilerini sıfırlar.
 -- site_users/yetki/kullanıcı tablolarını silmez.
 -- Reset istemediğin güncellemelerde migration dosyası kullan.
@@ -105,8 +105,7 @@ create table if not exists public.episodes (
   is_watched boolean default false,
   sort_order int default 0,
   created_at timestamptz default now(),
-  updated_at timestamptz default now(),
-  unique(game_id, episode_number)
+  updated_at timestamptz default now()
 );
 
 alter table public.episodes add column if not exists game_id uuid references public.games(id) on delete cascade;
@@ -124,14 +123,15 @@ alter table public.episodes add column if not exists sort_order int default 0;
 alter table public.episodes add column if not exists created_at timestamptz default now();
 alter table public.episodes add column if not exists updated_at timestamptz default now();
 
-do $$ begin
-  alter table public.episodes add constraint episodes_game_number_unique unique(game_id, episode_number);
-exception when duplicate_object then null;
-end $$;
+-- Constraint hatası fix: eski/yarım kalan constraint varsa önce güvenli kaldırılır.
+alter table public.episodes drop constraint if exists episodes_game_number_unique;
 
 -- TEMIZ RESET: yeni arşiv başlangıcı için sadece oyun ve bölüm kayıtları sıfırlanır.
 truncate table public.episodes restart identity cascade;
 truncate table public.games restart identity cascade;
+
+-- YouTube playlist upsert için idempotent benzersiz index.
+create unique index if not exists episodes_game_number_unique_idx on public.episodes(game_id, episode_number);
 
 alter table public.games enable row level security;
 alter table public.episodes enable row level security;
@@ -161,11 +161,11 @@ create table if not exists public.site_runtime_config (
 );
 
 insert into public.site_runtime_config(key,value,updated_at)
-values ('site_version', jsonb_build_object('version','v4.0.2','label','v4.0.2 YouTube Episodes Reset Fix','vercel_label','v4.0.2-youtube-episodes-reset-fix','status','Başarılı'), now())
+values ('site_version', jsonb_build_object('version','v4.0.4','label','v4.0.4 YouTube SteamDB Playlist Kesin Fix','vercel_label','v4.0.4-youtube-steamdb-playlist-kesin-fix','status','Başarılı'), now())
 on conflict (key) do update set value=excluded.value, updated_at=now();
 
 insert into public.site_runtime_config(key,value,updated_at)
 values ('maintenance_mode', jsonb_build_object('enabled',false,'message','Site yayında.','percent',100,'adminBypass',true), now())
 on conflict (key) do update set value=excluded.value, updated_at=now();
 
-select 'Başarılı' as durum, 'v4.0.2' as surum, 'Games + Episodes reset schema kuruldu; YouTube playlistItems çıktısı episodes tablosuna yazılmaya hazır.' as islem;
+select 'Başarılı' as durum, 'v4.0.4' as surum, 'Games + Episodes reset schema kuruldu; constraint çakışması giderildi; YouTube playlistItems çıktısı episodes tablosuna yazılmaya hazır.' as islem;

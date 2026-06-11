@@ -1,40 +1,26 @@
-# Hayatımız Oyun v4.0.2 - YouTube Episodes Reset Fix
+# Hayatımız Oyun v4.0.4 - Supabase Constraint + Temiz Paket Fix
 
-Bu paket yeni özellik eklemeden önce temel veri akışını düzeltir.
+Bu paket v4.0.3 üstüne temizlenmiş kesin fix paketidir.
 
-## Yapılan kesin düzeltmeler
+## Önce Supabase'de çalıştır
+1. Supabase > SQL Editor aç.
+2. `supabase/schema.sql` dosyasının tamamını çalıştır.
+3. Bu dosya sadece `games` ve `episodes` tablolarını temiz resetler. Yetki/kullanıcı tablolarını silmez.
 
-- Supabase `games` tablosu reset uyumlu yeni schema ile düzenlendi.
-- Supabase `episodes` tablosu eklendi.
-- YouTube oynatma listesi çekme `playlistItems.list` endpoint mantığına kilitlendi.
-- Playlistten gelen gerçek videolar artık doğrudan `episodes` tablosuna yazılır.
-- `games-list` çıktısı artık `games + episodes` birlikte döndürür.
-- Oyun kaydetme/güncelleme sırasında formdaki bölümler Supabase `episodes` tablosuna da işlenir.
-- Steam App ID ile Steam kapak/tarih/meta çekme akışı korundu.
-- RAWG/meta çekme akışı korundu.
-- Kanal logosu/thumbnail sahte fallback üretimi yerine gerçek veri yoksa mevcut liste korunur.
-- Yönetim panelinde tablo ve buton taşmaları azaltıldı; yatay kaydırma sadece tablo içinde kaldı.
+## Düzeltilen hata
+- `relation "episodes_game_number_unique" already exists` hatası düzeltildi.
+- Eski constraint güvenli kaldırılıp idempotent unique index ile yeniden kuruluyor.
+- Aynı SQL tekrar çalıştırıldığında aynı constraint hatasını vermez.
 
-## Supabase kurulumu
+## API değişkenleri
+Vercel'de görünen değişkenler yeterli:
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `YOUTUBE_API_KEY`
+- `RAWG_API_KEY`
+- `ADMIN_PASSWORD`
 
-1. Supabase SQL Editor aç.
-2. `schema.sql` içeriğini çalıştır.
-3. Bu dosya istek üzerine reset yapar: `games` ve `episodes` boş başlar.
-4. Vercel Environment Variables içinde şunlar olmalı:
-   - `SUPABASE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-   - `YOUTUBE_API_KEY`
-   - RAWG kullanıyorsan `RAWG_API_KEY`
+SteamDB için API key gerekmez. SteamDB linkinden App ID alınır: `https://steamdb.info/app/123456/`
 
-## YouTube kontrol
-
-Oyun düzenleme ekranında playlist URL girip **Oynatma Listesi Çek** dediğinde:
-
-- API `playlistItems.list` ile videoları çeker.
-- Video başlığı, video ID, thumbnail ve URL normalize edilir.
-- Sonuçlar `episodes` tablosuna kaydedilir.
-- Oyun kartında bölüm sayısı güncellenir.
-
-## Sürüm etiketi
-
-Aktif paket: `v4.0.2-youtube-episodes-reset-fix`
+## Temizlenenler
+Eski v4.0.0/v4.0.1/v4.0.2 not dosyaları paketten kaldırıldı. Sadece gerekli kurulum ve schema dosyaları bırakıldı.

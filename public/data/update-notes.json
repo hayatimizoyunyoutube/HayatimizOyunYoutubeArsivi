@@ -1,6 +1,6 @@
 [
   {
-    "version": "v4.0.2",
+    "version": "v4.0.4",
     "title": "YouTube playlistItems + Episodes tablo reset fix",
     "summary": "Games ve Episodes schema yenilendi; playlist videoları YouTube Data API playlistItems.list ile çekilip Episodes tablosuna yazılır.",
     "status": "Tamamlandı"

@@ -1,12 +1,12 @@
 {
-  "name": "hayatimiz-oyun-v402-youtube-episodes-reset-fix",
+  "name": "hayatimiz-oyun-v404-supabase-constraint-temiz-paket-fix",
   "private": true,
   "type": "module",
-  "version": "4.0.2",
+  "version": "4.0.4",
   "engines": {
     "node": "20.x"
   },
-  "description": "Hayatımız Oyun v4.0.2 YouTube playlistItems, Steam/RAWG meta ve Supabase episodes reset fix paketi",
+  "description": "Hayatımız Oyun v4.0.4 Supabase constraint, YouTube playlist, SteamDB/RAWG ve temiz paket fix",
   "scripts": {
     "build": "echo Vercel static build disabled - files served from root",
     "dev": "node scripts/dev-server.mjs",

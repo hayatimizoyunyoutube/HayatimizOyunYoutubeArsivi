@@ -715,7 +715,24 @@ export default async function handler(req, res){
   const body = req.method === 'POST' ? await readBody(req) : {};
 
   try{
-    if(action === 'health') return json(res, 200, { ok:true, version:'v4.0.2', status:'YouTube playlistItems + Episodes tablo fix aktif' });
+    if(action === 'health') return json(res, 200, { ok:true, version:'v4.0.4', status:'YouTube playlistItems kesin API + Steam App ID/SteamDB URL kapak fix aktif' });
+
+
+    if(action === 'api-env-check'){
+      return json(res, 200, {
+        ok:true,
+        version:'v4.0.4',
+        env:{
+          supabaseUrl:!!process.env.SUPABASE_URL,
+          supabaseServiceRole:!!process.env.SUPABASE_SERVICE_ROLE_KEY,
+          rawgApiKey:!!process.env.RAWG_API_KEY,
+          youtubeApiKey:!!(process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY),
+          steamApiKeyRequired:false,
+          steamDbApiKeyRequired:false
+        },
+        note:'SteamDB için ayrı API anahtarı yok; Steam App ID/SteamDB URL içindeki app id ile Steam Store CDN kapakları çekilir.'
+      });
+    }
 
     if(action === 'game-meta-lite'){
       const title = String(body.title || '').trim();
@@ -734,10 +751,10 @@ export default async function handler(req, res){
 
     if(action === 'steam-meta-lite'){
       const title = String(body.title || '').trim();
-      const appId = String(body.steamAppId || body.steam_app_id || '').trim();
+      const appId = String(body.steamAppId || body.steam_app_id || body.steamdbUrl || body.steamUrl || '').trim().match(/(\d{3,})/)?.[1] || String(body.steamAppId || body.steam_app_id || '').trim();
       if(appId){
         const byId = await fetchSteamAppDetailsById(appId);
-        return json(res, 200, { ok:true, steam:byId, meta:byId, source:`Steam App ID ${appId} kesin çekim`, version:'v4.0.2' });
+        return json(res, 200, { ok:true, steam:byId, meta:byId, source:`Steam App ID ${appId} kesin çekim`, version:'v4.0.4' });
       }
       if(!title) throw new Error('Steam kontrolü için oyun adı veya Steam App ID gerekli.');
       const steam = await ho240f58SteamBest(title).catch(()=>null);
@@ -746,7 +763,7 @@ export default async function handler(req, res){
         return json(res, 200, { ok:true, steam:fallback, meta:fallback, source:'Steam sonucu yok / yerel güvenli meta' });
       }
       const steamDate = pickDateTR(steam.releaseDate, steam.released);
-      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, meta:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.2' });
+      return json(res, 200, { ok:true, steam:{ ...steam, releaseDate:steamDate, released:steamDate }, meta:{ ...steam, releaseDate:steamDate, released:steamDate }, source:'Steam güvenli kontrol', version:'v4.0.4' });
     }
 
     if(action === 'register'){
@@ -952,7 +969,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v4.0.2', note:'v4.0.2 YouTube Episodes Reset Fix sürüm senkronizasyonu', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v4.0.4', note:'v4.0.2 YouTube Episodes Reset Fix sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -969,7 +986,7 @@ export default async function handler(req, res){
         headers:{ Prefer:'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify([
           { key, value, updated_at:now },
-          { key:'schema_version', value:{ version:'v4.0.2', note:'v4.0.2 YouTube Episodes Reset Fix sürüm senkronizasyonu', updated_at:now }, updated_at:now }
+          { key:'schema_version', value:{ version:'v4.0.4', note:'v4.0.2 YouTube Episodes Reset Fix sürüm senkronizasyonu', updated_at:now }, updated_at:now }
         ])
       });
       return json(res, 200, { ok:true, key, value, maintenance:key === 'maintenance_mode' ? value : undefined, rows });
@@ -1113,7 +1130,7 @@ export default async function handler(req, res){
       const games = await supabase('games?select=*&order=series_order.asc', { method:'GET' }).catch(()=>[]);
       const runtime = await supabase('site_runtime_config?select=key,value,updated_at', { method:'GET' }).catch(()=>[]);
       const snapshot = {
-        version:'v4.0.2',
+        version:'v4.0.4',
         source,
         created_at:now,
         counts:{
@@ -1215,7 +1232,7 @@ export default async function handler(req, res){
     if(action === 'data-backup-save'){
       await requireStaff(body.adminToken);
       const payload = body.payload || {};
-      const row = { backup_type:String(body.backupType||'manual'), version:'v4.0.2', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
+      const row = { backup_type:String(body.backupType||'manual'), version:'v4.0.4', summary:String(body.summary||'Manuel yedek'), payload, created_by:String(body.email||'') };
       const rows = await supabase('site_data_backups', { method:'POST', body: JSON.stringify([row]) }).catch(()=>[]);
       return json(res, 200, { ok:true, backup:Array.isArray(rows)?rows[0]:row, message:'Yedek kaydı oluşturuldu.' });
     }
@@ -1759,9 +1776,9 @@ export default async function handler(req, res){
         storeScores.forEach(s=>sources.push(s));
       }catch{}
       const clean = sources.filter(s=>Number.isFinite(Number(s.score)) && Number(s.score)>0);
-      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v4.0.2' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
+      if(!clean.length){ const known = ho247f8ApiKnownScore(title); if(known) return json(res, 200, { ok:true, score:known.score, averageScore:known.score, sources:[{source:known.source, score:known.score}], message:'Katalog puanı bulundu.', version:'v4.0.4' }); return json(res, 200, { ok:false, score:'', averageScore:'', sources:[], message:'Steam/Google/Epic/Ubisoft puanı bulunamadı.' }); }
       const avg = clean.reduce((a,b)=>a+Number(b.score),0)/clean.length;
-      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v4.0.2' });
+      return json(res, 200, { ok:true, score:Number(avg.toFixed(1)), averageScore:Number(avg.toFixed(1)), sources:clean.slice(0,8), version:'v4.0.4' });
     }
 
 
@@ -1771,7 +1788,7 @@ export default async function handler(req, res){
       const source = String(body.source || 'epic').trim().toLowerCase();
       if(!title) throw new Error('Kaynak kontrolü için oyun adı gerekli.');
       const result = ho244ApiStoreSearch(title, source);
-      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v4.0.2' });
+      return json(res, 200, { ok:true, title, result:{ ...result, title, matchScore:82, message:`${result.source} için resmi arama bağlantısı hazırlandı. Sonuçtan kapak ve çıkış tarihini manuel doğrulayabilirsin.` }, version:'v4.0.4' });
     }
 
     return json(res, 404, { ok:false, error:'Bilinmeyen API action.' });
@@ -3064,7 +3081,7 @@ try{
   fetchYoutubePlaylistItems = async function(playlistUrl){
     const playlistId = ho240f63StrictPlaylistId(playlistUrl);
     if(!playlistId) return { count:0, episodes:[], source:'FIX63: sadece playlist URL kabul edilir' };
-    const key = process.env.YOUTUBE_API_KEY || '';
+    const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
     let official = { count:0, episodes:[] };
     if(key){
       const rows = [];
@@ -3072,7 +3089,11 @@ try{
       for(let page=0; page<20; page++){
         const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(playlistId)}&key=${encodeURIComponent(key)}${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
         const response = await fetch(url);
-        if(!response.ok) break;
+        if(!response.ok){
+          let errText='';
+          try{ errText = await response.text(); }catch{}
+          throw new Error(`YouTube playlistItems.list hata verdi: ${response.status} ${errText.slice(0,160)}`);
+        }
         const data = await response.json();
         (data.items || []).forEach((item)=>{
           const sn = item.snippet || {};
