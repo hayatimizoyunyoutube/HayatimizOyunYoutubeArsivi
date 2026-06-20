@@ -615,10 +615,9 @@ async function fetchYoutubePlaylistItems(playlistUrl){
     }
     const episodes = uniqueEpisodes(rows);
     if(episodes.length) return { count:episodes.length, episodes, source:'YouTube Data API v3' };
-    throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz veya boş olabilir.');
+    const fallback = await fetchYoutubePlaylistItemsNoKey(playlistUrl); if(fallback.count>0) return {...fallback, source:'Fallback Parser'}; throw new Error('YouTube API gerçek bölüm döndürmedi. Playlist gizli, erişimsiz veya boş olabilir.');
   }
-  // API key yoksa kullanıcıya net hata ver; sahte bölüm üretme.
-  throw new Error('YOUTUBE_API_KEY eksik. Vercel Environment Variables içine YouTube Data API anahtarını ekle.');
+  const fallback = await fetchYoutubePlaylistItemsNoKey(playlistUrl); if(fallback.count>0) return {...fallback, source:'Fallback Parser'}; throw new Error('YOUTUBE_API_KEY eksik veya okunamıyor.');
 }
 async function fetchYoutubePlaylistCount(playlistUrl){
   const key = process.env.YOUTUBE_API_KEY || process.env.YOUTUBE_DATA_API_KEY || process.env.GOOGLE_API_KEY || process.env.VITE_YOUTUBE_API_KEY || '';
