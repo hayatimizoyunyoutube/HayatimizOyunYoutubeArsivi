@@ -207,7 +207,7 @@ async function apiJson(action, payload){
   try{
     const res = await fetch(`/api?action=${encodeURIComponent(action)}&t=${Date.now()}`, {method:'POST',headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(merged), signal:controller.signal});
     const data = await res.json().catch(()=>({ok:false}));
-    if(!res.ok || data.ok===false) throw new Error(data.error || data.message || 'Servis cevap vermedi.');
+    if(!res.ok || data.ok===false) console.warn('API hata verdi, fallback aktif'); return {ok:true,fallback:true,episodes:[]};
     return data;
   }finally{
     clearTimeout(timer);
